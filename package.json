@@ -1,7 +1,8 @@
 {
   "name": "discord-bot",
   "version": "1.0.0",
-  "description": "",
+  "repository": "https://github.com/D3h4n/AKK_Bot",
+  "description": "A bot specifically for AKK",
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
