@@ -24,7 +24,13 @@ client.once("ready", () => {
   });
 
   console.log("\nReady to Go!\n");
-  client.user?.setActivity("Muahahahahahaha", { type: "CUSTOM_STATUS" });
+  client.user!.setPresence({
+    status: "online",
+    activity: {
+      name: "the cries of the damned",
+      type: "LISTENING",
+    },
+  });
 });
 
 client.on("message", (message) => {
