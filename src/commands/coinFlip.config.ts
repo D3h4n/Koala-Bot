@@ -12,8 +12,11 @@ export class coinFlipCommand extends Command {
 
     if (args.length > 1) {
       times = parseInt(args[1]);
+
       if (isNaN(times))
         return message.channel.send(`argument must be a number`);
+
+      times = times > 20 ? 20 : times;
     }
 
     for (let i = 0; i < times; i++) {
