@@ -24,6 +24,7 @@ client.once("ready", () => {
   });
 
   console.log("\nReady to Go!\n");
+  client.user?.setActivity("Muahahahahahaha", { type: "CUSTOM_STATUS" });
 });
 
 client.on("message", (message) => {
