@@ -27,8 +27,8 @@ client.once("ready", () => {
   client.user!.setPresence({
     status: "online",
     activity: {
-      name: "the cries of the damned",
-      type: "LISTENING",
+      name: "try $commands",
+      type: "PLAYING",
     },
   });
 });
