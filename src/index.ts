@@ -6,8 +6,8 @@ import commands from "./commands/index.commands.setup";
 const { token, prefix } = config; // config info for bot
 
 const client = new Client(); // initialize client
-// functions
 
+// functions
 const logCommand = (message: Message) => {
   let channel = message.guild?.channels.resolve(message.channel.id);
 

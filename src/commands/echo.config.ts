@@ -24,6 +24,6 @@ export class echoCommand extends Command {
   }
 
   help() {
-    return ["I repeat what ever you said", "Usage: $echo <text>"];
+    return ["I repeat whatever you want", "Usage: $echo <text>"];
   }
 }
