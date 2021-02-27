@@ -1,3 +1,4 @@
+import Discord from "discord.js";
 import { Command } from "./common.commands.config";
 import { helloCommand } from "./chat/hello.config";
 import { coinFlipCommand } from "./misc/coinFlip.config";
@@ -10,9 +11,10 @@ import { leaveCommand } from "./music/leave.config";
 import { playCommand } from "./music/play.config";
 import { pauseCommand } from "./music/pause.config";
 import { skipCommand } from "./music/skip.config";
+import { queueCommand } from "./music/queue.config";
 
 // create a map of commands
-let commands = new Map<string, Command>();
+let commands = new Discord.Collection<string, Command>();
 
 // add commands to map
 // chat commands
@@ -29,6 +31,7 @@ commands.set("join", new joinCommand("join"));
 commands.set("leave", new leaveCommand("leave"));
 commands.set("pause", new pauseCommand("pause"));
 commands.set("play", new playCommand("play"));
+commands.set("queue", new queueCommand("queue"));
 commands.set("skip", new skipCommand("skip"));
 
 // misc commads

@@ -1,5 +1,5 @@
 import { Command } from "../common.commands.config";
-import { distube } from "src";
+import { distube } from "../../index";
 import { Message } from "discord.js";
 
 export class pauseCommand extends Command {

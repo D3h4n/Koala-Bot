@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import { distube } from "src";
+import { distube } from "../../index";
 import { Command } from "../common.commands.config";
 
 export class skipCommand extends Command {

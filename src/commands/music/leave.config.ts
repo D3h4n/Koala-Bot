@@ -1,6 +1,6 @@
 import { Message } from "discord.js";
 import { Command } from "../common.commands.config";
-import { client } from "src";
+import { client } from "../../index";
 
 export class leaveCommand extends Command {
   constructor(commandName: string) {
