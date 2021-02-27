@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "discord.js": "^12.5.1",
-    "dotenv": "^8.2.0"
+    "dotenv": "^8.2.0",
+    "googleapis": "^67.1.0"
   }
 }
