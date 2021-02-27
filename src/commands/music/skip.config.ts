@@ -11,7 +11,7 @@ export class skipCommand extends Command {
     try {
       distube.skip(message);
     } catch (error) {
-      message.channel.send("Unable to skip messages");
+      message.channel.send("Unable to skip song");
       return;
     }
 
