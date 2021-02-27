@@ -9,6 +9,7 @@ import { joinCommand } from "./music/join.config";
 import { leaveCommand } from "./music/leave.config";
 import { playCommand } from "./music/play.config";
 import { pauseCommand } from "./music/pause.config";
+import { skipCommand } from "./music/skip.config";
 
 // create a map of commands
 let commands = new Map<string, Command>();
@@ -28,6 +29,7 @@ commands.set("join", new joinCommand("join"));
 commands.set("leave", new leaveCommand("leave"));
 commands.set("pause", new pauseCommand("pause"));
 commands.set("play", new playCommand("play"));
+commands.set("skip", new skipCommand("skip"));
 
 // misc commads
 commands.set("coinflip", new coinFlipCommand("coinflip"));

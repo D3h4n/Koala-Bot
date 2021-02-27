@@ -1,6 +1,6 @@
 import { Message } from "discord.js";
 import { Command } from "../common.commands.config";
-import { distube } from "../../index";
+import { distube } from "src";
 
 export class playCommand extends Command {
   constructor(commandName: string) {
