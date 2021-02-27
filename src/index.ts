@@ -1,11 +1,17 @@
 import { Client, Message } from "discord.js";
+import Distube from "distube";
 import config from "./config";
 
 import commands from "./commands/index.commands.setup";
 
 const { token, prefix, botStatus } = config; // config info for bot
 
-const client = new Client(); // initialize client
+export const client = new Client(); // initialize client
+
+export const distube = new Distube(client, {
+  searchSongs: false,
+  emitNewSongOnly: true,
+});
 
 // functions
 const logCommand = (message: Message) => {
