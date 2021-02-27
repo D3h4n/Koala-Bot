@@ -3,8 +3,8 @@ import { Command } from "../common.commands.config";
 import { distube } from "../../index";
 
 export class playCommand extends Command {
-  constructor(commandName: string) {
-    super(commandName);
+  constructor(commandName: string, help: string[]) {
+    super(commandName, help);
   }
 
   async action(message: Message, args: string[]) {
@@ -23,9 +23,5 @@ export class playCommand extends Command {
     }
 
     distube.play(message, query);
-  }
-
-  help() {
-    return ["Play music", "$play <song>"];
   }
 }

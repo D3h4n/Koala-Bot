@@ -4,8 +4,8 @@ import { Command } from "../common.commands.config";
 export class helloCommand extends Command {
   greetings: string[];
 
-  constructor(commandName: string) {
-    super(commandName);
+  constructor(commandName: string, help: string[]) {
+    super(commandName, help);
 
     this.greetings = [
       "Hi",
@@ -28,9 +28,5 @@ export class helloCommand extends Command {
     // greet user that called command
     message.channel.send(`${greeting} ${message.author.toString()}`);
     return;
-  }
-
-  help() {
-    return ["Greet someone", "Usage: $hello or $hello @friend"];
   }
 }

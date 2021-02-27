@@ -3,8 +3,8 @@ import { distube } from "../../index";
 import { Command } from "../common.commands.config";
 
 export class skipCommand extends Command {
-  constructor(commandName: string) {
-    super(commandName);
+  constructor(commandName: string, help: string[]) {
+    super(commandName, help);
   }
 
   action(message: Message) {
@@ -16,9 +16,5 @@ export class skipCommand extends Command {
     }
 
     message.channel.send("Skipped song");
-  }
-
-  help() {
-    return ["Skip the current song", "Usage: $skip"];
   }
 }

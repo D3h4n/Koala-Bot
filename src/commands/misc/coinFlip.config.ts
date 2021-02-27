@@ -2,8 +2,8 @@ import { Message } from "discord.js";
 import { Command } from "../common.commands.config";
 
 export class coinFlipCommand extends Command {
-  constructor(commandName: string) {
-    super(commandName);
+  constructor(commandName: string, help: string[]) {
+    super(commandName, help);
   }
 
   action(message: Message, args: string[]) {
@@ -29,9 +29,5 @@ export class coinFlipCommand extends Command {
 
     message.channel.send(response);
     return;
-  }
-
-  help() {
-    return ["Flip one or more coins", "Usage: $coinflip or $coinflip <number>"];
   }
 }

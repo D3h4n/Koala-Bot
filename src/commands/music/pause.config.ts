@@ -3,8 +3,8 @@ import { distube } from "../../index";
 import { Message } from "discord.js";
 
 export class pauseCommand extends Command {
-  constructor(commandName: string) {
-    super(commandName);
+  constructor(commandName: string, help: string[]) {
+    super(commandName, help);
   }
 
   action(message: Message) {
@@ -16,9 +16,5 @@ export class pauseCommand extends Command {
     }
 
     message.channel.send("Paused song");
-  }
-
-  help() {
-    return ["Pause song", "Usage: $pause"];
   }
 }

@@ -13,11 +13,21 @@ export const distube = new Distube(client, {
   emitNewSongOnly: true,
 });
 
-distube.on("playSong", (message, _, song) =>
-  message.channel.send(
-    `Playing ${song.name} - ${song.formattedDuration} ${song.user}`
+distube
+  .on("playSong", (message, _, song) =>
+    message.channel.send(
+      `Playing ${song.name} - ${song.formattedDuration} ${song.user}`
+    )
   )
-);
+  .on("initQueue", (queue) => {
+    queue.autoplay = false;
+    queue.volume = 0;
+  })
+  .on("noRelated", (message) =>
+    message.channel.send(
+      "Can't find related video to play. Stop playing music."
+    )
+  );
 
 // functions
 const logCommand = (message: Message) => {
