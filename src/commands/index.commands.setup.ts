@@ -13,7 +13,7 @@ let commands = new Map<string, Command>();
 commands.set("coinflip", new coinFlipCommand("coinflip"));
 commands.set("echo", new echoCommand("echo"));
 commands.set("hello", new helloCommand("hello"));
-commands.set("help", new helpCommand("help"));
+commands.set("help", new helpCommand("help", 5));
 commands.set("insult", new insultCommand("insult"));
 commands.set("youtube", new youtubeCommand("youtube"));
 
