@@ -18,7 +18,7 @@ export class helpCommand extends Command {
     if (!this.commandList?.length) {
       this.commandList = [];
 
-      commands().forEach((command) => {
+      commands.forEach((command) => {
         this.commandList.push(command);
       });
 
@@ -67,10 +67,10 @@ export class helpCommand extends Command {
       return;
     }
 
-    if (commands().has(args[1])) {
+    if (commands.has(args[1])) {
       let helpMsg = new MessageEmbed({
         title: args[1],
-        description: commands()
+        description: commands
           .get(args[1])!
           .help.reduce((res, msg) => res + "\n" + msg),
       });

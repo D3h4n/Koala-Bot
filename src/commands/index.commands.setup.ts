@@ -12,6 +12,7 @@ import { playCommand } from "./music/play.config";
 import { pauseCommand } from "./music/pause.config";
 import { skipCommand } from "./music/skip.config";
 import { queueCommand } from "./music/queue.config";
+import { stopCommand } from "./music/stop.config";
 
 // create a map of commands
 let commands = new Discord.Collection<string, Command>();
@@ -85,10 +86,15 @@ commands.set(
   new skipCommand("skip", ["Skip the current song", "Usage: $skip"])
 );
 
+commands.set(
+  "stop",
+  new stopCommand("stop", ["Stop the queue", "Usage: $stop"])
+);
+
 // search commands
 commands.set(
   "youtube",
   new youtubeCommand("youtube", ["Search youtube", "Usage: $youtube <query>"])
 );
 
-export default () => commands;
+export default (() => commands)();

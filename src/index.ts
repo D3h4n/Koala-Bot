@@ -40,8 +40,8 @@ const logCommand = (message: Message) => {
 
 // log that bot is running
 client.once("ready", () => {
-  console.log(`Loaded ${commands().size} commands`);
-  commands().forEach((command) => {
+  console.log(`Loaded ${commands.size} commands`);
+  commands.forEach((command) => {
     console.log(prefix + command.commandName);
   });
 
@@ -67,8 +67,8 @@ client.on("message", (message) => {
     let commandName = args[0].toLowerCase();
 
     // check for the correct command and execute it
-    if (commands().has(commandName)) {
-      commands().get(commandName)!.action(message, args);
+    if (commands.has(commandName)) {
+      commands.get(commandName)!.action(message, args);
       logCommand(message);
       return;
     }

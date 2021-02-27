@@ -3,8 +3,8 @@ import { distube } from "../../index";
 import { Command } from "../common.commands.config";
 
 export class stopCommand extends Command {
-  constructor(commandName: string) {
-    super(commandName);
+  constructor(commandName: string, help: string[]) {
+    super(commandName, help);
   }
 
   action(message: Message) {
@@ -16,9 +16,5 @@ export class stopCommand extends Command {
     }
 
     message.channel.send("`Queue stopped`");
-  }
-
-  help() {
-    return ["Stop the queue", "Usage: $stop"];
   }
 }
