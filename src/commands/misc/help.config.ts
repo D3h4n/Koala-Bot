@@ -50,11 +50,14 @@ export class helpCommand extends Command {
       );
 
     let response = new MessageEmbed();
-    response.title = `Commands - Page ${pageNumber}`;
+    response.title = `Commands`;
     response.setDescription(description);
-    if (pageNumber !== numPages) {
-      response.setFooter(`use $help ${pageNumber + 1} for next page`);
-    }
+    response.setFooter(
+      `${pageNumber}/${numPages}` +
+        (pageNumber < numPages
+          ? `\t\t\t\t\t\t\t\tnext page $help ${pageNumber + 1}`
+          : "")
+    );
 
     return response;
   }
