@@ -3,7 +3,7 @@ import config from "./config";
 
 import commands from "./commands/index.commands.setup";
 
-const { token, prefix } = config; // config info for bot
+const { token, prefix, botStatus } = config; // config info for bot
 
 const client = new Client(); // initialize client
 
@@ -27,7 +27,7 @@ client.once("ready", () => {
   client.user!.setPresence({
     status: "online",
     activity: {
-      name: "try $commands",
+      name: botStatus,
       type: "PLAYING",
     },
   });
