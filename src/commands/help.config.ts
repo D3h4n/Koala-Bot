@@ -7,15 +7,26 @@ export class helpCommand extends Command {
     super(commandName);
   }
 
+  listCommands() {
+    let response: string[] = [];
+
+    commands().forEach((command) => {
+      response.push(`**${command.commandName}**`);
+      command.help().forEach((helpMsg) => response.push(helpMsg));
+      response.push(" ");
+    });
+
+    return response;
+  }
+
   action(message: Message, args: string[]) {
     if (args.length === 1) {
-      commands().get("commands")!.action(message, args);
+      message.channel.send(this.listCommands());
       return;
     }
 
     if (commands().has(args[1])) {
-      let helpMsg = commands().get(args[1])!.help();
-      message.channel.send(helpMsg);
+      message.channel.send(commands().get(args[1])!.help());
       return;
     }
 
