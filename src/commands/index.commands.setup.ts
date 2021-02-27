@@ -20,7 +20,7 @@ let commands = new Discord.Collection<string, Command>();
 // chat commands
 commands.set("echo", new echoCommand("echo"));
 commands.set("hello", new helloCommand("hello"));
-commands.set("help", new helpCommand("help"));
+commands.set("help", new helpCommand("help", 5));
 commands.set("insult", new insultCommand("insult"));
 
 // search commands
