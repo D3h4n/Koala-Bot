@@ -1,6 +1,6 @@
 import { Message } from "discord.js";
-import { Command } from "./common.commands.config";
-import { distube } from "../index";
+import { Command } from "../common.commands.config";
+import { distube } from "../../index";
 
 export class playCommand extends Command {
   constructor(commandName: string) {
@@ -11,7 +11,14 @@ export class playCommand extends Command {
     let query = args.slice(1).join(" ");
 
     if (!query) {
-      message.channel.send("Gimme something to play");
+      try {
+        distube.resume(message);
+      } catch (err) {
+        message.channel.send("Error resuming song");
+        return;
+      }
+
+      message.channel.send("Resuming song");
       return;
     }
 

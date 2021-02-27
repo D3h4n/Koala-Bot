@@ -1,6 +1,6 @@
 import { Message } from "discord.js";
-import { Command } from "./common.commands.config";
-import commands from "./index.commands.setup";
+import { Command } from "../common.commands.config";
+import commands from "../index.commands.setup";
 
 export class helpCommand extends Command {
   constructor(commandName: string) {

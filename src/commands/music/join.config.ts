@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import { Command } from "./common.commands.config";
+import { Command } from "../common.commands.config";
 
 export class joinCommand extends Command {
   constructor(commandName: string) {

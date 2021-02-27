@@ -1,7 +1,7 @@
 import { Message } from "discord.js";
-import { Command } from "./common.commands.config";
+import { Command } from "../common.commands.config";
 import { google } from "googleapis";
-import config from "../config";
+import config from "../../config";
 
 export class youtubeCommand extends Command {
   constructor(commandName: string) {

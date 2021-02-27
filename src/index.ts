@@ -13,6 +13,12 @@ export const distube = new Distube(client, {
   emitNewSongOnly: true,
 });
 
+distube.on("playSong", (message, _, song) =>
+  message.channel.send(
+    `Playing ${song.name} - ${song.formattedDuration} ${song.user}`
+  )
+);
+
 // functions
 const logCommand = (message: Message) => {
   let channel = message.guild?.channels.resolve(message.channel.id);
