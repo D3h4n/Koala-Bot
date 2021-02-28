@@ -10,48 +10,114 @@ export class helpCommand extends Command {
 
   constructor(commandName: string, help: string[], pageLength: number) {
     super(commandName, help);
-
+    this.commandList = [];
     this.pageLength = pageLength;
   }
 
+  async action(message: Message, args: string[]) {
+    // get page number if args else set page number to 1
+    let pageNumber = args.length < 2 ? 1 : parseInt(args[1]);
+
+    // check that args[1] is number
+    if (!isNaN(pageNumber)) {
+      // send list of commands for pageNumber and get back message object
+      let sentMsg = await message.channel.send(this.listCommands(pageNumber));
+
+      // add reactions to control the page
+      sentMsg
+        .react("◀")
+        .then(() => sentMsg.react("▶"))
+        .catch(console.error);
+
+      // filter for reactions
+      const filter = (reaction: MessageReaction, user: User) => {
+        return (
+          ["◀", "▶"].includes(reaction.emoji.name) &&
+          user.id !== client.user?.id
+        );
+      };
+
+      // collector which gets reactions within filter
+      const collector = sentMsg.createReactionCollector(filter, {
+        time: 20000,
+      });
+
+      collector.on("collect", (reaction, user) => {
+        // change page number every time a valid reaction is ran
+        pageNumber = this.changePage(sentMsg, reaction, user, pageNumber);
+      });
+
+      return; // exit function
+    }
+
+    // args[1] was not a number
+    // check if it was a command
+    if (commands.has(args[1])) {
+      // create a message embed with the help message of the command
+      let helpMsg = new MessageEmbed({
+        title: args[1],
+        description: commands
+          .get(args[1])!
+          .help.reduce((res, msg) => res + "\n" + msg),
+      });
+
+      // send message and return
+      message.channel.send(helpMsg);
+      return;
+    }
+
+    // args[1] was not a page number or command
+    // tell user that command was not found
+    message.channel.send("`That command was not found`");
+  }
+
   listCommands(pageNumber: number) {
-    let description: string[];
+    let description: string[]; // declare description
 
-    if (!this.commandList?.length) {
-      this.commandList = [];
-
+    // check if commandList was already generated
+    if (!this.commandList.length) {
+      // push each command to the command list
       commands.forEach((command) => {
         this.commandList.push(command);
       });
 
+      // sort the list by the name of each command
       this.commandList.sort((a, b) => {
         if (a.commandName < b.commandName) return -1;
         if (a.commandName > b.commandName) return 1;
         return 0;
       });
 
+      // set numPages
       this.numPages = Math.ceil(this.commandList.length / this.pageLength);
     }
 
+    // get the index of the first command in the page
     let startIndex = (pageNumber - 1) * this.pageLength;
 
-    if (startIndex > this.commandList.length) {
+    if (startIndex >= this.commandList.length) {
+      // if the start index too big,
+      // set it to 0 and display the first page
       startIndex = 0;
       pageNumber = 1;
     }
 
+    // create description
     description = this.commandList
+      // get the commands that are on the page
+      .slice(
+        startIndex,
+        Math.min(startIndex + this.pageLength, this.commandList.length)
+      )
+      // generate an entry for each command
       .map(
         (command) =>
           `**${command.commandName}**\n` +
           command.help.reduce((res, msg) => res + "\n" + msg) +
           "\n"
-      )
-      .slice(
-        startIndex,
-        Math.min(startIndex + this.pageLength, this.commandList.length)
       );
 
+    // create the help message
     let response = new MessageEmbed();
     response
       .setTitle("Help")
@@ -68,57 +134,17 @@ export class helpCommand extends Command {
     pageNumber: number
   ) {
     if (reaction.emoji.name === "◀" && pageNumber > 1) {
+      // if back arrow generate previous page if there is one
       message.edit(this.listCommands(--pageNumber));
     } else if (reaction.emoji.name === "▶" && pageNumber < this.numPages) {
+      // if forward arrow generate next page if there is one
       message.edit(this.listCommands(++pageNumber));
     }
 
+    // remove user reactions
     reaction.users.remove(user.id);
 
+    // return new pageNumber
     return pageNumber;
-  }
-
-  async action(message: Message, args: string[]) {
-    let pageNumber = args.length < 2 ? 1 : parseInt(args[1]);
-
-    if (!isNaN(pageNumber)) {
-      let sentMsg = await message.channel.send(this.listCommands(pageNumber));
-
-      sentMsg
-        .react("◀")
-        .then(() => sentMsg.react("▶"))
-        .catch(console.error);
-
-      const filter = (reaction: MessageReaction, user: User) => {
-        return (
-          ["◀", "▶"].includes(reaction.emoji.name) &&
-          user.id !== client.user?.id
-        );
-      };
-
-      const collector = sentMsg.createReactionCollector(filter, {
-        time: 20000,
-      });
-
-      collector.on("collect", (reaction, user) => {
-        pageNumber = this.changePage(sentMsg, reaction, user, pageNumber);
-      });
-
-      return;
-    }
-
-    if (commands.has(args[1])) {
-      let helpMsg = new MessageEmbed({
-        title: args[1],
-        description: commands
-          .get(args[1])!
-          .help.reduce((res, msg) => res + "\n" + msg),
-      });
-
-      message.channel.send(helpMsg);
-      return;
-    }
-
-    message.channel.send("`That command was not found`");
   }
 }
