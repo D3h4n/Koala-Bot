@@ -13,6 +13,7 @@ import { pauseCommand } from "./music/pause.config";
 import { skipCommand } from "./music/skip.config";
 import { queueCommand } from "./music/queue.config";
 import { stopCommand } from "./music/stop.config";
+import { volumeCommand } from "./music/volume.config";
 
 // create a map of commands
 let commands = new Discord.Collection<string, Command>();
@@ -89,6 +90,14 @@ commands.set(
 commands.set(
   "stop",
   new stopCommand("stop", ["Stop the queue", "Usage: $stop"])
+);
+
+commands.set(
+  "volume",
+  new volumeCommand("volume", [
+    "Set the volume of the bot",
+    "Usage: $volume <percent>",
+  ])
 );
 
 // search commands

@@ -21,7 +21,7 @@ distube
   )
   .on("initQueue", (queue) => {
     queue.autoplay = false;
-    queue.volume = 0;
+    queue.volume = 100;
   })
   .on("noRelated", (message) =>
     message.channel.send(
