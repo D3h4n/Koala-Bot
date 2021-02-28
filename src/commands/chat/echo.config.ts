@@ -1,9 +1,9 @@
 import { Message } from "discord.js";
-import { Command } from "./common.commands.config";
+import { Command } from "../common.commands.config";
 
 export class echoCommand extends Command {
-  constructor(commandName: string) {
-    super(commandName);
+  constructor(commandName: string, help: string[]) {
+    super(commandName, help);
   }
 
   action(message: Message, args: string[]) {
@@ -21,9 +21,5 @@ export class echoCommand extends Command {
     }
 
     message.channel.send("I have nothing to say.");
-  }
-
-  help() {
-    return ["I repeat whatever you want", "Usage: $echo <text>"];
   }
 }

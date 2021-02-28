@@ -1,13 +1,13 @@
 import { Message, MessageEmbed } from "discord.js";
-import { Command } from "./common.commands.config";
-import commands from "./index.commands.setup";
+import { Command } from "../common.commands.config";
+import commands from "../index.commands.setup";
 
 export class helpCommand extends Command {
   commandList: Command[];
   pageLength: number;
 
-  constructor(commandName: string, pageLength: number) {
-    super(commandName);
+  constructor(commandName: string, help: string[], pageLength: number) {
+    super(commandName, help);
 
     this.pageLength = pageLength;
   }
@@ -18,7 +18,7 @@ export class helpCommand extends Command {
     if (!this.commandList?.length) {
       this.commandList = [];
 
-      commands().forEach((command) => {
+      commands.forEach((command) => {
         this.commandList.push(command);
       });
 
@@ -41,7 +41,7 @@ export class helpCommand extends Command {
       .map(
         (command) =>
           `**${command.commandName}**\n` +
-          command.help().reduce((res, msg) => res + "\n" + msg) +
+          command.help.reduce((res, msg) => res + "\n" + msg) +
           "\n"
       )
       .slice(
@@ -70,13 +70,12 @@ export class helpCommand extends Command {
       return;
     }
 
-    if (commands().has(args[1])) {
+    if (commands.has(args[1])) {
       let helpMsg = new MessageEmbed({
         title: args[1],
-        description: commands()
+        description: commands
           .get(args[1])!
-          .help()
-          .reduce((res, msg) => res + "\n" + msg),
+          .help.reduce((res, msg) => res + "\n" + msg),
       });
 
       message.channel.send(helpMsg);
@@ -84,12 +83,5 @@ export class helpCommand extends Command {
     }
 
     message.channel.send("That command was not found");
-  }
-
-  help() {
-    return [
-      "Get information about a command",
-      "Usage: $help or $help <command>",
-    ];
   }
 }

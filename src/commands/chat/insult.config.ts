@@ -1,11 +1,11 @@
 import { Message } from "discord.js";
-import { Command } from "./common.commands.config";
+import { Command } from "../common.commands.config";
 
 export class insultCommand extends Command {
   insults: Array<(user: string) => string>;
 
-  constructor(name: string) {
-    super(name);
+  constructor(commandName: string, help: string[]) {
+    super(commandName, help);
     this.insults = [this.yuhMudda, this.yuhBot];
   }
 
@@ -26,9 +26,5 @@ export class insultCommand extends Command {
     );
 
     return message.channel.send(insult);
-  }
-
-  help() {
-    return ["Insult someone or yourself", "Usage: $insult or $insult @friend"];
   }
 }

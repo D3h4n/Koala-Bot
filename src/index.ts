@@ -1,11 +1,33 @@
 import { Client, Message } from "discord.js";
+import Distube from "distube";
 import config from "./config";
 
 import commands from "./commands/index.commands.setup";
 
 const { token, prefix, botStatus } = config; // config info for bot
 
-const client = new Client(); // initialize client
+export const client = new Client(); // initialize client
+
+export const distube = new Distube(client, {
+  searchSongs: false,
+  emitNewSongOnly: true,
+});
+
+distube
+  .on("playSong", (message, _, song) =>
+    message.channel.send(
+      `Playing ${song.name} - ${song.formattedDuration} ${song.user}`
+    )
+  )
+  .on("initQueue", (queue) => {
+    queue.autoplay = false;
+    queue.volume = 0;
+  })
+  .on("noRelated", (message) =>
+    message.channel.send(
+      "Can't find related video to play. Stop playing music."
+    )
+  );
 
 // functions
 const logCommand = (message: Message) => {
@@ -18,8 +40,8 @@ const logCommand = (message: Message) => {
 
 // log that bot is running
 client.once("ready", () => {
-  console.log(`Loaded ${commands().size} commands`);
-  commands().forEach((command) => {
+  console.log(`Loaded ${commands.size} commands`);
+  commands.forEach((command) => {
     console.log(prefix + command.commandName);
   });
 
@@ -45,8 +67,8 @@ client.on("message", (message) => {
     let commandName = args[0].toLowerCase();
 
     // check for the correct command and execute it
-    if (commands().has(commandName)) {
-      commands().get(commandName)!.action(message, args);
+    if (commands.has(commandName)) {
+      commands.get(commandName)!.action(message, args);
       logCommand(message);
       return;
     }

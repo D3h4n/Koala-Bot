@@ -1,11 +1,11 @@
 import { Message } from "discord.js";
-import { Command } from "./common.commands.config";
+import { Command } from "../common.commands.config";
 import { google } from "googleapis";
-import config from "../config";
+import config from "../../config";
 
 export class youtubeCommand extends Command {
-  constructor(commandName: string) {
-    super(commandName);
+  constructor(commandName: string, help: string[]) {
+    super(commandName, help);
   }
 
   action(message: Message, args: string[]) {
@@ -41,9 +41,5 @@ export class youtubeCommand extends Command {
         }
       })
       .catch(console.error);
-  }
-
-  help() {
-    return ["Search youtube", "Usage: $youtube <query>"];
   }
 }

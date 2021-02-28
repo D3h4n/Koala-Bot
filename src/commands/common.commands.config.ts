@@ -2,9 +2,11 @@ import { Message } from "discord.js";
 
 export abstract class Command {
   commandName: string;
+  help: string[];
 
-  constructor(commandName: string) {
+  constructor(commandName: string, help: string[]) {
     this.commandName = commandName;
+    this.help = help;
   }
 
   checkForCommand(commandName: string) {
@@ -12,6 +14,4 @@ export abstract class Command {
   }
 
   abstract action(message: Message, args: string[]): void;
-
-  abstract help(): string[];
 }
