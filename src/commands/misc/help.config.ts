@@ -1,10 +1,12 @@
-import { Message, MessageEmbed } from "discord.js";
+import { Message, MessageEmbed, MessageReaction, User } from "discord.js";
+import { client } from "../../index";
 import { Command } from "../common.commands.config";
 import commands from "../index.commands.setup";
 
 export class helpCommand extends Command {
   commandList: Command[];
   pageLength: number;
+  numPages: number;
 
   constructor(commandName: string, help: string[], pageLength: number) {
     super(commandName, help);
@@ -27,9 +29,10 @@ export class helpCommand extends Command {
         if (a.commandName > b.commandName) return 1;
         return 0;
       });
+
+      this.numPages = Math.ceil(this.commandList.length / this.pageLength);
     }
 
-    let numPages = Math.ceil(this.commandList.length / this.pageLength);
     let startIndex = (pageNumber - 1) * this.pageLength;
 
     if (startIndex > this.commandList.length) {
@@ -50,23 +53,57 @@ export class helpCommand extends Command {
       );
 
     let response = new MessageEmbed();
-    response.title = `Commands`;
-    response.setDescription(description);
-    response.setFooter(
-      `${pageNumber}/${numPages}` +
-        (pageNumber < numPages
-          ? `\t\t\t\t\t\t\t\tnext page $help ${pageNumber + 1}`
-          : "")
-    );
+    response
+      .setTitle("Help")
+      .setDescription(description)
+      .setFooter("\u2800".repeat(30) + `${pageNumber}/${this.numPages}`);
 
     return response;
   }
 
-  action(message: Message, args: string[]) {
-    let pageNumber = parseInt(args[1]);
+  changePage(
+    message: Message,
+    reaction: MessageReaction,
+    user: User,
+    pageNumber: number
+  ) {
+    if (reaction.emoji.name === "◀" && pageNumber > 1) {
+      message.edit(this.listCommands(--pageNumber));
+    } else if (reaction.emoji.name === "▶" && pageNumber < this.numPages) {
+      message.edit(this.listCommands(++pageNumber));
+    }
 
-    if (!isNaN(pageNumber) || args.length === 1) {
-      message.channel.send(this.listCommands(pageNumber || 1));
+    reaction.users.remove(user.id);
+
+    return pageNumber;
+  }
+
+  async action(message: Message, args: string[]) {
+    let pageNumber = args.length < 2 ? 1 : parseInt(args[1]);
+
+    if (!isNaN(pageNumber)) {
+      let sentMsg = await message.channel.send(this.listCommands(pageNumber));
+
+      sentMsg
+        .react("◀")
+        .then(() => sentMsg.react("▶"))
+        .catch(console.error);
+
+      const filter = (reaction: MessageReaction, user: User) => {
+        return (
+          ["◀", "▶"].includes(reaction.emoji.name) &&
+          user.id !== client.user?.id
+        );
+      };
+
+      const collector = sentMsg.createReactionCollector(filter, {
+        time: 20000,
+      });
+
+      collector.on("collect", (reaction, user) => {
+        pageNumber = this.changePage(sentMsg, reaction, user, pageNumber);
+      });
+
       return;
     }
 
