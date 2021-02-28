@@ -4,7 +4,7 @@ import { Command } from "../common.commands.config";
 import commands from "../index.commands.setup";
 
 export class helpCommand extends Command {
-  commandList: Command[];
+  commandList: string[];
   pageLength: number;
   numPages: number;
 
@@ -33,7 +33,8 @@ export class helpCommand extends Command {
       const filter = (reaction: MessageReaction, user: User) => {
         return (
           ["◀", "▶"].includes(reaction.emoji.name) &&
-          user.id !== client.user?.id
+          user.id !== client.user?.id &&
+          !user.bot
         );
       };
 
@@ -42,10 +43,14 @@ export class helpCommand extends Command {
         time: 20000,
       });
 
-      collector.on("collect", (reaction, user) => {
-        // change page number every time a valid reaction is ran
-        pageNumber = this.changePage(sentMsg, reaction, user, pageNumber);
-      });
+      collector
+        .on("collect", (reaction, user) => {
+          // change page number every time a valid reaction is ran
+          pageNumber = this.changePage(sentMsg, reaction, user, pageNumber);
+        })
+        .on("end", () => {
+          sentMsg.reactions.removeAll();
+        });
 
       return; // exit function
     }
@@ -72,19 +77,21 @@ export class helpCommand extends Command {
   }
 
   listCommands(pageNumber: number) {
-    let description: string[]; // declare description
-
     // check if commandList was already generated
     if (!this.commandList.length) {
       // push each command to the command list
       commands.forEach((command) => {
-        this.commandList.push(command);
+        this.commandList.push(
+          `**${command.commandName}**\n` +
+            command.help.reduce((res, msg) => res + "\n" + msg) +
+            "\n"
+        );
       });
 
       // sort the list by the name of each command
       this.commandList.sort((a, b) => {
-        if (a.commandName < b.commandName) return -1;
-        if (a.commandName > b.commandName) return 1;
+        if (a < b) return -1;
+        if (a > b) return 1;
         return 0;
       });
 
@@ -102,19 +109,11 @@ export class helpCommand extends Command {
       pageNumber = 1;
     }
 
-    // create description
-    description = this.commandList
+    let description = this.commandList
       // get the commands that are on the page
       .slice(
         startIndex,
         Math.min(startIndex + this.pageLength, this.commandList.length)
-      )
-      // generate an entry for each command
-      .map(
-        (command) =>
-          `**${command.commandName}**\n` +
-          command.help.reduce((res, msg) => res + "\n" + msg) +
-          "\n"
       );
 
     // create the help message
