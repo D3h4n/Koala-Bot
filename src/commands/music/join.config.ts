@@ -10,7 +10,7 @@ export class joinCommand extends Command {
     const { voice } = message.member!;
 
     if (!voice.channel?.join()) {
-      message.channel.send("Join a voice channel first");
+      message.channel.send("`Join a voice channel first`");
       return;
     }
   }

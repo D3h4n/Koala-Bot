@@ -11,7 +11,7 @@ export class leaveCommand extends Command {
     let voice = client.voice?.connections.first();
 
     if (!voice?.channel.id) {
-      message.channel.send("I'm not in a voice channel");
+      message.channel.send("`I'm not in a voice channel`");
       return;
     }
 

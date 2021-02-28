@@ -82,6 +82,6 @@ export class helpCommand extends Command {
       return;
     }
 
-    message.channel.send("That command was not found");
+    message.channel.send("`That command was not found`");
   }
 }

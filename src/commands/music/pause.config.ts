@@ -11,10 +11,10 @@ export class pauseCommand extends Command {
     try {
       distube.pause(message);
     } catch (error) {
-      message.channel.send("Error pausing song");
+      message.channel.send("`Error pausing song`");
       return;
     }
 
-    message.channel.send("Paused song");
+    message.channel.send("`Paused song`");
   }
 }

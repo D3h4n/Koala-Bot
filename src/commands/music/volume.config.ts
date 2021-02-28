@@ -11,7 +11,7 @@ export class volumeCommand extends Command {
     let volume = parseInt(args[1]);
 
     if (isNaN(volume)) {
-      message.channel.send("The volume must be a number between 0 and 100");
+      message.channel.send("`Volume must be a number between 0 and 100`");
       return;
     }
 
@@ -22,9 +22,10 @@ export class volumeCommand extends Command {
     try {
       distube.setVolume(message, volume);
     } catch (error) {
-      message.channel.send("Error setting volume");
+      message.channel.send("`Error setting volume`");
+      return;
     }
 
-    message.channel.send(`Volume set to ${volume}`);
+    message.channel.send(`\`Volume set to ${volume}\``);
   }
 }

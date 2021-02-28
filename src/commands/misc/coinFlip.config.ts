@@ -14,16 +14,16 @@ export class coinFlipCommand extends Command {
       times = parseInt(args[1]);
 
       if (isNaN(times))
-        return message.channel.send(`argument must be a number`);
+        return message.channel.send("`Argument must be a number`");
 
       times = times > 20 ? 20 : times;
     }
 
     for (let i = 0; i < times; i++) {
       if (Math.round(Math.random())) {
-        response.push("Heads");
+        response.push("`Heads`");
       } else {
-        response.push("Tails");
+        response.push("`Tails`");
       }
     }
 

@@ -14,11 +14,11 @@ export class playCommand extends Command {
       try {
         distube.resume(message);
       } catch (err) {
-        message.channel.send("Error resuming song");
+        message.channel.send("`Error resuming song`");
         return;
       }
 
-      message.channel.send("Resuming song");
+      message.channel.send("`Resuming song`");
       return;
     }
 
