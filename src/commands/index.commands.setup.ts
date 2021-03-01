@@ -20,25 +20,26 @@ let commands = new Discord.Collection<string, Command>();
 
 // add commands to map
 // chat commands
-commands.set("echo", new echoCommand());
-commands.set("hello", new helloCommand());
-commands.set("insult", new insultCommand());
+commands
+  .set("echo", new echoCommand())
+  .set("hello", new helloCommand())
+  .set("insult", new insultCommand())
 
-// misc commads
-commands.set("coinflip", new coinFlipCommand());
-commands.set("help", new helpCommand());
+  // misc commads
+  .set("coinflip", new coinFlipCommand())
+  .set("help", new helpCommand())
 
-// music commands
-commands.set("join", new joinCommand());
-commands.set("leave", new leaveCommand());
-commands.set("pause", new pauseCommand());
-commands.set("play", new playCommand());
-commands.set("queue", new queueCommand());
-commands.set("skip", new skipCommand());
-commands.set("stop", new stopCommand());
-commands.set("volume", new volumeCommand());
+  // music commands
+  .set("join", new joinCommand())
+  .set("leave", new leaveCommand())
+  .set("pause", new pauseCommand())
+  .set("play", new playCommand())
+  .set("queue", new queueCommand())
+  .set("skip", new skipCommand())
+  .set("stop", new stopCommand())
+  .set("volume", new volumeCommand())
 
-// search commands
-commands.set("youtube", new youtubeCommand());
+  // search commands
+  .set("youtube", new youtubeCommand());
 
 export default (() => commands)();
