@@ -6,5 +6,5 @@ export default {
   botStatus: process.env.DISCORD_BOT_STATUS ?? "$help",
   youtubeApiKey: process.env.YOUTUBE_API_KEY,
   helpPageLength: 5,
-  mainColor: 0x111111,
+  mainColor: 0x181818,
 };
