@@ -13,6 +13,16 @@ export const distube = new Distube(client, {
   emitNewSongOnly: true,
 });
 
+// functions
+const logCommand = (message: Message) => {
+  let channel = message.guild?.channels.resolve(message.channel.id);
+
+  console.log(
+    `User: ${message.author.tag} Channel: ${channel?.name} Command: ${message.content}`
+  );
+};
+
+// distube setup
 distube
   .on("playSong", (message, _, song) =>
     message.channel.send(
@@ -28,15 +38,6 @@ distube
       "Can't find related video to play. Stop playing music."
     )
   );
-
-// functions
-const logCommand = (message: Message) => {
-  let channel = message.guild?.channels.resolve(message.channel.id);
-
-  console.log(
-    `User: ${message.author.tag} Channel: ${channel?.name} Command: ${message.content}`
-  );
-};
 
 // log that bot is running
 client.once("ready", () => {
@@ -55,6 +56,7 @@ client.once("ready", () => {
   });
 });
 
+// runs every time a message is sent in the server
 client.on("message", (message) => {
   if (
     // check for valid message
