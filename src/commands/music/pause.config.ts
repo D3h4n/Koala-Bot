@@ -3,8 +3,8 @@ import { distube } from "../../index";
 import { Message } from "discord.js";
 
 export class pauseCommand extends Command {
-  constructor(commandName: string, help: string[]) {
-    super(commandName, help);
+  constructor() {
+    super("pause", ["Pause song", "Usage: $pause"]);
   }
 
   action(message: Message) {

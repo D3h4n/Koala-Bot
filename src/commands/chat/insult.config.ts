@@ -4,8 +4,11 @@ import { Command } from "../common.commands.config";
 export class insultCommand extends Command {
   insults: Array<(user: string) => string>;
 
-  constructor(commandName: string, help: string[]) {
-    super(commandName, help);
+  constructor() {
+    super("insult", [
+      "Insult someone or yourself",
+      "Usage: $insult or $insult @friend",
+    ]);
     this.insults = [this.yuhMudda, this.yuhBot];
   }
 

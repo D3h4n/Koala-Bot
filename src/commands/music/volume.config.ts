@@ -3,8 +3,8 @@ import { distube } from "../../index";
 import { Command } from "../common.commands.config";
 
 export class volumeCommand extends Command {
-  constructor(commandName: string, help: string[]) {
-    super(commandName, help);
+  constructor() {
+    super("volume", ["Set the volume of the bot", "Usage: $volume <percent>"]);
   }
 
   action(message: Message, args: string[]) {

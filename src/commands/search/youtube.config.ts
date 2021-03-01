@@ -4,8 +4,8 @@ import { google } from "googleapis";
 import config from "../../config";
 
 export class youtubeCommand extends Command {
-  constructor(commandName: string, help: string[]) {
-    super(commandName, help);
+  constructor() {
+    super("youtube", ["Search youtube", "Usage: $youtube <query>"]);
   }
 
   action(message: Message, args: string[]) {

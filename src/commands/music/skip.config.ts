@@ -3,8 +3,8 @@ import { distube } from "../../index";
 import { Command } from "../common.commands.config";
 
 export class skipCommand extends Command {
-  constructor(commandName: string, help: string[]) {
-    super(commandName, help);
+  constructor() {
+    super("skip", ["Skip the current song", "Usage: $skip"]);
   }
 
   action(message: Message) {

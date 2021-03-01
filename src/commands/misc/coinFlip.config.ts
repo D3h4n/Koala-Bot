@@ -2,8 +2,11 @@ import { Message } from "discord.js";
 import { Command } from "../common.commands.config";
 
 export class coinFlipCommand extends Command {
-  constructor(commandName: string, help: string[]) {
-    super(commandName, help);
+  constructor() {
+    super("coinflip", [
+      "Flip one or more coins",
+      "Usage: $coinflip or $coinflip <number>",
+    ]);
   }
 
   action(message: Message, args: string[]) {

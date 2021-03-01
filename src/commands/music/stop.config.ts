@@ -3,8 +3,8 @@ import { distube } from "../../index";
 import { Command } from "../common.commands.config";
 
 export class stopCommand extends Command {
-  constructor(commandName: string, help: string[]) {
-    super(commandName, help);
+  constructor() {
+    super("stop", ["Stop the queue", "Usage: $stop"]);
   }
 
   action(message: Message) {

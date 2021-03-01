@@ -9,9 +9,5 @@ export abstract class Command {
     this.help = help;
   }
 
-  checkForCommand(commandName: string) {
-    return commandName === this.commandName;
-  }
-
   abstract action(message: Message, args: string[]): void;
 }

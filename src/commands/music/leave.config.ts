@@ -3,8 +3,8 @@ import { Command } from "../common.commands.config";
 import { client } from "../../index";
 
 export class leaveCommand extends Command {
-  constructor(commandName: string, help: string[]) {
-    super(commandName, help);
+  constructor() {
+    super("leave", ["Leave voice channel", "Usage: $leave"]);
   }
 
   action(message: Message) {

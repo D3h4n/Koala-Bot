@@ -4,8 +4,8 @@ import { Command } from "../common.commands.config";
 export class helloCommand extends Command {
   greetings: string[];
 
-  constructor(commandName: string, help: string[]) {
-    super(commandName, help);
+  constructor() {
+    super("hello", ["Greet someone", "Usage: $hello or $hello @friend"]);
 
     this.greetings = [
       "Hi",

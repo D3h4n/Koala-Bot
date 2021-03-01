@@ -1,4 +1,5 @@
 import { Message, MessageEmbed, MessageReaction, User } from "discord.js";
+import config from "../../config";
 import { client } from "../../index";
 import { Command } from "../common.commands.config";
 import commands from "../index.commands.setup";
@@ -8,10 +9,13 @@ export class helpCommand extends Command {
   pageLength: number;
   numPages: number;
 
-  constructor(commandName: string, help: string[], pageLength: number) {
-    super(commandName, help);
+  constructor() {
+    super("help", [
+      "Get information about a command",
+      "Usage: $help or $help <command>",
+    ]);
     this.commandList = [];
-    this.pageLength = pageLength;
+    this.pageLength = config.helpPageLength;
   }
 
   async action(message: Message, args: string[]) {

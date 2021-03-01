@@ -2,8 +2,8 @@ import { Message } from "discord.js";
 import { Command } from "../common.commands.config";
 
 export class joinCommand extends Command {
-  constructor(commandName: string, help: string[]) {
-    super(commandName, help);
+  constructor() {
+    super("join", ["Add bot to voice channel", "Usage: $join"]);
   }
 
   action(message: Message) {
