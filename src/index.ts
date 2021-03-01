@@ -1,4 +1,4 @@
-import { Client, Message } from "discord.js";
+import { Client, Message, MessageEmbed } from "discord.js";
 import Distube from "distube";
 import config from "./config";
 
@@ -24,14 +24,41 @@ const logCommand = (message: Message) => {
 
 // distube setup
 distube
-  .on("playSong", (message, _, song) =>
-    message.channel.send(
-      `Playing ${song.name} - ${song.formattedDuration} ${song.user}`
-    )
-  )
+  .on("playSong", (message, _, song) => {
+    let res = new MessageEmbed();
+
+    let desc =
+      `[${song.name}](${song.url})\n` + `Length: ${song.formattedDuration}`;
+
+    res
+      .setColor(config.mainColor)
+      .setTitle("Now playing")
+      .setAuthor(song.user.username, song.user.displayAvatarURL())
+      .setThumbnail(song.thumbnail!)
+      .setDescription(desc);
+
+    message.channel.send(res);
+  })
   .on("initQueue", (queue) => {
     queue.autoplay = false;
     queue.volume = 100;
+  })
+  .on("addSong", (message, queue, song) => {
+    let res = new MessageEmbed();
+
+    let desc =
+      `[${song.name}](${song.url})\n` +
+      `Length: ${song.formattedDuration}\n` +
+      `Position in Queue: ${queue.songs.findIndex((val) => val === song)}`;
+
+    res
+      .setColor(config.mainColor)
+      .setTitle("Added to queue")
+      .setDescription(desc)
+      .setThumbnail(song.thumbnail!)
+      .setAuthor(song.user.username, song.user.displayAvatarURL());
+
+    message.channel.send(res);
   })
   .on("noRelated", (message) =>
     message.channel.send(

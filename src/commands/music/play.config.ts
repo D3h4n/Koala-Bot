@@ -22,6 +22,8 @@ export class playCommand extends Command {
       return;
     }
 
-    distube.play(message, query);
+    distube
+      .play(message, query)
+      .catch(() => message.channel.send("`Could not find that song`"));
   }
 }

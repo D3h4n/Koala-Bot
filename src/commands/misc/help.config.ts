@@ -123,6 +123,7 @@ export class helpCommand extends Command {
     // create the help message
     let response = new MessageEmbed();
     response
+      .setColor(config.mainColor)
       .setTitle("Help")
       .setDescription(description)
       .setFooter("\u2800".repeat(30) + `${pageNumber}/${this.numPages}`);
