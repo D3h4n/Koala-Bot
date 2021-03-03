@@ -22,8 +22,37 @@ export class helpCommand extends Command {
     // get page number if args else set page number to 1
     let pageNumber = args.length < 2 ? 1 : parseInt(args[1]);
 
+    // check if commandList was already generated
+    if (!this.commandList.length) {
+      // push each command to the command list
+      commands.forEach((command) => {
+        this.commandList.push(
+          `**${command.commandName}**\n` +
+            command.help.reduce((res, msg) => res + "\n" + msg) +
+            "\n"
+        );
+      });
+
+      // sort the list by the name of each command
+      this.commandList.sort((a, b) => {
+        if (a < b) return -1;
+        if (a > b) return 1;
+        return 0;
+      });
+
+      // set numPages
+      this.numPages = Math.ceil(this.commandList.length / this.pageLength);
+    }
+
     // check that args[1] is number
     if (!isNaN(pageNumber)) {
+      pageNumber =
+        pageNumber < 1
+          ? 1
+          : pageNumber > this.numPages
+          ? this.numPages
+          : pageNumber;
+
       // send list of commands for pageNumber and get back message object
       let sentMsg = await message.channel.send(this.listCommands(pageNumber));
 
@@ -81,28 +110,6 @@ export class helpCommand extends Command {
   }
 
   listCommands(pageNumber: number) {
-    // check if commandList was already generated
-    if (!this.commandList.length) {
-      // push each command to the command list
-      commands.forEach((command) => {
-        this.commandList.push(
-          `**${command.commandName}**\n` +
-            command.help.reduce((res, msg) => res + "\n" + msg) +
-            "\n"
-        );
-      });
-
-      // sort the list by the name of each command
-      this.commandList.sort((a, b) => {
-        if (a < b) return -1;
-        if (a > b) return 1;
-        return 0;
-      });
-
-      // set numPages
-      this.numPages = Math.ceil(this.commandList.length / this.pageLength);
-    }
-
     // get the index of the first command in the page
     let startIndex = (pageNumber - 1) * this.pageLength;
 

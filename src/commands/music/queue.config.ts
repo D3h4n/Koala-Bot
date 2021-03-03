@@ -20,7 +20,11 @@ export class queueCommand extends Command {
     }
 
     try {
+      let numPages = Math.ceil(queue.songs.length / config.queuePageLength);
       let pageNumber = parseInt(args[1]) || 1; // set pageNumber
+
+      pageNumber =
+        pageNumber < 1 ? 1 : pageNumber > numPages ? numPages : pageNumber;
 
       // send page one and get message object
       let sentMsg = await message.channel.send(
