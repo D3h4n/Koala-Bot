@@ -8,97 +8,10 @@ const { token, prefix, botStatus } = config; // config info for bot
 
 export const client = new Client(); // initialize client
 
-export const distube = new Distube(client, {
-  searchSongs: false,
-  emitNewSongOnly: true,
-});
-
-// functions
-const logCommand = (message: Message) => {
-  let channel = message.guild?.channels.resolve(message.channel.id);
-
-  console.log(
-    `User: ${message.author.tag} Channel: ${channel?.name} Command: ${message.content}`
-  );
-};
-
-// distube setup
-distube
-  .on("playSong", (message, _, song) => {
-    let res = new MessageEmbed();
-
-    let desc =
-      `[${song.name}](${song.url})\n` + `Length: ${song.formattedDuration}`;
-
-    res
-      .setColor(config.mainColor)
-      .setTitle("Now playing")
-      .setAuthor(song.user.username, song.user.displayAvatarURL())
-      .setThumbnail(song.thumbnail!)
-      .setDescription(desc);
-
-    message.channel.send(res);
-  })
-  .on("initQueue", (queue) => {
-    queue.autoplay = false;
-    queue.volume = 100;
-  })
-  .on("addSong", (message, queue, song) => {
-    let res = new MessageEmbed();
-
-    let desc =
-      `[${song.name}](${song.url})\n` +
-      `Length: ${song.formattedDuration}\n` +
-      `Position in Queue: ${queue.songs.findIndex((val) => val === song)}`;
-
-    res
-      .setColor(config.mainColor)
-      .setTitle("Added to Queue")
-      .setDescription(desc)
-      .setThumbnail(song.thumbnail!)
-      .setAuthor(song.user.username, song.user.displayAvatarURL());
-
-    message.channel.send(res);
-  })
-  .on("playList", (message, queue, playlist, song) => {
-    try {
-      let res = new MessageEmbed();
-
-      let desc =
-        `[${song.name}](${song.url})\n and \`${
-          playlist.songs.length - 1
-        } others\`\n` +
-        `Length: ${playlist.formattedDuration}\n` +
-        `Start Position in Queue: ${queue.songs.findIndex(
-          (val) => val === song
-        )}`;
-
-      res
-        .setColor(config.mainColor)
-        .setTitle("Added Playlist to Queue")
-        .setDescription(desc)
-        .setThumbnail(song.thumbnail!)
-        .setAuthor(song.user.username, song.user.displayAvatarURL());
-
-      message.channel.send(res).catch(console.error);
-    } catch (error) {
-      console.error(error);
-    }
-  })
-  .on("noRelated", (message) =>
-    message.channel.send(
-      "Can't find related video to play. Stop playing music."
-    )
-  );
-
 // log that bot is running
 client.once("ready", () => {
   console.log(`Loaded ${commands.size} commands`);
-  commands.forEach((command) => {
-    console.log(prefix + command.commandName);
-  });
 
-  console.log("\nReady to Go!\n");
   client.user!.setPresence({
     status: "online",
     activity: {
@@ -132,5 +45,89 @@ client.on("message", (message) => {
     return;
   }
 });
+
+export const distube = new Distube(client, {
+  searchSongs: false,
+  emitNewSongOnly: true,
+});
+
+// distube setup
+distube.on("playSong", (message, _, song) => {
+  let res = new MessageEmbed();
+
+  let desc =
+    `[${song.name}](${song.url})\n` + `Length: ${song.formattedDuration}`;
+
+  res
+    .setColor(config.mainColor)
+    .setTitle("Now playing")
+    .setAuthor(song.user.username, song.user.displayAvatarURL())
+    .setThumbnail(song.thumbnail!)
+    .setDescription(desc);
+
+  message.channel.send(res);
+});
+
+distube.on("initQueue", (queue) => {
+  queue.autoplay = false;
+  queue.volume = 100;
+});
+
+distube.on("addSong", (message, queue, song) => {
+  let res = new MessageEmbed();
+
+  let desc =
+    `[${song.name}](${song.url})\n` +
+    `Length: ${song.formattedDuration}\n` +
+    `Position in Queue: ${queue.songs.findIndex((val) => val === song)}`;
+
+  res
+    .setColor(config.mainColor)
+    .setTitle("Added to Queue")
+    .setDescription(desc)
+    .setThumbnail(song.thumbnail!)
+    .setAuthor(song.user.username, song.user.displayAvatarURL());
+
+  message.channel.send(res);
+});
+
+distube.on("playList", (message, queue, playlist, song) => {
+  try {
+    let res = new MessageEmbed();
+
+    let desc =
+      `[${song.name}](${song.url})\n and \`${
+        playlist.songs.length - 1
+      } others\`\n` +
+      `Length: ${playlist.formattedDuration}\n` +
+      `Start Position in Queue: ${queue.songs.findIndex(
+        (val) => val === song
+      )}`;
+
+    res
+      .setColor(config.mainColor)
+      .setTitle("Added Playlist to Queue")
+      .setDescription(desc)
+      .setThumbnail(song.thumbnail!)
+      .setAuthor(song.user.username, song.user.displayAvatarURL());
+
+    message.channel.send(res).catch(console.error);
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+distube.on("noRelated", (message) =>
+  message.channel.send("Can't find related video to play. Stop playing music.")
+);
+
+// functions
+const logCommand = (message: Message) => {
+  let channel = message.guild?.channels.resolve(message.channel.id);
+
+  console.log(
+    `User: ${message.author.tag} Channel: ${channel?.name} Command: ${message.content}`
+  );
+};
 
 client.login(token);
