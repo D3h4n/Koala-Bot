@@ -14,6 +14,7 @@ import { skipCommand } from "./music/skip.config";
 import { queueCommand } from "./music/queue.config";
 import { stopCommand } from "./music/stop.config";
 import { volumeCommand } from "./music/volume.config";
+import { shuffleCommand } from "./music/shuffle.config";
 
 // create a map of commands
 let commands = new Discord.Collection<string, Command>();
@@ -35,6 +36,7 @@ commands
   .set("pause", new pauseCommand())
   .set("play", new playCommand())
   .set("queue", new queueCommand())
+  .set("shuffle", new shuffleCommand())
   .set("skip", new skipCommand())
   .set("stop", new stopCommand())
   .set("volume", new volumeCommand())

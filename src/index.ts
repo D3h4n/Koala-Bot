@@ -53,12 +53,37 @@ distube
 
     res
       .setColor(config.mainColor)
-      .setTitle("Added to queue")
+      .setTitle("Added to Queue")
       .setDescription(desc)
       .setThumbnail(song.thumbnail!)
       .setAuthor(song.user.username, song.user.displayAvatarURL());
 
     message.channel.send(res);
+  })
+  .on("playList", (message, queue, playlist, song) => {
+    try {
+      let res = new MessageEmbed();
+
+      let desc =
+        `[${song.name}](${song.url})\n and \`${
+          playlist.songs.length - 1
+        } others\`\n` +
+        `Length: ${playlist.formattedDuration}\n` +
+        `Start Position in Queue: ${queue.songs.findIndex(
+          (val) => val === song
+        )}`;
+
+      res
+        .setColor(config.mainColor)
+        .setTitle("Added Playlist to Queue")
+        .setDescription(desc)
+        .setThumbnail(song.thumbnail!)
+        .setAuthor(song.user.username, song.user.displayAvatarURL());
+
+      message.channel.send(res).catch(console.error);
+    } catch (error) {
+      console.error(error);
+    }
   })
   .on("noRelated", (message) =>
     message.channel.send(

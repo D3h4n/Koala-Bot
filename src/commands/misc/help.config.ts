@@ -44,7 +44,7 @@ export class helpCommand extends Command {
 
       // collector which gets reactions within filter
       const collector = sentMsg.createReactionCollector(filter, {
-        time: 20000,
+        time: config.helpTimeLimit,
       });
 
       collector
@@ -126,7 +126,7 @@ export class helpCommand extends Command {
       .setColor(config.mainColor)
       .setTitle("Help")
       .setDescription(description)
-      .setFooter("\u2800".repeat(30) + `${pageNumber}/${this.numPages}`);
+      .setFooter("\u2800".repeat(30) + `Page: ${pageNumber}/${this.numPages}`);
 
     return response;
   }
