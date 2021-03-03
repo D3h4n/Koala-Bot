@@ -6,6 +6,7 @@ export default {
   botStatus: process.env.DISCORD_BOT_STATUS ?? "$help", // bot status
   prefix: "$", // command prefix
   mainColor: 0x181818, // accent colour of embedded messages
+  msgTimeout: 10000, // time limit for message deletion
   helpPageLength: 5, // length of help pages
   helpTimeLimit: 20000, // time limit of interactive help page
   queuePageLength: 10, // number of songs per queue page

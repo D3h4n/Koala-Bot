@@ -6,6 +6,15 @@ import commands from "./commands/index.commands.setup";
 
 const { token, prefix, botStatus } = config; // config info for bot
 
+// functions
+const logCommand = (message: Message) => {
+  let channel = message.guild?.channels.resolve(message.channel.id);
+
+  console.log(
+    `User: ${message.author.tag} Channel: ${channel?.name} Command: ${message.content}`
+  );
+};
+
 export const client = new Client(); // initialize client
 
 // log that bot is running
@@ -52,6 +61,11 @@ export const distube = new Distube(client, {
 });
 
 // distube setup
+distube.on("initQueue", (queue) => {
+  queue.autoplay = false;
+  queue.volume = 100;
+});
+
 distube.on("playSong", (message, _, song) => {
   let res = new MessageEmbed();
 
@@ -65,12 +79,9 @@ distube.on("playSong", (message, _, song) => {
     .setThumbnail(song.thumbnail!)
     .setDescription(desc);
 
-  message.channel.send(res);
-});
-
-distube.on("initQueue", (queue) => {
-  queue.autoplay = false;
-  queue.volume = 100;
+  message.channel
+    .send(res)
+    .then((msg) => msg.delete({ timeout: song.duration }));
 });
 
 distube.on("addSong", (message, queue, song) => {
@@ -88,7 +99,9 @@ distube.on("addSong", (message, queue, song) => {
     .setThumbnail(song.thumbnail!)
     .setAuthor(song.user.username, song.user.displayAvatarURL());
 
-  message.channel.send(res);
+  message.channel
+    .send(res)
+    .then((msg) => msg.delete({ timeout: config.msgTimeout }));
 });
 
 distube.on("playList", (message, queue, playlist, song) => {
@@ -111,7 +124,9 @@ distube.on("playList", (message, queue, playlist, song) => {
       .setThumbnail(song.thumbnail!)
       .setAuthor(song.user.username, song.user.displayAvatarURL());
 
-    message.channel.send(res).catch(console.error);
+    message.channel
+      .send(res)
+      .then((msg) => msg.delete({ timeout: config.msgTimeout }));
   } catch (error) {
     console.error(error);
   }
@@ -120,14 +135,5 @@ distube.on("playList", (message, queue, playlist, song) => {
 distube.on("noRelated", (message) =>
   message.channel.send("Can't find related video to play. Stop playing music.")
 );
-
-// functions
-const logCommand = (message: Message) => {
-  let channel = message.guild?.channels.resolve(message.channel.id);
-
-  console.log(
-    `User: ${message.author.tag} Channel: ${channel?.name} Command: ${message.content}`
-  );
-};
 
 client.login(token);
