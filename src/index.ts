@@ -81,7 +81,7 @@ distube.on("playSong", (message, _, song) => {
 
   message.channel
     .send(res)
-    .then((msg) => msg.delete({ timeout: song.duration }));
+    .then((msg) => msg.delete({ timeout: song.duration * 1000 }));
 });
 
 distube.on("addSong", (message, queue, song) => {
