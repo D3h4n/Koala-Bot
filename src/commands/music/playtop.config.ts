@@ -16,42 +16,50 @@ export default class PlayTopCommand extends Command {
     let query = args.slice(1).join(' ');
 
     if (!query) {
-      message.channel.send('`Add a song to play!!!!`');
-      return;
+      return message.channel.send('`Add a song to play!!!!`');
     }
 
-    let results: SearchResult[];
-
-    try {
-      results = await distube.search(query);
-    } catch (error) {
-      message.channel.send('`Could not find that song`');
-      return;
+    if (query.includes('https://youtube.com/playlist')) {
+      return message.channel.send('`Use the play command for playlists`');
     }
 
     let queue = distube.getQueue(message);
 
-    if (queue?.songs?.length) {
-      // FIXME: This is botched way to do this until the contructor works
-      let song: Song = {
-        ...results[0],
-        user: message.author,
-        youtube: true,
-        info: null,
-        streamURL: null,
-        related: null,
-        plays: NaN,
-        likes: NaN,
-        dislikes: NaN,
-        reposts: NaN,
-      };
-      // Better Way:
-      // let song = new Song(results[0], message.author);
-
-      queue.songs.splice(1, 0, song);
-      distube.emit('addSong', message, queue, song);
-    } else {
-      distube.play(message, results[0]);
+    if (!queue?.songs?.length) {
+      return distube.play(message, query);
     }
+
+    let result: SearchResult;
+
+    try {
+      [result] = await distube.search(query);
+    } catch (error) {
+      message.channel.send('`Could not find that song`');
+      console.error(error);
+      return;
+    }
+
+    // FIXME: This is botched way to do this until the contructor works
+    let song = this.createSong(message, result);
+    // Better Way:
+    // let song = new Song(results[0], message.author);
+
+    queue.songs.splice(1, 0, song);
+    distube.emit('addSong', message, queue, song);
+  }
+
+  createSong(message: Message, result: SearchResult): Song {
+    return {
+      ...result,
+      user: message.author,
+      youtube: true,
+      info: null,
+      streamURL: null,
+      related: null,
+      plays: NaN,
+      likes: NaN,
+      dislikes: NaN,
+      reposts: NaN,
+    };
   }
 }

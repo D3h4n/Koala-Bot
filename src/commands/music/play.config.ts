@@ -18,13 +18,14 @@ export default class playCommand extends Command {
 
     if (!query) {
       try {
-        distube.resume(message);
+        if (distube.getQueue(message).pause) {
+          distube.resume(message);
+          message.channel.send('`Resuming song`');
+        }
       } catch (err) {
         message.channel.send('`Error resuming song`');
-        return;
       }
 
-      message.channel.send('`Resuming song`');
       return;
     }
 

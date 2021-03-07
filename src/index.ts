@@ -1,8 +1,8 @@
-import { Client, Message, MessageEmbed } from "discord.js";
-import Distube from "distube";
-import config from "./config";
+import { Client, Message, MessageEmbed } from 'discord.js';
+import Distube from 'distube';
+import config from './config';
 
-import commands from "./commands/index.commands.setup";
+import commands from './commands/index.commands.setup';
 
 const { token, prefix, botStatus } = config; // config info for bot
 
@@ -18,20 +18,20 @@ const logCommand = (message: Message) => {
 export const client = new Client(); // initialize client
 
 // log that bot is running
-client.once("ready", () => {
+client.once('ready', () => {
   console.log(`Loaded ${commands.size} commands`);
 
   client.user!.setPresence({
-    status: "online",
+    status: 'online',
     activity: {
       name: botStatus,
-      type: "PLAYING",
+      type: 'PLAYING',
     },
   });
 });
 
 // runs every time a message is sent in the server
-client.on("message", (message) => {
+client.on('message', (message) => {
   if (
     // check for valid message
     message.content.startsWith(prefix) &&
@@ -61,12 +61,12 @@ export const distube = new Distube(client, {
 });
 
 // distube setup
-distube.on("initQueue", (queue) => {
+distube.on('initQueue', (queue) => {
   queue.autoplay = false;
   queue.volume = 100;
 });
 
-distube.on("playSong", (message, _, song) => {
+distube.on('playSong', (message, _, song) => {
   let res = new MessageEmbed();
 
   let desc =
@@ -74,7 +74,7 @@ distube.on("playSong", (message, _, song) => {
 
   res
     .setColor(config.mainColor)
-    .setTitle("Now playing")
+    .setTitle('Now playing')
     .setAuthor(song.user.username, song.user.displayAvatarURL())
     .setThumbnail(song.thumbnail!)
     .setDescription(desc);
@@ -84,7 +84,7 @@ distube.on("playSong", (message, _, song) => {
     .then((msg) => msg.delete({ timeout: song.duration * 1000 }));
 });
 
-distube.on("addSong", (message, queue, song) => {
+distube.on('addSong', (message, queue, song) => {
   let res = new MessageEmbed();
 
   let desc =
@@ -94,7 +94,7 @@ distube.on("addSong", (message, queue, song) => {
 
   res
     .setColor(config.mainColor)
-    .setTitle("Added to Queue")
+    .setTitle('Added to Queue')
     .setDescription(desc)
     .setThumbnail(song.thumbnail!)
     .setAuthor(song.user.username, song.user.displayAvatarURL());
@@ -104,7 +104,7 @@ distube.on("addSong", (message, queue, song) => {
     .then((msg) => msg.delete({ timeout: config.msgTimeout }));
 });
 
-distube.on("playList", (message, queue, playlist, song) => {
+distube.on('playList', (message, queue, playlist, song) => {
   try {
     let res = new MessageEmbed();
 
@@ -119,7 +119,7 @@ distube.on("playList", (message, queue, playlist, song) => {
 
     res
       .setColor(config.mainColor)
-      .setTitle("Added Playlist to Queue")
+      .setTitle('Added Playlist to Queue')
       .setDescription(desc)
       .setThumbnail(song.thumbnail!)
       .setAuthor(song.user.username, song.user.displayAvatarURL());
@@ -131,9 +131,5 @@ distube.on("playList", (message, queue, playlist, song) => {
     console.error(error);
   }
 });
-
-distube.on("noRelated", (message) =>
-  message.channel.send("Can't find related video to play. Stop playing music.")
-);
 
 client.login(token);

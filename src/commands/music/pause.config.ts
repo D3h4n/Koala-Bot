@@ -9,12 +9,13 @@ export default class pauseCommand extends Command {
 
   action(message: Message) {
     try {
-      distube.pause(message);
+      if (distube.getQueue(message).playing) {
+        distube.pause(message);
+        message.channel.send('`Paused song`');
+      }
     } catch (error) {
       message.channel.send('`Error pausing song`');
       return;
     }
-
-    message.channel.send('`Paused song`');
   }
 }
