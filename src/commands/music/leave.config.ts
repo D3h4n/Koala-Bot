@@ -1,10 +1,10 @@
-import { Message } from "discord.js";
-import { Command } from "../common.commands.config";
-import { client } from "../../index";
+import Command from '../common.commands.config';
+import { Message } from 'discord.js';
+import { client } from '../../index';
 
-export class leaveCommand extends Command {
+export default class leaveCommand extends Command {
   constructor() {
-    super("leave", ["Leave voice channel", "Usage: $leave"]);
+    super('leave', ['Leave voice channel', 'Usage: $leave']);
   }
 
   action(message: Message) {

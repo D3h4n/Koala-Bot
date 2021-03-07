@@ -1,10 +1,10 @@
-import { Message } from "discord.js";
-import { distube } from "../../index";
-import { Command } from "../common.commands.config";
+import Command from '../common.commands.config';
+import { Message } from 'discord.js';
+import { distube } from '../../index';
 
-export class shuffleCommand extends Command {
+export default class shuffleCommand extends Command {
   constructor() {
-    super("shuffle", ["shuffle the queue", "Usage: $shuffle"]);
+    super('shuffle', ['shuffle the queue', 'Usage: $shuffle']);
   }
 
   action(message: Message) {
@@ -12,9 +12,9 @@ export class shuffleCommand extends Command {
       distube.shuffle(message);
     } catch (error) {
       console.error(error);
-      message.channel.send("`Error shuffling queue`");
+      message.channel.send('`Error shuffling queue`');
     }
 
-    message.channel.send("`Shuffled Queue`");
+    message.channel.send('`Shuffled Queue`');
   }
 }

@@ -1,18 +1,18 @@
-import { Message, MessageEmbed, MessageReaction, User } from "discord.js";
-import config from "../../config";
-import { client } from "../../index";
-import { Command } from "../common.commands.config";
-import commands from "../index.commands.setup";
+import { Message, MessageEmbed, MessageReaction, User } from 'discord.js';
+import config from '../../config';
+import { client } from '../../index';
+import Command from '../common.commands.config';
+import commands from '../index.commands.setup';
 
-export class helpCommand extends Command {
+export default class helpCommand extends Command {
   commandList: string[];
   pageLength: number;
   numPages: number;
 
   constructor() {
-    super("help", [
-      "Get information about a command",
-      "Usage: $help or $help <command>",
+    super('help', [
+      'Get information about a command',
+      'Usage: $help or $help <command>',
     ]);
     this.commandList = [];
     this.pageLength = config.helpPageLength;
@@ -28,8 +28,8 @@ export class helpCommand extends Command {
       commands.forEach((command) => {
         this.commandList.push(
           `**${command.commandName}**\n` +
-            command.help.reduce((res, msg) => res + "\n" + msg) +
-            "\n"
+            command.help.reduce((res, msg) => res + '\n' + msg) +
+            '\n'
         );
       });
 
@@ -58,14 +58,14 @@ export class helpCommand extends Command {
 
       // add reactions to control the page
       sentMsg
-        .react("◀")
-        .then(() => sentMsg.react("▶"))
+        .react('◀')
+        .then(() => sentMsg.react('▶'))
         .catch(console.error);
 
       // filter for reactions
       const filter = (reaction: MessageReaction, user: User) => {
         return (
-          ["◀", "▶"].includes(reaction.emoji.name) &&
+          ['◀', '▶'].includes(reaction.emoji.name) &&
           user.id !== client.user?.id &&
           !user.bot
         );
@@ -77,11 +77,11 @@ export class helpCommand extends Command {
       });
 
       collector
-        .on("collect", (reaction, user) => {
+        .on('collect', (reaction, user) => {
           // change page number every time a valid reaction is ran
           pageNumber = this.changePage(sentMsg, reaction, user, pageNumber);
         })
-        .on("end", () => {
+        .on('end', () => {
           sentMsg.reactions.removeAll();
         });
 
@@ -96,7 +96,7 @@ export class helpCommand extends Command {
         title: args[1],
         description: commands
           .get(args[1])!
-          .help.reduce((res, msg) => res + "\n" + msg),
+          .help.reduce((res, msg) => res + '\n' + msg),
       });
 
       // send message and return
@@ -106,7 +106,7 @@ export class helpCommand extends Command {
 
     // args[1] was not a page number or command
     // tell user that command was not found
-    message.channel.send("`That command was not found`");
+    message.channel.send('`That command was not found`');
   }
 
   listCommands(pageNumber: number) {
@@ -131,9 +131,9 @@ export class helpCommand extends Command {
     let response = new MessageEmbed();
     response
       .setColor(config.mainColor)
-      .setTitle("Help")
+      .setTitle('Help')
       .setDescription(description)
-      .setFooter("\u2800".repeat(30) + `Page: ${pageNumber}/${this.numPages}`);
+      .setFooter('\u2800'.repeat(30) + `Page: ${pageNumber}/${this.numPages}`);
 
     return response;
   }
@@ -144,10 +144,10 @@ export class helpCommand extends Command {
     user: User,
     pageNumber: number
   ) {
-    if (reaction.emoji.name === "◀" && pageNumber > 1) {
+    if (reaction.emoji.name === '◀' && pageNumber > 1) {
       // if back arrow generate previous page if there is one
       message.edit(this.listCommands(--pageNumber));
-    } else if (reaction.emoji.name === "▶" && pageNumber < this.numPages) {
+    } else if (reaction.emoji.name === '▶' && pageNumber < this.numPages) {
       // if forward arrow generate next page if there is one
       message.edit(this.listCommands(++pageNumber));
     }

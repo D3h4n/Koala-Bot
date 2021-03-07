@@ -1,9 +1,9 @@
-import { Message } from "discord.js";
-import { Command } from "../common.commands.config";
+import { Message } from 'discord.js';
+import Command from '../common.commands.config';
 
-export class echoCommand extends Command {
+export default class echoCommand extends Command {
   constructor() {
-    super("echo", ["I repeat whatever you want", "Usage: $echo <text>"]);
+    super('echo', ['I repeat whatever you want', 'Usage: $echo <text>']);
   }
 
   action(message: Message, args: string[]) {
@@ -11,7 +11,7 @@ export class echoCommand extends Command {
 
     args.shift();
 
-    response = args?.join(" ");
+    response = args?.join(' ');
 
     message.delete({ timeout: 100 });
 
@@ -20,6 +20,6 @@ export class echoCommand extends Command {
       return;
     }
 
-    message.channel.send("I have nothing to say.");
+    message.channel.send('I have nothing to say.');
   }
 }

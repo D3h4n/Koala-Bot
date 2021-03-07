@@ -1,17 +1,17 @@
-import { Message } from "discord.js";
-import { distube } from "../../index";
-import { Command } from "../common.commands.config";
+import Command from '../common.commands.config';
+import { Message } from 'discord.js';
+import { distube } from '../../index';
 
-export class volumeCommand extends Command {
+export default class volumeCommand extends Command {
   constructor() {
-    super("volume", ["Set the volume of the bot", "Usage: $volume <percent>"]);
+    super('volume', ['Set the volume of the bot', 'Usage: $volume <percent>']);
   }
 
   action(message: Message, args: string[]) {
     let volume = parseInt(args[1]);
 
     if (isNaN(volume)) {
-      message.channel.send("`Volume must be a number between 0 and 100`");
+      message.channel.send('`Volume must be a number between 0 and 100`');
       return;
     }
 
@@ -22,7 +22,7 @@ export class volumeCommand extends Command {
     try {
       distube.setVolume(message, volume);
     } catch (error) {
-      message.channel.send("`Error setting volume`");
+      message.channel.send('`Error setting volume`');
       return;
     }
 

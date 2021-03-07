@@ -1,6 +1,6 @@
-import { Message } from "discord.js";
+import { Message } from 'discord.js';
 
-export abstract class Command {
+export default abstract class Command {
   commandName: string;
   help: string[];
 

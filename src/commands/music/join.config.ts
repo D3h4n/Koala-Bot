@@ -1,9 +1,9 @@
-import { Message } from "discord.js";
-import { Command } from "../common.commands.config";
+import Command from '../common.commands.config';
+import { Message } from 'discord.js';
 
-export class joinCommand extends Command {
+export default class joinCommand extends Command {
   constructor() {
-    super("join", ["Add bot to voice channel", "Usage: $join"]);
+    super('join', ['Add bot to voice channel', 'Usage: $join']);
   }
 
   action(message: Message) {
@@ -18,7 +18,7 @@ export class joinCommand extends Command {
           )
         );
     } catch (err) {
-      message.channel.send("`Error joinging voice channel`");
+      message.channel.send('`Error joinging voice channel`');
     }
   }
 }

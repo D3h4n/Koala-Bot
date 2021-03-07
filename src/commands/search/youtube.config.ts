@@ -1,15 +1,15 @@
-import { Message } from "discord.js";
-import { Command } from "../common.commands.config";
-import { google } from "googleapis";
-import config from "../../config";
+import Command from '../common.commands.config';
+import config from '../../config';
+import { Message } from 'discord.js';
+import { google } from 'googleapis';
 
-export class youtubeCommand extends Command {
+export default class youtubeCommand extends Command {
   constructor() {
-    super("youtube", ["Search youtube", "Usage: $youtube <query>"]);
+    super('youtube', ['Search youtube', 'Usage: $youtube <query>']);
   }
 
   action(message: Message, args: string[]) {
-    let search = args.slice(1).join(" ");
+    let search = args.slice(1).join(' ');
 
     if (!search.length) {
       message.channel.send("I can't search nothing");
@@ -17,11 +17,11 @@ export class youtubeCommand extends Command {
     }
 
     google
-      .youtube("v3")
+      .youtube('v3')
       .search.list({
         key: config.youtubeApiKey,
-        type: ["video", "channel"],
-        part: ["snippet"],
+        type: ['video', 'channel'],
+        part: ['snippet'],
         q: search,
         maxResults: 1,
       })

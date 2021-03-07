@@ -1,13 +1,13 @@
-import { Message, MessageEmbed, MessageReaction, User } from "discord.js";
-import Queue from "distube/typings/Queue";
-import Song from "distube/typings/Song";
-import config from "../../config";
-import { client, distube } from "../../index";
-import { Command } from "../common.commands.config";
+import Queue from 'distube/typings/Queue';
+import Song from 'distube/typings/Song';
+import config from '../../config';
+import Command from '../common.commands.config';
+import { Message, MessageEmbed, MessageReaction, User } from 'discord.js';
+import { client, distube } from '../../index';
 
-export class queueCommand extends Command {
+export default class queueCommand extends Command {
   constructor() {
-    super("queue", [`Get's the song queue`, "Usage: $queue"]);
+    super('queue', [`Get's the song queue`, 'Usage: $queue']);
   }
 
   async action(message: Message, args: string[]) {
@@ -15,7 +15,7 @@ export class queueCommand extends Command {
 
     if (!queue?.songs.length) {
       // check that the queue has songs
-      message.channel.send("`The queue is empty`");
+      message.channel.send('`The queue is empty`');
       return;
     }
 
@@ -33,15 +33,15 @@ export class queueCommand extends Command {
 
       // add interative reactions
       sentMsg
-        .react("◀")
-        .then(() => sentMsg.react("▶"))
+        .react('◀')
+        .then(() => sentMsg.react('▶'))
         .catch(console.error);
 
       // add reaction collector for message
       let collector = sentMsg.createReactionCollector(
         // filter reactions to ignore bot reactions and other reactions
         (reaction: MessageReaction, user: User) =>
-          ["◀", "▶"].includes(reaction.emoji.name) &&
+          ['◀', '▶'].includes(reaction.emoji.name) &&
           user.id !== client.user?.id &&
           !user.bot,
         {
@@ -52,7 +52,7 @@ export class queueCommand extends Command {
 
       collector
         .on(
-          "collect",
+          'collect',
           (reaction, user) =>
             // run changePage function for every valid reaction
             (pageNumber = this.changePage(
@@ -64,7 +64,7 @@ export class queueCommand extends Command {
             ))
         )
         // remove all reactions when timer runs out
-        .on("end", () => sentMsg.reactions.removeAll());
+        .on('end', () => sentMsg.reactions.removeAll());
     } catch (error) {
       console.error(error);
     }
@@ -97,7 +97,7 @@ export class queueCommand extends Command {
       /*
        * Add the display for all the songs on the page
        */
-      description.push("__Up Next:__");
+      description.push('__Up Next:__');
       songs
         // gets the up next songs on the page. If startIndex is 0 start at 1 instead
         .slice(startIndex || 1, endIndex)
@@ -113,12 +113,12 @@ export class queueCommand extends Command {
     let response = new MessageEmbed();
 
     response
-      .setTitle("Queue")
+      .setTitle('Queue')
       .setColor(config.mainColor)
       .setThumbnail(nowPlaying.thumbnail!)
       .setFooter(
         `Page: ${pageNumber}/${numPages}` +
-          "\u2800".repeat(20) +
+          '\u2800'.repeat(20) +
           `${songs.length} songs in Queue | Total Length: ${queue.formattedDuration}`
       )
       .setDescription(description);
@@ -138,10 +138,10 @@ export class queueCommand extends Command {
   ) {
     let numPages = Math.ceil(queue.songs.length / config.queuePageLength);
 
-    if (reaction.emoji.name === "◀" && pageNumber > 1) {
+    if (reaction.emoji.name === '◀' && pageNumber > 1) {
       // if back arrow generate previous page if there is one
       message.edit(this.generateResponse(queue, --pageNumber));
-    } else if (reaction.emoji.name === "▶" && pageNumber < numPages) {
+    } else if (reaction.emoji.name === '▶' && pageNumber < numPages) {
       // if forward arrow generate next page if there is one
       message.edit(this.generateResponse(queue, ++pageNumber));
     }

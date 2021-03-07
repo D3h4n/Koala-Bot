@@ -1,13 +1,13 @@
-import { Message } from "discord.js";
-import { Command } from "../common.commands.config";
+import { Message } from 'discord.js';
+import Command from '../common.commands.config';
 
-export class insultCommand extends Command {
+export default class insultCommand extends Command {
   insults: Array<(user: string) => string>;
 
   constructor() {
-    super("insult", [
-      "Insult someone or yourself",
-      "Usage: $insult or $insult @friend",
+    super('insult', [
+      'Insult someone or yourself',
+      'Usage: $insult or $insult @friend',
     ]);
     this.insults = [this.yuhMudda, this.yuhBot];
   }

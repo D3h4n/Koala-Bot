@@ -1,21 +1,21 @@
-import { Message } from "discord.js";
-import { Command } from "../common.commands.config";
+import { Message } from 'discord.js';
+import Command from '../common.commands.config';
 
-export class helloCommand extends Command {
+export default class helloCommand extends Command {
   greetings: string[];
 
   constructor() {
-    super("hello", ["Greet someone", "Usage: $hello or $hello @friend"]);
+    super('hello', ['Greet someone', 'Usage: $hello or $hello @friend']);
 
     this.greetings = [
-      "Hi",
-      "Hello",
-      "Howdy",
-      "Mudda",
-      "Bonjour",
-      "Salut",
-      "Sup",
-      "Greetings",
+      'Hi',
+      'Hello',
+      'Howdy',
+      'Mudda',
+      'Bonjour',
+      'Salut',
+      'Sup',
+      'Greetings',
     ];
   }
 
