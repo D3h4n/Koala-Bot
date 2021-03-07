@@ -9,9 +9,16 @@ export class joinCommand extends Command {
   action(message: Message) {
     const { voice } = message.member!;
 
-    if (!voice.channel?.join()) {
-      message.channel.send("`Join a voice channel first`");
-      return;
+    try {
+      voice.channel
+        ?.join()
+        .then((voiceConnection) =>
+          message.channel.send(
+            `Joined channel ${voiceConnection.channel.toString()}`
+          )
+        );
+    } catch (err) {
+      message.channel.send("`Error joinging voice channel`");
     }
   }
 }
