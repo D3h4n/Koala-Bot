@@ -25,6 +25,8 @@ import volumeCommand from './music/volume.config';
 import shuffleCommand from './music/shuffle.config';
 import playSkipCommand from './music/playskip.config';
 import PlayTopCommand from './music/playtop.config';
+import repeatCommand from './music/repeat.config';
+import loopCommand from './music/loop.config';
 
 // create a map of commands
 let commands = new Discord.Collection<string, Command>();
@@ -52,6 +54,8 @@ commands
   .set('volume', new volumeCommand())
   .set('playskip', new playSkipCommand())
   .set('playtop', new PlayTopCommand())
+  .set('repeat', new repeatCommand())
+  .set('loop', new loopCommand())
 
   // search commands
   .set('youtube', new youtubeCommand());
