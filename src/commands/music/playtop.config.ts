@@ -42,7 +42,7 @@ export default class PlayTopCommand extends Command {
     // FIXME: This is botched way to do this until the contructor works
     let song = this.createSong(message, result);
     // Better Way:
-    // let song = new Song(results[0], message.author);
+    // let song = new Song(result, message.author);
 
     queue.songs.splice(1, 0, song);
     distube.emit('addSong', message, queue, song);
