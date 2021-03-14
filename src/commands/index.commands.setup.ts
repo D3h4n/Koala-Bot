@@ -27,6 +27,7 @@ import playSkipCommand from './music/playskip.config';
 import PlayTopCommand from './music/playtop.config';
 import repeatCommand from './music/repeat.config';
 import loopCommand from './music/loop.config';
+import timeoutCommand from './admin/timeout.config';
 
 // create a map of commands
 let commands = new Discord.Collection<string, Command>();
@@ -58,6 +59,8 @@ commands
   .set('loop', new loopCommand())
 
   // search commands
-  .set('youtube', new youtubeCommand());
+  .set('youtube', new youtubeCommand())
 
+  // admin
+  .set('timeout', new timeoutCommand());
 export default (() => commands)();
