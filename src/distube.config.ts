@@ -1,6 +1,5 @@
 import { MessageEmbed } from 'discord.js';
 import DisTube from 'distube';
-import { client } from './index';
 import config from './config';
 
 export default function (distube: DisTube) {
@@ -8,9 +7,6 @@ export default function (distube: DisTube) {
 
   // distube setup
   distube.on('initQueue', (queue) => {
-    client.voice?.connections.forEach((connection) => {
-      connection.voice?.setSelfDeaf(true).catch(console.error);
-    });
     queue.autoplay = false;
     queue.volume = 100;
   });
