@@ -18,7 +18,7 @@ export default class joinCommand extends Command {
           )
         );
     } catch (err) {
-      message.channel.send('`Error joinging voice channel`');
+      message.channel.send('`Error joining voice channel`');
     }
   }
 }

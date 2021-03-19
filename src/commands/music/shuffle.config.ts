@@ -12,9 +12,9 @@ export default class shuffleCommand extends Command {
       distube.shuffle(message);
     } catch (error) {
       console.error(error);
-      message.channel.send('`Error shuffling queue`');
+      return message.channel.send('`Error shuffling queue`');
     }
 
-    message.channel.send('`Shuffled Queue`');
+    return message.channel.send('`Shuffled Queue`');
   }
 }

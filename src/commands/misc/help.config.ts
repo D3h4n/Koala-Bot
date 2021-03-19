@@ -45,7 +45,7 @@ export default class helpCommand extends Command {
     }
 
     // check that args[1] is number
-    if (!isNaN(pageNumber)) {
+    if (!Number.isNaN(pageNumber)) {
       pageNumber =
         pageNumber < 1
           ? 1

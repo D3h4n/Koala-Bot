@@ -16,7 +16,7 @@ export default class coinFlipCommand extends Command {
     if (args.length > 1) {
       times = parseInt(args[1]);
 
-      if (isNaN(times))
+      if (Number.isNaN(times))
         return message.channel.send('`Argument must be a number`');
 
       times = times > 20 ? 20 : times;

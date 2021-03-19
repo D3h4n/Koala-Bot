@@ -10,7 +10,7 @@ export default class volumeCommand extends Command {
   action(message: Message, args: string[]) {
     let volume = parseInt(args[1]);
 
-    if (isNaN(volume)) {
+    if (Number.isNaN(volume)) {
       message.channel.send('`Volume must be a number between 0 and 100`');
       return;
     }
