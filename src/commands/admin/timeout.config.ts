@@ -1,12 +1,13 @@
 import { Message, GuildMember } from 'discord.js';
 import Command from '../common.commands.config';
+import config from '../../config';
 
 export default class timeoutCommand extends Command {
   constructor() {
     super('timeout', [
       'Put a user in timeout',
-      'Usage: $timeout @<user> <time>',
-      'Max timeout 120 seconds (2 minutes)',
+      'Usage: $timeout @<user> <minutes>',
+      `Max timeout ${config.timeoutMaxLimit / 60000} minutes`,
     ]);
   }
 
@@ -35,14 +36,14 @@ export default class timeoutCommand extends Command {
       return;
     }
 
-    let timeout = (Number(args[2]) || 10) * 1000;
+    let timeout = (Number(args[2]) || 1) * 60000;
 
     if (timeout < 1000) {
       message.channel.send('`That time is too short`');
       return;
     }
 
-    if (timeout > 120000) {
+    if (timeout > config.timeoutMaxLimit) {
       message.channel.send('`That time is too large`');
       return;
     }
