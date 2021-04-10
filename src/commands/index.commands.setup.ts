@@ -9,6 +9,7 @@ import echoCommand from './chat/echo.config';
 // misc
 import coinFlipCommand from './misc/coinFlip.config';
 import helpCommand from './misc/help.config';
+import rngCommand from './misc/rng.config';
 
 // search
 import youtubeCommand from './search/youtube.config';
@@ -42,6 +43,7 @@ commands
   // misc commads
   .set('coinflip', new coinFlipCommand())
   .set('help', new helpCommand())
+  .set('rng', new rngCommand())
 
   // music commands
   .set('join', new joinCommand())

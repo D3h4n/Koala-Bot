@@ -12,4 +12,5 @@ export default {
   queuePageLength: 10, // number of songs per queue page
   queueTimeLimit: 30000, // time limit of interactive queue
   timeoutMaxLimit: 600000, // limit for timeouts (10 minutes)
+  maxRandomNumbers: 10,
 };

@@ -20,7 +20,7 @@ export default function (distube: DisTube) {
     res
       .setColor(mainColor)
       .setTitle('Now playing')
-      .setAuthor(song.user.username, song.user.displayAvatarURL())
+      .setAuthor(message?.member?.displayName, song.user.displayAvatarURL())
       .setThumbnail(song.thumbnail!)
       .setDescription(desc);
 
@@ -42,7 +42,7 @@ export default function (distube: DisTube) {
       .setTitle('Added to Queue')
       .setDescription(desc)
       .setThumbnail(song.thumbnail!)
-      .setAuthor(song.user.username, song.user.displayAvatarURL());
+      .setAuthor(message?.member?.displayName, song.user.displayAvatarURL());
 
     message.channel
       .send(res)
@@ -67,7 +67,7 @@ export default function (distube: DisTube) {
         .setTitle('Added Playlist to Queue')
         .setDescription(desc)
         .setThumbnail(song.thumbnail!)
-        .setAuthor(song.user.username, song.user.displayAvatarURL());
+        .setAuthor(message?.member?.displayName, song.user.displayAvatarURL());
 
       message.channel
         .send(res)

@@ -1,5 +1,6 @@
-import { Message } from 'discord.js';
+import { Message, MessageEmbed } from 'discord.js';
 import Command from '../common.commands.config';
+import config from '../../config';
 
 export default class coinFlipCommand extends Command {
   constructor() {
@@ -11,7 +12,7 @@ export default class coinFlipCommand extends Command {
 
   action(message: Message, args: string[]) {
     let times = 1;
-    let response: string[] = [];
+    let flips: string[] = [];
 
     if (args.length > 1) {
       times = parseInt(args[1]);
@@ -24,13 +25,27 @@ export default class coinFlipCommand extends Command {
 
     for (let i = 0; i < times; i++) {
       if (Math.round(Math.random())) {
-        response.push('`Heads`');
+        flips.push('Heads');
       } else {
-        response.push('`Tails`');
+        flips.push('Tails');
       }
     }
 
-    message.channel.send(response);
-    return;
+    if (times > 1) {
+      let response = new MessageEmbed();
+
+      response
+        .setTitle('Coin Flips')
+        .setAuthor(
+          message.member?.displayName,
+          message.author.displayAvatarURL()
+        )
+        .setDescription(['**Results:**', ...flips])
+        .setColor(config.mainColor);
+
+      return message.channel.send(response);
+    }
+
+    return message.channel.send(`\`${flips[0]}\``);
   }
 }
