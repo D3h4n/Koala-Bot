@@ -28,13 +28,13 @@ export default class youtubeCommand extends Command {
       .then((res) => {
         let result = res.data.items?.[0];
 
-        if (result?.id?.videoId) {
+        let id = result?.id;
+
+        if (id?.videoId) {
+          message.channel.send(`https://www.youtube.com/watch?v=${id.videoId}`);
+        } else if (id?.channelId) {
           message.channel.send(
-            `https://www.youtube.com/watch?v=${result.id.videoId}`
-          );
-        } else if (result?.id?.channelId) {
-          message.channel.send(
-            `https://www.youtube.com/channel/${result.id.channelId}`
+            `https://www.youtube.com/channel/${id.channelId}`
           );
         } else {
           message.channel.send(`No results found`);

@@ -6,28 +6,46 @@ export default class coinFlipCommand extends Command {
   constructor() {
     super('coinflip', [
       'Flip one or more coins',
-      'Usage: $coinflip or $coinflip <number>',
+      'Usage:',
+      '$coinflip',
+      '$coinflip <number>',
+      '$coinflip <success> <failure>',
+      '$coinflip <success> <failure> <number>',
     ]);
   }
 
   action(message: Message, args: string[]) {
-    let times = 1;
+    // set default values
     let flips: string[] = [];
+    let times = 1;
+    let success = 'Heads';
+    let failure = 'Tails';
 
-    if (args.length > 1) {
+    // check for 1 arg
+    if (args.length === 2) {
       times = parseInt(args[1]);
-
-      if (Number.isNaN(times))
-        return message.channel.send('`Argument must be a number`');
-
-      times = times > 20 ? 20 : times;
     }
+
+    // check for more than 1 arg
+    else if (args.length > 2) {
+      success = args[1];
+      failure = args[2];
+      times = Number(args[3]) || 1;
+    }
+
+    if (Number.isNaN(times))
+      return message.channel.send('`Argument must be a number`');
+
+    if (times < 1)
+      return message.channel.send('`The number of flips is too small`');
+
+    times = Math.min(times, config.maxRandomNumbers);
 
     for (let i = 0; i < times; i++) {
       if (Math.round(Math.random())) {
-        flips.push('Heads');
+        flips.push(success);
       } else {
-        flips.push('Tails');
+        flips.push(failure);
       }
     }
 

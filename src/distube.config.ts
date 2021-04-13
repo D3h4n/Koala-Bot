@@ -76,4 +76,6 @@ export default function (distube: DisTube) {
       console.error(error);
     }
   });
+
+  return distube;
 }

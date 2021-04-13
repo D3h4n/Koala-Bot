@@ -14,10 +14,10 @@ const log = function logEveryCommand({
   guild,
   channel,
 }: Message) {
-  const textChannel = guild?.channels.resolve(channel.id);
+  const textChannelName = guild?.channels.resolve(channel.id)?.name;
 
   console.log(
-    `[server] Command: ${content} User: ${author.tag} Channel: ${textChannel?.name}`
+    `[server] User: ${author.tag} Channel: ${textChannelName} Command: ${content}`
   );
 };
 
@@ -49,8 +49,9 @@ client.on('message', (message) => {
     let commandName = args[0].toLowerCase();
 
     // check for the correct command and execute it
-    if (commands.has(commandName)) {
-      commands.get(commandName)!.action(message, args);
+    let command = commands.get(commandName);
+    if (command) {
+      command.action(message, args);
       log(message);
       return;
     }
@@ -61,11 +62,11 @@ client.on('message', (message) => {
   }
 });
 
-export const distube = new Distube(client, {
-  searchSongs: false,
-  emitNewSongOnly: true,
-});
-
-initDistube(distube);
+export const distube = initDistube(
+  new Distube(client, {
+    searchSongs: false,
+    emitNewSongOnly: true,
+  })
+);
 
 client.login(token);
