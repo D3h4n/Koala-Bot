@@ -12,32 +12,40 @@ export default class timeoutCommand extends Command {
   }
 
   action(message: Message, args: string[]) {
-    if (!this.validatePermissions(message)) {
+    // check if user had valid roles
+    if (!message.member?.hasPermission('MANAGE_ROLES')) {
       message.channel.send("`You're not cool enough`");
       return;
     }
 
+    // get the user ID
     let id = args[1].match(/\d+/)?.[0];
 
+    // check if the ID is in the message
     if (!id) {
       message.channel.send("`I don't know who that is homie`");
       return;
     }
 
-    let memberToTimeout = message.guild?.members.resolve(id);
+    // get the member based on the ID
+    const memberToTimeout = message.guild?.members.resolve(id);
 
+    // check if the member exists
     if (!memberToTimeout) {
       message.channel.send("`I don't know who that is homie`");
       return;
     }
 
+    // check that the member isn't an administrator
     if (memberToTimeout.hasPermission('ADMINISTRATOR')) {
       message.channel.send('`That user is too stronk`');
       return;
     }
 
+    // calculate timeout
     let timeout = (Number(args[2]) || 1) * 60000;
 
+    // check if time is within range
     if (timeout < 1000) {
       message.channel.send('`That time is too short`');
       return;
@@ -48,34 +56,35 @@ export default class timeoutCommand extends Command {
       return;
     }
 
+    // add timeout and handle errors
     if (!this.addTimeout(memberToTimeout, timeout)) {
       message.channel.send('`Some kinda error or something`');
       return;
     }
 
+    // send prompt after timeout
     message.channel.send(
-      `Timedout ${memberToTimeout.toString()} for ${timeout / 1000} seconds`
+      `Timed out ${memberToTimeout.toString()} for ${timeout / 1000} seconds`
     );
   }
 
-  private validatePermissions(message: Message): Boolean {
-    return message.member?.hasPermission('MANAGE_ROLES')!;
-  }
-
   private async addTimeout(member: GuildMember, timeout: number) {
-    let roles = [...member.roles.cache.values()].map((role) => role.id);
+    const timeoutID = '416009802112696320'; // ID for timeout role
+    let roles = [...member.roles.cache.values()].map((role) => role.id); // get array of roles
 
+    // remove roles and add timeout role
     try {
       await member.roles.remove(roles, "You've been a bad boy");
-      await member.roles.add('416009802112696320');
+      await member.roles.add(timeoutID);
     } catch (error) {
       console.error(error);
       return false;
     }
 
+    // set timer to add roles and remove timeout role
     setTimeout(async () => {
       try {
-        await member.roles.remove('416009802112696320');
+        await member.roles.remove(timeoutID);
         await member.roles.add(roles!);
       } catch (error) {
         console.error(error);
