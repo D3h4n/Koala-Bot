@@ -9,8 +9,6 @@ export default class coinFlipCommand extends Command {
       'Usage:',
       '$coinflip',
       '$coinflip <number>',
-      '$coinflip <success> <failure>',
-      '$coinflip <success> <failure> <number>',
     ]);
   }
 
@@ -18,19 +16,10 @@ export default class coinFlipCommand extends Command {
     // set default values
     let flips: string[] = [];
     let times = 1;
-    let success = 'Heads';
-    let failure = 'Tails';
 
     // check for 1 arg
     if (args.length === 2) {
       times = parseInt(args[1]);
-    }
-
-    // check for more than 1 arg
-    else if (args.length > 2) {
-      success = args[1];
-      failure = args[2];
-      times = Number(args[3]) || 1;
     }
 
     if (Number.isNaN(times))
@@ -43,9 +32,9 @@ export default class coinFlipCommand extends Command {
 
     for (let i = 0; i < times; i++) {
       if (Math.round(Math.random())) {
-        flips.push(success);
+        flips.push('Heads');
       } else {
-        flips.push(failure);
+        flips.push('Tails');
       }
     }
 
@@ -63,8 +52,6 @@ export default class coinFlipCommand extends Command {
 
       return message.channel.send(response);
     }
-
-    if (flips[0].match(/<@!\d+>/)) return message.channel.send(flips[0]);
 
     return message.channel.send(`\`${flips[0]}\``);
   }
