@@ -30,6 +30,7 @@ import repeatCommand from './music/repeat.config';
 import loopCommand from './music/loop.config';
 import timeoutCommand from './admin/timeout.config';
 import chooseCommand from './misc/choose.config';
+import teamsCommand from './misc/teams.config';
 
 // create a map of commands
 let commands = new Discord.Collection<string, Command>();
@@ -46,6 +47,7 @@ commands
   .set('help', new helpCommand())
   .set('rng', new rngCommand())
   .set('choose', new chooseCommand())
+  .set('teams', new teamsCommand())
 
   // music commands
   .set('join', new joinCommand())
