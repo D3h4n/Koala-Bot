@@ -64,6 +64,8 @@ export default class coinFlipCommand extends Command {
       return message.channel.send(response);
     }
 
+    if (flips[0].match(/<@!\d+>/)) return message.channel.send(flips[0]);
+
     return message.channel.send(`\`${flips[0]}\``);
   }
 }
