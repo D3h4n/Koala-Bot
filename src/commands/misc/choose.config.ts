@@ -7,11 +7,7 @@ export default class chooseCommand extends Command {
   }
 
   action(message: Message, args: string[]) {
-    args.shift();
-
-    let index = Math.floor(Math.random() * args.length);
-
-    let result = args[index];
+    let result = args[Math.floor(Math.random() * (args.length - 1)) + 1];
 
     if (result.match(/<@!\d+>/)) return message.channel.send(result);
 
