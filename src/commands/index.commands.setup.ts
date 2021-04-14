@@ -29,6 +29,7 @@ import PlayTopCommand from './music/playtop.config';
 import repeatCommand from './music/repeat.config';
 import loopCommand from './music/loop.config';
 import timeoutCommand from './admin/timeout.config';
+import chooseCommand from './misc/choose.config';
 
 // create a map of commands
 let commands = new Discord.Collection<string, Command>();
@@ -44,6 +45,7 @@ commands
   .set('coinflip', new coinFlipCommand())
   .set('help', new helpCommand())
   .set('rng', new rngCommand())
+  .set('choose', new chooseCommand())
 
   // music commands
   .set('join', new joinCommand())
