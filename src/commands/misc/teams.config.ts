@@ -5,6 +5,7 @@ import Command from '../common.commands.config';
 export default class teamsCommand extends Command {
   constructor() {
     super('teams', [
+      'Split a list of names into teams',
       'Usage:',
       '$teams <no. teams> <name 1> <name 2> ... <name n>',
     ]);
