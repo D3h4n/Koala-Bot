@@ -36,8 +36,8 @@ export default class timeoutCommand extends Command {
       return;
     }
 
-    // check that the member isn't an administrator
-    if (memberToTimeout.hasPermission('ADMINISTRATOR')) {
+    // check that the member can be timedout
+    if (!memberToTimeout.manageable) {
       message.channel.send('`That user is too stronk`');
       return;
     }
@@ -76,20 +76,25 @@ export default class timeoutCommand extends Command {
     try {
       await member.roles.remove(roles, "You've been a bad boy");
       await member.roles.add(timeoutID);
+
+      // set timer to add roles and remove timeout role
+      setTimeout(
+        async function (member: GuildMember, roles: string[]) {
+          try {
+            await member.roles.remove(timeoutID);
+            await member.roles.add(roles!);
+          } catch (error) {
+            console.error(error);
+          }
+        },
+        timeout,
+        member,
+        roles
+      );
     } catch (error) {
       console.error(error);
       return false;
     }
-
-    // set timer to add roles and remove timeout role
-    setTimeout(async () => {
-      try {
-        await member.roles.remove(timeoutID);
-        await member.roles.add(roles!);
-      } catch (error) {
-        console.error(error);
-      }
-    }, timeout);
 
     return true;
   }
