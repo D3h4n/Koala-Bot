@@ -18,17 +18,8 @@ export default class timeoutCommand extends Command {
       return;
     }
 
-    // get the user ID
-    let id = args[1].match(/\d+/)?.[0];
-
-    // check if the ID is in the message
-    if (!id) {
-      message.channel.send("`I don't know who that is homie`");
-      return;
-    }
-
-    // get the member based on the ID
-    const memberToTimeout = message.guild?.members.resolve(id);
+    // get first mentioned member
+    const memberToTimeout = message.mentions.members?.first();
 
     // check if the member exists
     if (!memberToTimeout) {
@@ -78,19 +69,14 @@ export default class timeoutCommand extends Command {
       await member.roles.add(timeoutID);
 
       // set timer to add roles and remove timeout role
-      setTimeout(
-        async function (member: GuildMember, roles: string[]) {
-          try {
-            await member.roles.remove(timeoutID);
-            await member.roles.add(roles!);
-          } catch (error) {
-            console.error(error);
-          }
-        },
-        timeout,
-        member,
-        roles
-      );
+      setTimeout(async () => {
+        try {
+          await member.roles.remove(timeoutID);
+          await member.roles.add(roles);
+        } catch (error) {
+          console.error(error);
+        }
+      }, timeout);
     } catch (error) {
       console.error(error);
       return false;
