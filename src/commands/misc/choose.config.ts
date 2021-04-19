@@ -7,6 +7,10 @@ export default class chooseCommand extends Command {
   }
 
   action(message: Message, args: string[]) {
+    if (args.length === 1) {
+      return message.channel.send('`There is nothing to choose!`');
+    }
+
     let result = args[Math.floor(Math.random() * (args.length - 1)) + 1];
 
     if (result.match(/<@!\d+>/)) return message.channel.send(result);

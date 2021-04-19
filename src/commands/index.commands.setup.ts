@@ -10,6 +10,8 @@ import echoCommand from './chat/echo.config';
 import coinFlipCommand from './misc/coinFlip.config';
 import helpCommand from './misc/help.config';
 import rngCommand from './misc/rng.config';
+import chooseCommand from './misc/choose.config';
+import teamsCommand from './misc/teams.config';
 
 // search
 import youtubeCommand from './search/youtube.config';
@@ -28,9 +30,9 @@ import playSkipCommand from './music/playskip.config';
 import PlayTopCommand from './music/playtop.config';
 import repeatCommand from './music/repeat.config';
 import loopCommand from './music/loop.config';
+
+// admin
 import timeoutCommand from './admin/timeout.config';
-import chooseCommand from './misc/choose.config';
-import teamsCommand from './misc/teams.config';
 
 // create a map of commands
 let commands = new Discord.Collection<string, Command>();
@@ -69,4 +71,5 @@ commands
 
   // admin
   .set('timeout', new timeoutCommand());
+
 export default (() => commands)();
