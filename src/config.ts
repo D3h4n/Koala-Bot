@@ -3,7 +3,10 @@ require('dotenv').config();
 export default {
   token: process.env.DISCORD_BOT_TOKEN, // token for discord bot
   youtubeApiKey: process.env.YOUTUBE_API_KEY, // token for google api
-  botStatus: process.env.DISCORD_BOT_STATUS, // bot status
+  botStatus:
+    process.env.NODE_ENV === 'production'
+      ? 'happy noises | $help'
+      : 'in maintenance', // bot status
   prefix: '$', // command prefix
   mainColor: 0x181818, // accent colour of embedded messages
   msgTimeout: 10000, // time limit for message deletion
