@@ -12,6 +12,7 @@ import helpCommand from './misc/help.config';
 import rngCommand from './misc/rng.config';
 import chooseCommand from './misc/choose.config';
 import teamsCommand from './misc/teams.config';
+import voteCommand from './misc/vote.config';
 
 // search
 import youtubeCommand from './search/youtube.config';
@@ -50,6 +51,7 @@ commands
   .set('rng', new rngCommand())
   .set('choose', new chooseCommand())
   .set('teams', new teamsCommand())
+  .set('vote', new voteCommand())
 
   // music commands
   .set('join', new joinCommand())
