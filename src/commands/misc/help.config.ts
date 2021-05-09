@@ -1,6 +1,5 @@
 import { Message, MessageEmbed, MessageReaction, User } from 'discord.js';
 import config from '../../config';
-import { client } from '../../index';
 import Command from '../common.commands.config';
 import commands from '../index.commands.setup';
 
@@ -65,9 +64,7 @@ export default class helpCommand extends Command {
       // filter for reactions
       const filter = (reaction: MessageReaction, user: User) => {
         return (
-          ['◀', '▶'].includes(reaction.emoji.name) &&
-          user.id !== client.user?.id &&
-          !user.bot
+          ['◀', '▶'].includes(reaction.emoji.name) && !reaction.me && !user.bot
         );
       };
 
