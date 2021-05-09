@@ -6,7 +6,7 @@ export default class voteCommand extends Command {
   constructor() {
     super('vote', [
       'Put something up for vote',
-      'Usage: $vote <timelimit [minutes]> <text>',
+      'Usage: $vote <timelimit [minutes]> <query>',
     ]);
   }
 
@@ -176,6 +176,7 @@ export default class voteCommand extends Command {
         );
 
         response.setDescription([
+          `**${query}**`,
           `Yes: ${yesCount}`,
           `No: ${noCount}`,
           `\nResult: ${result}`,
@@ -187,7 +188,7 @@ export default class voteCommand extends Command {
   }
 
   generateMessage(
-    text: string,
+    query: string,
     displayName: string,
     displayAvatarURL: string,
     yesCount: number,
@@ -196,10 +197,10 @@ export default class voteCommand extends Command {
     const response = new MessageEmbed();
 
     response
-      .setTitle(text)
+      .setTitle('Vote')
       .setAuthor(displayName, displayAvatarURL)
       .setColor(config.mainColor)
-      .setDescription([`Yes: ${yesCount}`, `No: ${noCount}`]);
+      .setDescription([`**${query}**`, `Yes: ${yesCount}`, `No: ${noCount}`]);
 
     return response;
   }
