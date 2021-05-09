@@ -13,7 +13,7 @@ export default class voteCommand extends Command {
   async action(message: Message, args: string[]) {
     args.shift();
 
-    const timeLimit = Number(args.shift()) * 6000; // time limit in milliseconds
+    const timeLimit = Number(args.shift()) * 60000; // time limit in milliseconds
 
     // check if timeLimit is a number
     if (Number.isNaN(timeLimit)) {
