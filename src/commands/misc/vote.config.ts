@@ -22,13 +22,13 @@ export default class voteCommand extends Command {
     }
 
     // check if timeLimit is too small
-    if (timeLimit < 3000) {
+    if (timeLimit < 30000) {
       message.channel.send('Time limit cannot be less than 30 seconds');
       return;
     }
 
     // check if timeLimit is too large
-    if (timeLimit > 60000) {
+    if (timeLimit > 600000) {
       message.channel.send('Timelimit cannot be more than 10 minutes');
       return;
     }
