@@ -65,11 +65,8 @@ export default class voteCommand extends Command {
     let noCount = 0;
 
     // filter for reaction collections
-    const filter = (reaction: MessageReaction, user: User) => {
-      return (
-        ['✔', '❌'].includes(reaction.emoji.name) && !reaction.me && !user.bot
-      );
-    };
+    const filter = (reaction: MessageReaction, user: User) =>
+      ['✔', '❌'].includes(reaction.emoji.name) && !reaction.me && !user.bot;
 
     // create reaction collector
     const collector = sentMessage.createReactionCollector(filter, {
@@ -82,12 +79,9 @@ export default class voteCommand extends Command {
         const result = reaction.emoji.name === '✔';
 
         // remove user from opposite reaction if they reacted before
-        const oppReactUsers = (result ? noReaction : yesReaction).users;
+        (result ? noReaction : yesReaction).users.remove(userId);
 
-        if (oppReactUsers?.resolveID(userId)) {
-          oppReactUsers.remove(userId);
-        }
-
+        // update counts;
         yesCount += Number(result);
         noCount += Number(!result);
       })
