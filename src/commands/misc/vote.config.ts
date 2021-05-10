@@ -75,11 +75,15 @@ export default class voteCommand extends Command {
     });
 
     collector
-      .on('collect', (reaction: MessageReaction, { id: userId }: User) => {
+      .on('collect', (reaction: MessageReaction, { id }: User) => {
         const result = reaction.emoji.name === '✔';
 
         // remove user from opposite reaction if they reacted before
-        (result ? noReaction : yesReaction).users.remove(userId);
+        const reactionUsers = (result ? noReaction : yesReaction).users;
+
+        if (reactionUsers.cache.has(id)) {
+          reactionUsers.remove(id);
+        }
 
         // update counts;
         yesCount += Number(result);
