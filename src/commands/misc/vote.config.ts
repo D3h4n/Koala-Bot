@@ -17,19 +17,25 @@ export default class voteCommand extends Command {
 
     // check if timeLimit is a number
     if (Number.isNaN(timeLimit)) {
-      message.channel.send('Invalid time limit');
+      message.channel.send('`Invalid time limit`');
       return;
     }
 
     // check if timeLimit is too small
     if (timeLimit < 30000) {
-      message.channel.send('Time limit cannot be less than 30 seconds');
+      message.channel.send('`Time limit cannot be less than 30 seconds`');
       return;
     }
 
     // check if timeLimit is too large
     if (timeLimit > 600000) {
-      message.channel.send('Timelimit cannot be more than 10 minutes');
+      message.channel.send('`Timelimit cannot be more than 10 minutes`');
+      return;
+    }
+
+    // check for remaining args
+    if (!args.length) {
+      message.channel.send('`No query`');
       return;
     }
 
@@ -46,23 +52,22 @@ export default class voteCommand extends Command {
     const displayAvatarURL = message.author.displayAvatarURL();
 
     // send initial message
-    const sentMessage = await message.channel.send(
-      this.generateMessage(query, displayName, displayAvatarURL, 0, 0)
+    let sentMessage = await message.channel.send(
+      this.generateMessage(query, displayName, displayAvatarURL)
     );
 
     // add reactions
-    await sentMessage.react('👍');
-    await sentMessage.react('👎');
+    const yesReaction = await sentMessage.react('✔');
+    const noReaction = await sentMessage.react('❌');
 
     // initialize counts and userMap
     let yesCount = 0;
     let noCount = 0;
-    const userMap = new Map<string, [boolean, boolean]>();
 
     // filter for reaction collections
     const filter = (reaction: MessageReaction, user: User) => {
       return (
-        ['👍', '👎'].includes(reaction.emoji.name) && !reaction.me && !user.bot
+        ['✔', '❌'].includes(reaction.emoji.name) && !reaction.me && !user.bot
       );
     };
 
@@ -73,90 +78,27 @@ export default class voteCommand extends Command {
     });
 
     collector
-      .on('collect', async (reaction: MessageReaction, user: User) => {
-        // get userInfo from map
-        const info = userMap.get(user.tag)!;
+      .on('collect', (reaction: MessageReaction, { id: userId }: User) => {
+        const result = reaction.emoji.name === '✔';
 
-        // check if user has voted before
-        if (!info) {
-          const result = reaction.emoji.name === '👍'; // booleon of response
+        // remove user from opposite reaction if they reacted before
+        const oppReactUsers = (result ? noReaction : yesReaction).users;
 
-          userMap.set(user.tag, [result, false]); // add user record to map
-
-          // update yes and no counts
-          yesCount += Number(result);
-          noCount += Number(!result);
-
-          // edit message with new counts
-          sentMessage.edit(
-            this.generateMessage(
-              query,
-              displayName,
-              displayAvatarURL,
-              yesCount,
-              noCount
-            )
-          );
-
-          return;
+        if (oppReactUsers?.resolveID(userId)) {
+          oppReactUsers.remove(userId);
         }
 
-        // get the previous response
-        const [prevRes] = info;
-
-        // set the swap tag to true
-        userMap.set(user.tag, [prevRes, true]);
+        yesCount += Number(result);
+        noCount += Number(!result);
+      })
+      .on('remove', (reaction: MessageReaction) => {
+        const result = reaction.emoji.name === '✔';
 
         // update counts
-        yesCount += Number(!prevRes);
-        noCount += Number(prevRes);
-
-        // remove previous reaction
-        await sentMessage.reactions
-          .resolve(prevRes ? '👍' : '👎')
-          ?.users.remove(user.id);
-
-        // edit message
-        await sentMessage.edit(
-          this.generateMessage(
-            query,
-            displayName,
-            displayAvatarURL,
-            yesCount,
-            noCount
-          )
-        );
+        yesCount = Math.max(0, yesCount - Number(result));
+        noCount = Math.max(0, noCount - Number(!result));
       })
-      .on('remove', (_: MessageReaction, user: User) => {
-        // get info on user
-        const [prevRes, swap] = userMap.get(user.tag)!;
-
-        // update counts
-        yesCount -= Number(prevRes);
-        noCount -= Number(!prevRes);
-
-        // edit message with new count
-        sentMessage.edit(
-          this.generateMessage(
-            query,
-            displayName,
-            displayAvatarURL,
-            yesCount,
-            noCount
-          )
-        );
-
-        // update user info if swap else delete user
-        if (swap) {
-          userMap.set(user.tag, [!prevRes, false]);
-        } else {
-          userMap.delete(user.tag);
-        }
-      })
-      .on('end', async () => {
-        // remove all reactions
-        await sentMessage.reactions.removeAll();
-
+      .on('end', () => {
         // find final result
         let result = 'Tie';
 
@@ -170,9 +112,7 @@ export default class voteCommand extends Command {
         const response = this.generateMessage(
           query,
           displayName,
-          displayAvatarURL,
-          yesCount,
-          noCount
+          displayAvatarURL
         );
 
         response.setDescription([
@@ -184,15 +124,18 @@ export default class voteCommand extends Command {
 
         // update message
         sentMessage.edit(response);
+
+        // remove all reactions
+        yesReaction.remove();
+        noReaction.remove();
+        sentMessage.reactions.removeAll();
       });
   }
 
   generateMessage(
     query: string,
     displayName: string,
-    displayAvatarURL: string,
-    yesCount: number,
-    noCount: number
+    displayAvatarURL: string
   ) {
     const response = new MessageEmbed();
 
@@ -200,7 +143,7 @@ export default class voteCommand extends Command {
       .setTitle('Vote')
       .setAuthor(displayName, displayAvatarURL)
       .setColor(config.mainColor)
-      .setDescription([`**${query}**`, `Yes: ${yesCount}`, `No: ${noCount}`]);
+      .setDescription(`**${query}**`);
 
     return response;
   }
