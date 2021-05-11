@@ -34,6 +34,7 @@ import loopCommand from './music/loop.config';
 
 // admin
 import timeoutCommand from './admin/timeout.config';
+import yeetCommand from './misc/yeet.config';
 
 // create a map of commands
 let commands = new Discord.Collection<string, Command>();
@@ -52,21 +53,22 @@ commands
   .set('choose', new chooseCommand())
   .set('teams', new teamsCommand())
   .set('vote', new voteCommand())
+  .set('yeet', new yeetCommand())
 
   // music commands
   .set('join', new joinCommand())
   .set('leave', new leaveCommand())
+  .set('loop', new loopCommand())
   .set('pause', new pauseCommand())
   .set('play', new playCommand())
+  .set('playskip', new playSkipCommand())
+  .set('playtop', new PlayTopCommand())
   .set('queue', new queueCommand())
+  .set('repeat', new repeatCommand())
   .set('shuffle', new shuffleCommand())
   .set('skip', new skipCommand())
   .set('stop', new stopCommand())
   .set('volume', new volumeCommand())
-  .set('playskip', new playSkipCommand())
-  .set('playtop', new PlayTopCommand())
-  .set('repeat', new repeatCommand())
-  .set('loop', new loopCommand())
 
   // search commands
   .set('youtube', new youtubeCommand())
