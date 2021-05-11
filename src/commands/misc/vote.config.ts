@@ -11,7 +11,7 @@ export default class voteCommand extends Command {
   }
 
   async action(message: Message, args: string[]) {
-    args.slice(1);
+    args.shift(); // remove first element
 
     const timeLimit = Number(args.shift()) * 60000; // time limit in milliseconds
 
