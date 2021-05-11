@@ -25,8 +25,7 @@ export default class yeetCommand extends Command {
     const voiceChannel = member?.voice.channel; // connected voice channel
 
     // get channel name
-    args.shift();
-    const channelName = args.reduce((prev, curr) => prev + ' ' + curr);
+    const channelName = args.slice(1).join(' ');
 
     // check if user is in a voice channel
     if (!voiceChannel) {

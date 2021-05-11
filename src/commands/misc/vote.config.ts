@@ -11,7 +11,7 @@ export default class voteCommand extends Command {
   }
 
   async action(message: Message, args: string[]) {
-    args.shift();
+    args.slice(1);
 
     const timeLimit = Number(args.shift()) * 60000; // time limit in milliseconds
 
@@ -40,7 +40,7 @@ export default class voteCommand extends Command {
     }
 
     // generate query
-    let query = args.reduce((prev, curr) => prev + ' ' + curr);
+    let query = args.join(' ');
 
     // add question mark if there is none
     if (!query.endsWith('?')) {
