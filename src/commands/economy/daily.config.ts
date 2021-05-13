@@ -20,11 +20,14 @@ export default class dailyCommand extends Command {
 
     // check last time user got daily
     if (user.nextDaily.valueOf() > today.valueOf()) {
-      channel.send(
-        `Stop being greedy. You have to wait \`${this.generateTimeString(
-          Math.round((user.nextDaily.valueOf() - today.valueOf()) / 60000)
-        )}\`.`
+      const remainingTime = Math.round(
+        (user.nextDaily.valueOf() - today.valueOf()) / 60000
       );
+
+      channel.send([
+        'Stop being greedy.',
+        `You have to wait \`${this.generateTimeString(remainingTime)}\`.`,
+      ]);
       return;
     }
 
@@ -59,18 +62,19 @@ export default class dailyCommand extends Command {
   generateTimeString(remainingTime: number) {
     const hours = Math.floor(remainingTime / 60); // calculate hours remaining
     const minutes = remainingTime % 60; // calculate minutes remaining
-    let timeString = '';
 
     if (hours > 0 && minutes > 0) {
-      timeString = `${hours} Hours and ${minutes} Minutes`;
-    } else if (hours > 0) {
-      timeString = `${hours} Hour${hours > 1 ? 's' : ''}`;
-    } else if (minutes > 0) {
-      timeString = `${minutes} Minute${minutes > 1 ? 's' : ''}`;
-    } else {
-      timeString = `Less than a minute`;
+      return `${hours} Hours and ${minutes} Minutes`;
     }
 
-    return timeString;
+    if (hours > 0) {
+      return `${hours} Hour${hours > 1 ? 's' : ''}`;
+    }
+
+    if (minutes > 0) {
+      return `${minutes} Minute${minutes > 1 ? 's' : ''}`;
+    }
+
+    return 'Less than a minute';
   }
 }
