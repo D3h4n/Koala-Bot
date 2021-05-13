@@ -4,6 +4,8 @@ export default {
   token: process.env.DISCORD_BOT_TOKEN, // token for discord bot
   youtubeApiKey: process.env.YOUTUBE_API_KEY, // token for google api
   dbURI: process.env.MONGO_DB_URI ?? 'mongodb://localhost/koala-bot',
+  dbUser: process.env.MONGO_DB_USER,
+  dbPass: process.env.MONGO_DB_PASS,
   botStatus:
     process.env.NODE_ENV === 'production'
       ? 'happy noises | $help'
