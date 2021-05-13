@@ -1,6 +1,6 @@
 import Queue from 'distube/typings/Queue';
 import Song from 'distube/typings/Song';
-import config from '../../config';
+import config from '../../utils/config';
 import Command from '../common.commands.config';
 import { Message, MessageEmbed, MessageReaction, User } from 'discord.js';
 import { client, distube } from '../../index';

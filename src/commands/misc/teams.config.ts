@@ -1,5 +1,5 @@
 import { Message, MessageEmbed } from 'discord.js';
-import config from '../../config';
+import config from '../../utils/config';
 import Command from '../common.commands.config';
 
 export default class teamsCommand extends Command {

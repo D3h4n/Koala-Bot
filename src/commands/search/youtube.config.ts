@@ -1,5 +1,5 @@
 import Command from '../common.commands.config';
-import config from '../../config';
+import config from '../../utils/config';
 import { Message } from 'discord.js';
 import { google } from 'googleapis';
 

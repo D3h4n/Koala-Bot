@@ -1,6 +1,6 @@
 import { Message, MessageEmbed } from 'discord.js';
 import Command from '../common.commands.config';
-import config from '../../config';
+import config from '../../utils/config';
 
 export default class coinFlipCommand extends Command {
   constructor() {
