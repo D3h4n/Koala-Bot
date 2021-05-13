@@ -11,6 +11,7 @@ import echoCommand from './chat/echo.config';
 
 // economy
 import balanceCommand from './economy/balance.config';
+import betCommand from './economy/bet.config';
 import dailyCommand from './economy/daily.config';
 import giftCommand from './economy/gift.config';
 
@@ -56,6 +57,7 @@ commands
 
   // economy commands
   .set('balance', new balanceCommand())
+  .set('bet', new betCommand())
   .set('daily', new dailyCommand())
   .set('gift', new giftCommand())
 
