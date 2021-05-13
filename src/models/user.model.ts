@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 export interface IUser {
   id: string;
   balance: number;
+  nextDaily: Date;
 }
 
 const userSchema = new mongoose.Schema(
@@ -13,6 +14,10 @@ const userSchema = new mongoose.Schema(
     },
     balance: {
       type: Number,
+      required: true,
+    },
+    nextDaily: {
+      type: Date,
       required: true,
     },
   },

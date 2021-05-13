@@ -1,5 +1,5 @@
 import { Message, MessageEmbed } from 'discord.js';
-import userRecord from '../../models/user.model';
+import economyServices from './economy.services';
 import Command from '../common.commands.config';
 
 export default class balanceCommand extends Command {
@@ -10,19 +10,13 @@ export default class balanceCommand extends Command {
   async action({ author, member, channel }: Message) {
     const userId = author.id;
 
-    let user = await userRecord.findOne({ id: userId }); // get user record
-
-    // if the user doesn't exist
-    if (!user) {
-      user = new userRecord({ id: userId, balance: 0 });
-      user.save();
-    }
-
+    // get user or create new user if doesn't exist
+    const user = await economyServices.getUser(userId);
     const response = new MessageEmbed();
 
     response
       .setAuthor(member?.displayName, author.displayAvatarURL())
-      .setDescription(`Balance: $${user.balance}`);
+      .setDescription(`**Balance:** $${user.balance}`);
 
     channel.send(response);
   }
