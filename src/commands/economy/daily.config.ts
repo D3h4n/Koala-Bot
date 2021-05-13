@@ -38,7 +38,7 @@ export default class dailyCommand extends Command {
     user.nextDaily = new Date(today.valueOf() + 8.64e7);
     user.save();
 
-    // TODO: make this an embedded message
+    // send embedded message
     const response = new MessageEmbed();
 
     response
