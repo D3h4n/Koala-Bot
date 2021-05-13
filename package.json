@@ -3,12 +3,12 @@
   "version": "1.1.0",
   "repository": "https://github.com/D3h4n/Koala-Bot",
   "description": "A bot specifically for AKK",
-  "main": "dist/index.js",
+  "main": "dist/index",
   "scripts": {
     "test": "echo no tests && exit 0",
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "tsc-watch --onSuccess \"node ./dist/index.js\""
+    "dev": "tsc-watch --onsuccess \"node dist/index.js\""
   },
   "keywords": [],
   "author": "D3h4n",
@@ -20,7 +20,7 @@
     "@typescript-eslint/eslint-plugin": "^4.15.1",
     "@typescript-eslint/parser": "^4.15.1",
     "eslint": "^7.20.0",
-    "tsc-watch": "^4.2.9",
+    "nodemon": "^2.0.7",
     "typescript": "^4.1.5"
   },
   "dependencies": {

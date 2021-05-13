@@ -1,10 +1,16 @@
 import Discord from 'discord.js';
 import Command from './common.commands.config';
 
+// admin
+import timeoutCommand from './admin/timeout.config';
+
 // chat
 import helloCommand from './chat/hello.config';
 import insultCommand from './chat/insult.config';
 import echoCommand from './chat/echo.config';
+
+// economy
+import balanceCommand from './economy/balance.config';
 
 // misc
 import coinFlipCommand from './misc/coinFlip.config';
@@ -13,9 +19,7 @@ import rngCommand from './misc/rng.config';
 import chooseCommand from './misc/choose.config';
 import teamsCommand from './misc/teams.config';
 import voteCommand from './misc/vote.config';
-
-// search
-import youtubeCommand from './search/youtube.config';
+import yeetCommand from './misc/yeet.config';
 
 // music
 import joinCommand from './music/join.config';
@@ -32,21 +36,26 @@ import PlayTopCommand from './music/playtop.config';
 import repeatCommand from './music/repeat.config';
 import loopCommand from './music/loop.config';
 
-// admin
-import timeoutCommand from './admin/timeout.config';
-import yeetCommand from './misc/yeet.config';
+// search
+import youtubeCommand from './search/youtube.config';
 
 // create a map of commands
 let commands = new Discord.Collection<string, Command>();
 
 // add commands to map
-// chat commands
 commands
+  // admin commands
+  .set('timeout', new timeoutCommand())
+
+  // chat commands
   .set('echo', new echoCommand())
   .set('hello', new helloCommand())
   .set('insult', new insultCommand())
 
-  // misc commads
+  // economy commands
+  .set('balance', new balanceCommand())
+
+  // misc commands
   .set('coinflip', new coinFlipCommand())
   .set('help', new helpCommand())
   .set('rng', new rngCommand())
@@ -71,9 +80,6 @@ commands
   .set('volume', new volumeCommand())
 
   // search commands
-  .set('youtube', new youtubeCommand())
-
-  // admin
-  .set('timeout', new timeoutCommand());
+  .set('youtube', new youtubeCommand());
 
 export default (() => commands)();

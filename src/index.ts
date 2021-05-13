@@ -5,6 +5,7 @@ import initDistube from './utils/distube.config';
 
 import commands from './commands/index.commands.setup';
 import { log, parseCommand } from './helper.functions';
+import { initMongoose } from './utils/mongoose.config';
 
 const { token, prefix, botStatus } = config; // config info for bot
 
@@ -63,5 +64,7 @@ export const distube = initDistube(
     emitNewSongOnly: true,
   })
 );
+
+initMongoose();
 
 client.login(token);
