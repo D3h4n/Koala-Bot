@@ -25,6 +25,7 @@ export default class lottoCommand extends Command {
 
     if (lotto.done || args.length <= 2) {
       lotto = args[2] ? await economyServices.getLotto(args[2]) : lotto;
+      const user = await economyServices.getUserByDiscord(message.author.id);
 
       if (!lotto) {
         message.channel.send('`No lottos found with that ID`');
@@ -39,7 +40,7 @@ export default class lottoCommand extends Command {
           `**ID:** ${lotto.id}`,
           `**End Date:** ${lotto.endDate.toDateString()}`,
           `**Entries:** ${lotto.guesses.length}`,
-          `**Entered:** ${lotto.users.includes(message.author.id)}`,
+          `**Entered:** ${lotto.users.includes(user?.id)}`,
           `**Ended:** ${lotto.done}`,
         ])
         .setAuthor(
