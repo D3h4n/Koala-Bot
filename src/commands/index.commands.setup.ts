@@ -14,6 +14,7 @@ import balanceCommand from './economy/balance.config';
 import betCommand from './economy/bet.config';
 import dailyCommand from './economy/daily.config';
 import giftCommand from './economy/gift.config';
+import lottoCommand from './economy/lotto.config';
 
 // misc
 import coinFlipCommand from './misc/coinFlip.config';
@@ -60,6 +61,7 @@ commands
   .set('bet', new betCommand())
   .set('daily', new dailyCommand())
   .set('gift', new giftCommand())
+  .set('lotto', new lottoCommand())
 
   // misc commands
   .set('coinflip', new coinFlipCommand())

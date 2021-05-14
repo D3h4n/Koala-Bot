@@ -6,6 +6,7 @@ import initDistube from './utils/distube.config';
 import commands from './commands/index.commands.setup';
 import { log, parseCommand } from './helper.functions';
 import { initMongoose } from './utils/mongoose.config';
+import initEventLoop from './utils/timer.config';
 const { token, prefix, botStatus } = config; // config info for bot
 
 export const client = new Client(); // initialize client
@@ -21,6 +22,8 @@ client.once('ready', () => {
       type: 'PLAYING',
     },
   });
+
+  initEventLoop();
 });
 
 // runs every time a message is sent in the server
