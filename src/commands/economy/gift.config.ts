@@ -11,15 +11,13 @@ export default class giftCommand extends Command {
     // get author record
     const authorId = message.author.id;
 
-    const authorRecord = await economyServices.getUser(authorId);
+    const authorRecord = await economyServices.getUserByDiscord(authorId);
 
     // get receiverRecord
     const receiverUser = message.mentions.users.first();
 
-    const receiverId = receiverUser?.id;
-
     // ensure valid receiver
-    if (!receiverId) {
+    if (!receiverUser) {
       message.channel.send('`That user was not found`');
       return;
     }
@@ -29,12 +27,26 @@ export default class giftCommand extends Command {
       return;
     }
 
-    if (receiverId === authorId) {
+    if (receiverUser.id === authorId) {
       message.channel.send("`You can't send money to yourself.`");
       return;
     }
 
-    const receiverRecord = await economyServices.getUser(receiverId);
+    const receiverRecord = await economyServices.getUserByDiscord(
+      receiverUser.id
+    );
+
+    if (!authorRecord) {
+      message.channel.send(
+        '`You have no money. Try collecting your daily first.`'
+      );
+      return;
+    }
+
+    if (!receiverRecord) {
+      message.channel.send('`That user was not found`');
+      return;
+    }
 
     // check for valid amount
     const giftAmount = Number(args[2]);
@@ -59,6 +71,8 @@ export default class giftCommand extends Command {
     receiverRecord.save();
 
     // response
-    message.channel.send(`Gifted \`$${giftAmount}\` to <@!${receiverId}>`);
+    message.channel.send(
+      `Gifted \`$${giftAmount}\` to ${receiverUser.toString()}`
+    );
   }
 }

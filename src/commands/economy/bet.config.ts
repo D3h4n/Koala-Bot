@@ -18,9 +18,12 @@ export default class betCommand extends Command {
       return;
     }
 
-    const id = author.id;
+    const record = await economyServices.getUserByDiscord(author.id);
 
-    const record = await economyServices.getUser(id);
+    if (!record) {
+      channel.send('You have no money. Try collecting your daily first');
+      return;
+    }
 
     if (record.balance < betAmount) {
       channel.send(

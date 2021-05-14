@@ -1,20 +1,19 @@
 import { Schema, model } from 'mongoose';
 
-export interface IWinner {
-  userId: string;
-  earnings: number;
-}
-
 export interface ILotto {
+  guildId: string;
   endDate: Date;
   guesses: string[];
   users: string[];
   done: boolean;
-  winners: IWinner[];
 }
 
 const lottoSchema = new Schema(
   {
+    guildId: {
+      type: String,
+      required: true,
+    },
     endDate: {
       type: Date,
       required: true,
@@ -30,15 +29,6 @@ const lottoSchema = new Schema(
     done: {
       type: Boolean,
       required: true,
-    },
-    winners: {
-      type: [
-        {
-          userId: String,
-          earnings: Number,
-        },
-      ],
-      required: false,
     },
   },
   { timestamps: true }

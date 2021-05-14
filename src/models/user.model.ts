@@ -1,14 +1,19 @@
 import mongoose from 'mongoose';
 
 export interface IUser {
-  userId: string;
+  username: string;
+  discordId: string;
   balance: number;
   nextDaily: Date;
 }
 
 const userSchema = new mongoose.Schema(
   {
-    userId: {
+    username: {
+      type: String,
+      required: true,
+    },
+    discordId: {
       type: String,
       required: true,
     },

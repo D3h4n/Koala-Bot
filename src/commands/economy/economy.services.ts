@@ -13,13 +13,22 @@ class economyServices {
     return economyServices.instance;
   }
 
-  async createUser(userId: string) {
-    const user = new userRecord({ userId, balance: 0, nextDaily: new Date(0) });
+  async createUser(discordId: string, username: string) {
+    const user = new userRecord({
+      username,
+      discordId,
+      balance: 1000,
+      nextDaily: new Date(0),
+    });
     return await user.save();
   }
 
-  async getUser(userId: string) {
-    return (await userRecord.findOne({ userId })) ?? this.createUser(userId);
+  async getUserById(id: string) {
+    return await userRecord.findById(id);
+  }
+
+  async getUserByDiscord(discordId: string) {
+    return await userRecord.findOne({ discordId });
   }
 
   async getLotto(id?: string) {
@@ -31,8 +40,14 @@ class economyServices {
     return Lotto.findOne().sort({ createdAt: -1 });
   }
 
-  async createLotto(endDate: Date) {
-    const lotto = new Lotto({ endDate, done: false, guesses: [], users: [] });
+  async createLotto(guildId: string, endDate: Date) {
+    const lotto = new Lotto({
+      guildId,
+      endDate,
+      done: false,
+      guesses: [],
+      users: [],
+    });
     return await lotto.save();
   }
 

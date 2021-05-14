@@ -2,9 +2,10 @@ import Command from '../common.commands.config';
 import economyServices from './economy.services';
 import config from '../../utils/config';
 import { Message, MessageEmbed, TextChannel } from 'discord.js';
-import { ILotto, IWinner } from 'src/models/lotto.model';
+import { ILotto } from 'src/models/lotto.model';
 import { Document } from 'mongoose';
 import { client } from '../../index';
+import { IUser } from '../../models/user.model';
 
 export default class lottoCommand extends Command {
   constructor() {
@@ -57,9 +58,9 @@ export default class lottoCommand extends Command {
     }
 
     // check if user has enough money
-    const user = await economyServices.getUser(message.author.id);
+    const user = await economyServices.getUserByDiscord(message.author.id);
 
-    if (user.balance < 20) {
+    if (!user || user.balance < 20) {
       message.channel.send([
         "You don't have enough money",
         '`$20 Entry Fee required`',
@@ -79,7 +80,7 @@ export default class lottoCommand extends Command {
     }
 
     economyServices
-      .addGuess(lotto.id, message.author.id, guessNums)
+      .addGuess(lotto.id, user.id, guessNums)
       .then(() => {
         user.balance -= 20;
         user.save();
@@ -132,11 +133,15 @@ async function endLotto(
     lottoChannel.send('`Nobody wanted to play` :sob::weary:');
     return;
   }
-
-  let winners: IWinner[] = [];
+  const winners: Array<{ user: IUser; earnings: number }> = [];
 
   for (let entry of guesses) {
-    const user = await economyServices.getUser(entry.userId); // get user record
+    const user = await economyServices.getUserById(entry.userId); // get user record
+
+    if (!user) {
+      continue;
+    }
+
     let earnings = 0;
 
     // check if number in guess is a winning number
@@ -158,11 +163,10 @@ async function endLotto(
     user.save();
 
     // add to winners array
-    winners.push({ userId: user.id, earnings });
+    winners.push({ user, earnings });
   }
 
   // update lotto and save
-  lotto.winners = winners;
   lotto.done = true;
   lotto.save();
 
@@ -174,26 +178,30 @@ async function endLotto(
     '**Results:**',
     ...winners
       .sort((a, b) => b.earnings - a.earnings)
-      .map(({ userId, earnings }, idx) => {
-        const guild = client.guilds.resolve('310489953157120023');
+      .map(({ user, earnings }, idx) => {
+        const guild = client.guilds.cache.find(
+          ({ id }) => id === lotto.guildId
+        );
 
-        const member = guild?.members.resolve(userId);
+        const member = guild?.members.cache.find(
+          ({ id }) => id === user.discordId
+        );
 
-        return `${idx + 1}. \`${member?.displayName}:\` $${earnings}`;
+        return `${idx + 1}. \`${
+          member?.displayName || user.username
+        }:\` $${earnings}`;
       }),
   ]);
 
   lottoChannel.send(response);
 }
 
-async function createNewLotto(lottoChannel: TextChannel) {
+async function createNewLotto(guildId: string, lottoChannel: TextChannel) {
   const endDate = new Date(
-    (Math.floor(new Date().valueOf() / config.lottoLength) +
-      config.lottoLength) *
-      config.lottoLength
+    Math.ceil(new Date().getTime() / config.lottoLength) * config.lottoLength
   );
 
-  const newLotto = await economyServices.createLotto(endDate);
+  const newLotto = await economyServices.createLotto(guildId, endDate);
 
   const response = new MessageEmbed();
 
@@ -218,7 +226,7 @@ export async function checkLotto() {
 
   // check if latest lotto is done
   if (!lotto || lotto.done) {
-    createNewLotto(lottoChannel);
+    createNewLotto('842552370960400415', lottoChannel);
     return;
   }
 

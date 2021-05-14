@@ -14,7 +14,9 @@ export default class dailyCommand extends Command {
   }
 
   async action({ author, channel, member }: Message) {
-    const user = await economyServices.getUser(author.id); // get user
+    const user =
+      (await economyServices.getUserByDiscord(author.id)) ??
+      (await economyServices.createUser(author.id, author.username)); // get user
 
     const today = new Date(); // get today's date
 

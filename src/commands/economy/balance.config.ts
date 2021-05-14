@@ -8,10 +8,11 @@ export default class balanceCommand extends Command {
   }
 
   async action({ author, member, channel }: Message) {
-    const userId = author.id;
-
     // get user or create new user if doesn't exist
-    const user = await economyServices.getUser(userId);
+    const user =
+      (await economyServices.getUserByDiscord(author.id)) ??
+      (await economyServices.createUser(author.id, author.username));
+
     const response = new MessageEmbed();
 
     response
