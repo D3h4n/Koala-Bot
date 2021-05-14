@@ -1,14 +1,14 @@
 import mongoose from 'mongoose';
 
 export interface IUser {
-  id: string;
+  userId: string;
   balance: number;
   nextDaily: Date;
 }
 
 const userSchema = new mongoose.Schema(
   {
-    id: {
+    userId: {
       type: String,
       required: true,
     },

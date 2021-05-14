@@ -1,6 +1,7 @@
-import { Message, MessageEmbed, TextChannel } from 'discord.js';
 import Command from '../common.commands.config';
 import economyServices from './economy.services';
+import config from '../../utils/config';
+import { Message, MessageEmbed, TextChannel } from 'discord.js';
 import { ILotto, IWinner } from 'src/models/lotto.model';
 import { Document } from 'mongoose';
 import { client } from '../../index';
@@ -92,8 +93,8 @@ export default class lottoCommand extends Command {
             message.author.displayAvatarURL()
           )
           .setDescription([
-            `Lotto ID: ${lotto?.id}`,
-            `Numbers: ${args.slice(1, 6).join(' ')}`,
+            `**Lotto ID:** ${lotto?.id}`,
+            `**Numbers:** ${args.slice(1, 6).join(' ')}`,
           ]);
 
         message.channel.send(response);
@@ -117,20 +118,18 @@ const generateNumbers = function () {
   return nums;
 };
 
-export async function endLotto(lotto: ILotto & Document<any, any>) {
+async function endLotto(
+  lotto: ILotto & Document<any, any>,
+  lottoChannel: TextChannel
+) {
   const nums = generateNumbers(); // get winning numbers
 
   // get entries for lotto
   const guesses = await economyServices.getGuesses(lotto.id);
 
-  // get channel to send messages
-  const channel = client.channels.cache.get(
-    '842552370960400415'
-  ) as TextChannel;
-
   // check if there are any guesses
   if (!guesses || !guesses.length) {
-    channel.send('`Nobody wanted to play` :sob::weary:');
+    lottoChannel.send('`Nobody wanted to play` :sob::weary:');
     return;
   }
 
@@ -184,5 +183,79 @@ export async function endLotto(lotto: ILotto & Document<any, any>) {
       }),
   ]);
 
-  channel.send(response);
+  lottoChannel.send(response);
+}
+
+async function createNewLotto(lottoChannel: TextChannel) {
+  const endDate = new Date(
+    (Math.floor(new Date().valueOf() / config.lottoLength) +
+      config.lottoLength) *
+      config.lottoLength
+  );
+
+  const newLotto = await economyServices.createLotto(endDate);
+
+  const response = new MessageEmbed();
+
+  response
+    .setTitle('New Lotto')
+    .setAuthor(client.user?.username, client.user?.displayAvatarURL())
+    .setDescription([
+      `**ID:** ${newLotto.id}`,
+      `**End Date:** ${endDate.toDateString()}`,
+    ]);
+
+  lottoChannel.send(response);
+}
+
+export async function checkLotto() {
+  console.log('[server] checking for end of lotto');
+  const lotto = await economyServices.getLotto();
+
+  const lottoChannel = client.channels.cache.get(
+    '842552370960400415'
+  ) as TextChannel;
+
+  // check if latest lotto is done
+  if (!lotto || lotto.done) {
+    createNewLotto(lottoChannel);
+    return;
+  }
+
+  // check if lotto should have ended
+  const today = new Date();
+
+  if (today.valueOf() > lotto.endDate.valueOf()) {
+    endLotto(lotto, lottoChannel);
+    return;
+  }
+
+  const difTime = Math.round((lotto.endDate.valueOf() - today.valueOf()) / 6e4);
+
+  if (difTime <= 5) {
+    const response = new MessageEmbed();
+    const hours = Math.floor(difTime / 60); // calculate hours remaining
+    const minutes = difTime % 60; // calculate minutes remaining
+
+    let timeString = 'Less than a minute';
+
+    if (hours > 0 && minutes > 0) {
+      timeString = `${hours} Hours and ${minutes} Minutes`;
+    } else if (hours > 0) {
+      timeString = `${hours} Hour${hours > 1 ? 's' : ''}`;
+    } else if (minutes > 0) {
+      timeString = `${minutes} Minute${minutes > 1 ? 's' : ''}`;
+    }
+
+    response
+      .setTitle(`\`Lotto ends in ${timeString}\``)
+      .setDescription([
+        `**ID:** ${lotto.id}`,
+        `**End Date:** ${lotto.endDate.toDateString()}`,
+        `**Entries:** ${lotto.guesses.length}`,
+      ])
+      .setAuthor(client.user?.username, client.user?.displayAvatarURL());
+
+    lottoChannel.send(response);
+  }
 }

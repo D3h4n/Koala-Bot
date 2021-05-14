@@ -13,13 +13,13 @@ class economyServices {
     return economyServices.instance;
   }
 
-  async createUser(id: string) {
-    const user = new userRecord({ id, balance: 0, nextDaily: new Date(0) });
+  async createUser(userId: string) {
+    const user = new userRecord({ userId, balance: 0, nextDaily: new Date(0) });
     return await user.save();
   }
 
-  async getUser(id: string) {
-    return (await userRecord.findOne({ id })) ?? this.createUser(id);
+  async getUser(userId: string) {
+    return (await userRecord.findOne({ userId })) ?? this.createUser(userId);
   }
 
   async getLotto(id?: string) {
@@ -54,8 +54,8 @@ class economyServices {
     lotto.guesses.push(guess.id);
     lotto.users.push(userId);
 
-    guess.save();
-    lotto.save();
+    guess.save().catch(console.error);
+    lotto.save().catch(console.error);
 
     return guess;
   }
