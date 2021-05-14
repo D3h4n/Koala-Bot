@@ -7,7 +7,10 @@ import { client } from '../../index';
 
 export default class lottoCommand extends Command {
   constructor() {
-    super('lotto', ['something']);
+    super('lotto', [
+      'Play the lotto to win BIG',
+      'Usage: $lotto <5 numbers between 1 and 30 inclusive>',
+    ]);
   }
 
   async action(message: Message, args: string[]) {
