@@ -15,7 +15,9 @@ const checkLotto = async () => {
   // check if latest lotto is done
   if (!lotto || lotto.done) {
     const endDate = new Date(
-      (Math.floor(new Date().valueOf() / 8.64e7) + config.lottoLength) * 8.64e7
+      (Math.floor(new Date().valueOf() / config.lottoLength) +
+        config.lottoLength) *
+        config.lottoLength
     );
 
     const newLotto = await economyServices.createLotto(endDate);

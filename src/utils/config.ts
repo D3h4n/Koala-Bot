@@ -19,6 +19,6 @@ export default {
   queueTimeLimit: 30000, // time limit of interactive queue
   timeoutMaxLimit: 600000, // limit for timeouts (10 minutes)
   maxRandomNumbers: 20, // limit of random numbers
-  lottoLength: 0.0208333, // number of days lotto lasts
+  lottoLength: 1.8e6, // number of ms each lotto lasts
   eventLoopTimeDelay: 6e5, // time delay of event loop in ms
 };
