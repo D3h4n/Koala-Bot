@@ -32,7 +32,7 @@ class economyServices {
   }
 
   async createLotto(endDate: Date) {
-    const lotto = new Lotto({ endDate, done: false, guesses: [] });
+    const lotto = new Lotto({ endDate, done: false, guesses: [], users: [] });
     return await lotto.save();
   }
 
@@ -52,6 +52,7 @@ class economyServices {
     const guess = new Guess({ lottoId, userId, guess: nums });
 
     lotto.guesses.push(guess.id);
+    lotto.users.push(userId);
 
     guess.save();
     lotto.save();

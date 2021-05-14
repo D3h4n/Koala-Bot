@@ -8,6 +8,7 @@ export interface IWinner {
 export interface ILotto {
   endDate: Date;
   guesses: string[];
+  users: string[];
   done: boolean;
   winners: IWinner[];
 }
@@ -19,6 +20,10 @@ const lottoSchema = new Schema(
       required: true,
     },
     guesses: {
+      type: [String],
+      required: true,
+    },
+    users: {
       type: [String],
       required: true,
     },

@@ -34,7 +34,7 @@ export default class lottoCommand extends Command {
           `**ID:** ${lotto.id}`,
           `**End Date:** ${lotto.endDate.toDateString()}`,
           `**Entries:** ${lotto.guesses.length}`,
-          `**Entered:** ${lotto.guesses.includes(message.author.id)}`,
+          `**Entered:** ${lotto.users.includes(message.author.id)}`,
           `**Ended:** ${lotto.done}`,
         ])
         .setAuthor(

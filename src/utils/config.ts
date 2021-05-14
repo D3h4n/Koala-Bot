@@ -20,5 +20,5 @@ export default {
   timeoutMaxLimit: 600000, // limit for timeouts (10 minutes)
   maxRandomNumbers: 20, // limit of random numbers
   lottoLength: 1, // number of days lotto lasts
-  eventLoopTimeDelay: 8.64e7, // time delay of event loop in ms
+  eventLoopTimeDelay: 1e4, // time delay of event loop in ms
 };
