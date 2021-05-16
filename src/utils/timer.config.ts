@@ -1,7 +1,7 @@
-import { checkLotto } from '../commands/economy/lotto.config';
+import lottoConfig from '../commands/economy/lotto.config';
 import config from './config';
 
-const events: Array<() => void> = [checkLotto];
+const events: Array<() => void> = [lottoConfig.checkLotto];
 
 function eventLoop() {
   console.log('[server] executing event loop');

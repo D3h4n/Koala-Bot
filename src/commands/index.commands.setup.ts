@@ -90,4 +90,4 @@ commands
   // search commands
   .set('youtube', new youtubeCommand());
 
-export default (() => commands)();
+export default commands;
