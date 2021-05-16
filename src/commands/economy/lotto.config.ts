@@ -107,7 +107,7 @@ export default class lottoCommand extends Command {
   }
 
   public static async checkLotto() {
-    if (!config.startLotto) {
+    if (!config.runLottos) {
       return;
     }
 
