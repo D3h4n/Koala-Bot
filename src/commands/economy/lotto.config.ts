@@ -154,7 +154,6 @@ export default class lottoCommand extends Command {
       response
         .setTitle(`\`Lotto ends in ${timeString}\``)
         .setDescription([
-          `**ID:** ${lotto.id}`,
           `**End Date:** ${lotto.endDate.toDateString()}`,
           `**Entries:** ${lotto.guesses.length}`,
         ])
@@ -276,17 +275,14 @@ export default class lottoCommand extends Command {
       Math.ceil(new Date().getTime() / config.lottoLength) * config.lottoLength
     );
 
-    const newLotto = await economyServices.createLotto(guildId, endDate);
+    await economyServices.createLotto(guildId, endDate);
 
     const response = new MessageEmbed();
 
     response
       .setTitle('New Lotto')
       .setAuthor(client.user?.username, client.user?.displayAvatarURL())
-      .setDescription([
-        `**ID:** ${newLotto.id}`,
-        `**End Date:** ${endDate.toDateString()}`,
-      ]);
+      .setDescription([`**End Date:** ${endDate.toDateString()}`]);
 
     lottoChannel.send(response);
   }
