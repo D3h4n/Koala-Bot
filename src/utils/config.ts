@@ -12,15 +12,15 @@ export default {
       : 'in maintenance', // bot status
   prefix: '$', // command prefix
   mainColor: 0x181818, // accent colour of embedded messages
-  msgTimeout: 10000, // time limit for message deletion
+  msgTimeout: 1e4, // time limit for message deletion
   helpPageLength: 5, // length of help pages
-  helpTimeLimit: 20000, // time limit of interactive help page
+  helpTimeLimit: 2e4, // time limit of interactive help page
   queuePageLength: 10, // number of songs per queue page
-  queueTimeLimit: 30000, // time limit of interactive queue
-  timeoutMaxLimit: 600000, // limit for timeouts (10 minutes)
+  queueTimeLimit: 3e4, // time limit of interactive queue
+  timeoutMaxLimit: 6e5, // limit for timeouts (10 minutes)
   maxRandomNumbers: 20, // limit of random numbers
-  eventLoopTimeDelay: 10e3, // time delay of event loop in ms
+  eventLoopTimeDelay: 1e4, // time delay of event loop in ms
   runLottos: false, // toggle lottos
-  lottoLength: 3.6e6, // number of ms each lotto lasts
+  lottoLength: 3e4, // number of ms each lotto lasts
   lottoChannelId: '842552370960400415',
 };

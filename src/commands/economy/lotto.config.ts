@@ -189,8 +189,11 @@ export default class lottoCommand extends Command {
     // check if there are any guesses
     if (!guesses || !guesses.length) {
       lottoChannel.send('`Nobody wanted to play` :sob::weary:');
+      lotto.done = true;
+      lotto.save();
       return;
     }
+
     const winners: Array<{ user: IUser; earnings: number }> = [];
 
     for (let entry of guesses) {
