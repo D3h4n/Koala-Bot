@@ -167,7 +167,7 @@ export default class lottoCommand extends Command {
   /**
    * Generate a list of 5 numbers
    */
-  static generateNumbers() {
+  private static generateNumbers() {
     const nums: number[] = [];
 
     for (let i = 0; i < 5; i++) {
@@ -177,7 +177,32 @@ export default class lottoCommand extends Command {
     return nums;
   }
 
-  static async endLotto(
+  private static calculateEarnings(nums: number[], guess: number[]) {
+    let correctNums = 0;
+    let earnings = 0;
+
+    // check if number in guess is a winning number
+    guess.forEach((num) => {
+      if (nums.includes(num)) {
+        correctNums++;
+      }
+    });
+
+    // add extra for more correctly guessed numbers
+    if (correctNums > 3) {
+      earnings += 5000;
+    }
+
+    if (correctNums === 5) {
+      earnings += 100000;
+    }
+
+    earnings += correctNums * 100;
+
+    return earnings;
+  }
+
+  private static async endLotto(
     lotto: ILotto & Document<any, any>,
     lottoChannel: TextChannel
   ) {
@@ -203,21 +228,7 @@ export default class lottoCommand extends Command {
         continue;
       }
 
-      let earnings = 0;
-
-      // check if number in guess is a winning number
-      entry.guess.forEach((num) => {
-        if (nums.includes(num)) {
-          earnings += 100;
-        }
-      });
-
-      // add extra for more correctly guessed numbers
-      if (earnings === 500) {
-        earnings += 100000;
-      } else if (earnings > 300) {
-        earnings += 5000;
-      }
+      const earnings = lottoCommand.calculateEarnings(nums, entry.guess);
 
       // update user with earnings
       user.balance += earnings;
@@ -236,7 +247,7 @@ export default class lottoCommand extends Command {
 
     response.setTitle('Lotto').setDescription([
       '**Winning Numbers:** ' + nums.map((num) => String(num)).join(' '),
-      '**Results:**',
+      '**__Results__**',
       ...winners
         .sort((a, b) => b.earnings - a.earnings)
         .map(({ user, earnings }, idx) => {
@@ -248,16 +259,19 @@ export default class lottoCommand extends Command {
             ({ id }) => id === user.discordId
           );
 
-          return `${idx + 1}. \`${
+          return `${idx + 1}. *${
             member?.displayName || user.username
-          }:\` $${earnings}`;
+          }:* $${earnings}`;
         }),
     ]);
 
     lottoChannel.send(response);
   }
 
-  static async createNewLotto(guildId: string, lottoChannel: TextChannel) {
+  private static async createNewLotto(
+    guildId: string,
+    lottoChannel: TextChannel
+  ) {
     const endDate = new Date(
       Math.ceil(new Date().getTime() / config.lottoLength) * config.lottoLength
     );
