@@ -19,8 +19,8 @@ export default {
   queueTimeLimit: 3e4, // time limit of interactive queue
   timeoutMaxLimit: 6e5, // limit for timeouts (10 minutes)
   maxRandomNumbers: 20, // limit of random numbers
-  eventLoopTimeDelay: 1e4, // time delay of event loop in ms
+  eventLoopTimeDelay: 1.8e6, // time delay of event loop in ms
   runLottos: false, // toggle lottos
-  lottoLength: 3e4, // number of ms each lotto lasts
+  lottoLength: 7.2e6, // number of ms each lotto lasts
   lottoChannelId: '842552370960400415',
 };
