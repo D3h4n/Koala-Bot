@@ -1,7 +1,10 @@
 import { Message } from 'discord.js';
+import commands from './commands/index.commands.setup';
+import config from './utils/config';
+import { client } from './index';
 
 // functions
-export const log = function logEveryCommand({
+const log = function logEveryCommand({
   content,
   author,
   guild,
@@ -14,7 +17,7 @@ export const log = function logEveryCommand({
   );
 };
 
-export const parseCommand = function (cmd: string) {
+const parseCommand = function (cmd: string) {
   let args: string[] = []; //args array
   let word = ''; // store each arg
 
@@ -50,3 +53,36 @@ export const parseCommand = function (cmd: string) {
 
   return args;
 };
+
+export default function handleMessage(message: Message) {
+  if (
+    // check for valid message
+    message.content.startsWith(config.prefix) &&
+    !message.author.bot &&
+    message.author !== client.user
+  ) {
+    // parse message
+    let args: string[] = [];
+
+    try {
+      args = parseCommand(message.content.slice(config.prefix.length).trim());
+    } catch (error) {
+      message.channel.send('`' + error + '`');
+      return;
+    }
+
+    let commandName = args[0].toLowerCase();
+
+    // check for the correct command and execute it
+    let command = commands.get(commandName);
+    if (command) {
+      command.action(message, args);
+      log(message);
+      return;
+    }
+
+    // send message if command isn't found
+    message.channel.send('`That command was not found`');
+    return;
+  }
+}

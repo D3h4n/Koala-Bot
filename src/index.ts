@@ -1,13 +1,11 @@
-import { Client } from 'discord.js';
+import { Client, TextChannel } from 'discord.js';
 import Distube from 'distube';
 import config from './utils/config';
 import initDistube from './utils/distube.config';
-
+import initMongoose from './utils/mongoose.config';
 import commands from './commands/index.commands.setup';
-import { log, parseCommand } from './helper.functions';
-import { initMongoose } from './utils/mongoose.config';
 import initEventLoop from './utils/timer.config';
-const { token, prefix, botStatus } = config; // config info for bot
+import handleMessage from './helper.functions';
 
 export const client = new Client(); // initialize client
 
@@ -18,47 +16,22 @@ client.once('ready', () => {
   client.user!.setPresence({
     status: 'online',
     activity: {
-      name: botStatus,
+      name: config.botStatus,
       type: 'PLAYING',
     },
   });
+
+  const channel = client.guilds
+    .resolve('310489953157120023')
+    ?.channels.resolve('310489953157120023') as TextChannel;
+
+  channel.send("Hello! I'm online now. 😊");
 
   initEventLoop();
 });
 
 // runs every time a message is sent in the server
-client.on('message', (message) => {
-  if (
-    // check for valid message
-    message.content.startsWith(prefix) &&
-    !message.author.bot &&
-    message.author !== client.user
-  ) {
-    // parse message
-    let args: string[] = [];
-
-    try {
-      args = parseCommand(message.content.slice(prefix.length).trim());
-    } catch (error) {
-      message.channel.send('`' + error + '`');
-      return;
-    }
-
-    let commandName = args[0].toLowerCase();
-
-    // check for the correct command and execute it
-    let command = commands.get(commandName);
-    if (command) {
-      command.action(message, args);
-      log(message);
-      return;
-    }
-
-    // send message if command isn't found
-    message.channel.send(`That command was not found`);
-    return;
-  }
-});
+client.on('message', handleMessage);
 
 export const distube = initDistube(
   new Distube(client, {
@@ -69,4 +42,4 @@ export const distube = initDistube(
 
 initMongoose();
 
-client.login(token);
+client.login(config.token);
