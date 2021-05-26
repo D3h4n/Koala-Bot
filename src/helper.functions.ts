@@ -73,6 +73,10 @@ export default function handleMessage(message: Message) {
 
     let commandName = args[0].toLowerCase();
 
+    if (Number(commandName)) {
+      return;
+    }
+
     // check for the correct command and execute it
     let command = commands.get(commandName);
     if (command) {
