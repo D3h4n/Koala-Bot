@@ -73,10 +73,6 @@ export default function handleMessage(message: Message) {
 
     let commandName = args[0].toLowerCase();
 
-    if (Number(commandName)) {
-      return;
-    }
-
     // check for the correct command and execute it
     let command = commands.get(commandName);
     if (command) {
@@ -84,9 +80,5 @@ export default function handleMessage(message: Message) {
       log(message);
       return;
     }
-
-    // send message if command isn't found
-    message.channel.send('`That command was not found`');
-    return;
   }
 }
