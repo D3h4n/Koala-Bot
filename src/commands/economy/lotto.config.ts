@@ -2,8 +2,8 @@ import Command from '../common.commands.config';
 import economyServices from './economy.services';
 import config from '../../utils/config';
 import { Message, MessageEmbed, TextChannel } from 'discord.js';
-import { ILotto } from 'src/models/lotto.model';
 import { Document } from 'mongoose';
+import { ILotto } from '../../models/lotto.model';
 import { client } from '../../index';
 import { IUser } from '../../models/user.model';
 
@@ -37,7 +37,6 @@ export default class lottoCommand extends Command {
       response
         .setTitle('Lotto')
         .setDescription([
-          `**ID:** ${lotto.id}`,
           `**End Date:** ${lotto.endDate.toDateString()}`,
           `**Entries:** ${lotto.guesses.length}`,
           `**Entered:** ${lotto.users.includes(user?.id)}`,
@@ -94,10 +93,7 @@ export default class lottoCommand extends Command {
             message.member?.displayName,
             message.author.displayAvatarURL()
           )
-          .setDescription([
-            `**Lotto ID:** ${lotto?.id}`,
-            `**Numbers:** ${args.slice(1, 6).join(' ')}`,
-          ]);
+          .setDescription([`**Numbers:** ${args.slice(1, 6).join(' ')}`]);
 
         message.channel.send(response);
       })
@@ -247,7 +243,7 @@ export default class lottoCommand extends Command {
     response.setTitle('Lotto').setDescription([
       '**Winning Numbers:** ' + nums.map((num) => String(num)).join(' '),
       '**__Results__**',
-      ...winners
+      winners
         .sort((a, b) => b.earnings - a.earnings)
         .map(({ user, earnings }, idx) => {
           const guild = client.guilds.cache.find(
@@ -282,7 +278,7 @@ export default class lottoCommand extends Command {
     response
       .setTitle('New Lotto')
       .setAuthor(client.user?.username, client.user?.displayAvatarURL())
-      .setDescription([`**End Date:** ${endDate.toDateString()}`]);
+      .setDescription(`**End Date:** ${endDate.toDateString()}`);
 
     lottoChannel.send(response);
   }

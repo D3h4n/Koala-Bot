@@ -14,7 +14,7 @@ export default class betCommand extends Command {
     const betAmount = Number(args[1]);
 
     if (Number.isNaN(betAmount) || betAmount < 1) {
-      channel.send(`\`$${betAmount}\` is not a valid amount`);
+      channel.send(`\`${args[1]}\` is not a valid amount`);
       return;
     }
 
@@ -35,7 +35,7 @@ export default class betCommand extends Command {
     const guess = Number(args[2]);
 
     if (Number.isNaN(guess) || guess < 1 || guess > 5) {
-      channel.send(`\`$${guess}\` is not a valid amount`);
+      channel.send(`\`${args[2]}\` is not a valid amount`);
       return;
     }
 
