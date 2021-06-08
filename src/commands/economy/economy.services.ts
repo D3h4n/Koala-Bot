@@ -1,6 +1,7 @@
 import userRecord from '../../models/user.model';
 import Lotto from '../../models/lotto.model';
 import Guess from '../../models/lotto-guess.model';
+import { isValidObjectId } from 'mongoose';
 
 class economyServices {
   static instance: economyServices;
@@ -32,7 +33,7 @@ class economyServices {
   }
 
   async getLotto(id?: string) {
-    if (id) {
+    if (id && isValidObjectId(id)) {
       const lotto = await Lotto.findById(id);
       return lotto;
     }

@@ -177,22 +177,27 @@ export default class lottoCommand extends Command {
     let earnings = 0;
 
     // check if number in guess is a winning number
-    guess.forEach((num) => {
-      if (nums.includes(num)) {
+    guess.forEach((num, idx) => {
+      if (num === nums[idx]) {
         correctNums++;
       }
     });
 
     // add extra for more correctly guessed numbers
-    if (correctNums > 3) {
-      earnings += 5000;
-    }
-
     if (correctNums === 5) {
-      earnings += 100000;
-    }
+      earnings = 100000;
+    } else if (correctNums > 3) {
+      earnings = 5000;
+    } else {
+      const found = new Map<number, null>();
 
-    earnings += correctNums * 100;
+      guess.forEach((num) => {
+        if (!found.has(num) && nums.includes(num)) {
+          earnings += 100;
+          found.set(num, null);
+        }
+      });
+    }
 
     return earnings;
   }
@@ -243,7 +248,7 @@ export default class lottoCommand extends Command {
     response.setTitle('Lotto').setDescription([
       '**Winning Numbers:** ' + nums.map((num) => String(num)).join(' '),
       '**__Results__**',
-      winners
+      ...winners
         .sort((a, b) => b.earnings - a.earnings)
         .map(({ user, earnings }, idx) => {
           const guild = client.guilds.cache.find(
@@ -261,6 +266,7 @@ export default class lottoCommand extends Command {
     ]);
 
     lottoChannel.send(response);
+    lottoCommand.createNewLotto(lotto.guildId, lottoChannel);
   }
 
   private static async createNewLotto(
