@@ -34,7 +34,6 @@ export default class calculateCommand extends Command {
     let operation = '\0'; // string to store operation
 
     // format expression
-    expression = expression.replace(' ', '');
     expression = expression.toLowerCase();
 
     // assume blank expression has a value of 0
@@ -49,6 +48,8 @@ export default class calculateCommand extends Command {
     // Calculate value of subexpressions in parentheses / functions
     try {
       expression = this.calculateFunction(expression, 'sqrt', Math.sqrt);
+
+      expression = this.calculateFunction(expression, 'fact', this.factorial);
 
       expression = this.calculateFunction(expression, 'log', Math.log10);
       expression = this.calculateFunction(expression, 'ln', Math.log);
@@ -117,6 +118,18 @@ export default class calculateCommand extends Command {
     }
 
     return Number.MAX_VALUE;
+  }
+
+  factorial(x: number): number {
+    let res = 1;
+
+    x = Math.round(x);
+
+    for (; x > 1; x--) {
+      res *= x;
+    }
+
+    return x;
   }
 
   /**
