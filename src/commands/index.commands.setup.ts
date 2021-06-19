@@ -58,7 +58,7 @@ commands
   .set('hello', new helloCommand())
   .set('insult', new insultCommand())
 
-  // economy
+  // economy commands
   .set('balance', new balanceCommand())
   .set('bet', new betCommand())
   .set('daily', new dailyCommand())
