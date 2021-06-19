@@ -129,7 +129,7 @@ export default class calculateCommand extends Command {
       res *= x;
     }
 
-    return x;
+    return res;
   }
 
   /**
