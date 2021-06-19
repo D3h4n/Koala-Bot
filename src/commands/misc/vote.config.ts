@@ -11,6 +11,9 @@ export default class voteCommand extends Command {
   }
 
   async action(message: Message, args: string[]) {
+    const yesEmote = '✔';
+    const noEmote = '❌';
+
     args.shift(); // remove first element
 
     const timeLimit = Number(args.shift()) * 60000; // time limit in milliseconds
@@ -57,8 +60,8 @@ export default class voteCommand extends Command {
     );
 
     // add reactions
-    const yesReaction = await sentMessage.react('✔');
-    const noReaction = await sentMessage.react('❌');
+    const yesReaction = await sentMessage.react(yesEmote);
+    const noReaction = await sentMessage.react(noEmote);
 
     // initialize counts and userMap
     let yesCount = 0;
@@ -66,7 +69,9 @@ export default class voteCommand extends Command {
 
     // filter for reaction collections
     const filter = (reaction: MessageReaction, user: User) =>
-      ['✔', '❌'].includes(reaction.emoji.name) && !reaction.me && !user.bot;
+      [yesEmote, noEmote].includes(reaction.emoji.name) &&
+      !reaction.me &&
+      !user.bot;
 
     // create reaction collector
     const collector = sentMessage.createReactionCollector(filter, {
@@ -76,7 +81,7 @@ export default class voteCommand extends Command {
 
     collector
       .on('collect', (reaction: MessageReaction, { id }: User) => {
-        const result = reaction.emoji.name === '✔';
+        const result = reaction.emoji.name === yesEmote;
 
         // remove user from opposite reaction if they reacted before
         const reactionUsers = (result ? noReaction : yesReaction).users;
@@ -90,7 +95,7 @@ export default class voteCommand extends Command {
         noCount += Number(!result);
       })
       .on('remove', (reaction: MessageReaction) => {
-        const result = reaction.emoji.name === '✔';
+        const result = reaction.emoji.name === yesEmote;
 
         // update counts
         yesCount = Math.max(0, yesCount - Number(result));

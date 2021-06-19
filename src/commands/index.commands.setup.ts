@@ -9,10 +9,19 @@ import helloCommand from './chat/hello.config';
 import insultCommand from './chat/insult.config';
 import echoCommand from './chat/echo.config';
 
+// economy
+import balanceCommand from './economy/balance.config';
+import betCommand from './economy/bet.config';
+import dailyCommand from './economy/daily.config';
+import giftCommand from './economy/gift.config';
+import lottoCommand from './economy/lotto.config';
+import toggleLottosCommand from './economy/toggleLottos.config';
+
 // misc
 import coinFlipCommand from './misc/coinFlip.config';
 import helpCommand from './misc/help.config';
 import rngCommand from './misc/rng.config';
+import calculateCommand from './misc/calculate.config';
 import chooseCommand from './misc/choose.config';
 import teamsCommand from './misc/teams.config';
 import voteCommand from './misc/vote.config';
@@ -49,10 +58,19 @@ commands
   .set('hello', new helloCommand())
   .set('insult', new insultCommand())
 
+  // economy
+  .set('balance', new balanceCommand())
+  .set('bet', new betCommand())
+  .set('daily', new dailyCommand())
+  .set('gift', new giftCommand())
+  .set('lotto', new lottoCommand())
+  .set('togglelottos', new toggleLottosCommand())
+
   // misc commands
   .set('coinflip', new coinFlipCommand())
   .set('help', new helpCommand())
   .set('rng', new rngCommand())
+  .set('calculate', new calculateCommand())
   .set('choose', new chooseCommand())
   .set('teams', new teamsCommand())
   .set('vote', new voteCommand())
@@ -76,4 +94,4 @@ commands
   // search commands
   .set('youtube', new youtubeCommand());
 
-export default (() => commands)();
+export default commands;
