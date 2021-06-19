@@ -149,7 +149,7 @@ export default class calculateCommand extends Command {
     for (; parenthesesCount != 0; endIdx++) {
       // exit program if invalid number of parentheses
       if (endIdx == length) {
-        throw new Error('Invalid number of parentheses');
+        throw 'Invalid number of parentheses';
       }
 
       if (expression.charAt(endIdx) == '(') {
