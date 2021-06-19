@@ -1,4 +1,5 @@
-import { Client, TextChannel } from 'discord.js';
+import { Client } from 'discord.js';
+// import { Client, TextChannel } from 'discord.js';
 import Distube from 'distube';
 import config from './utils/config';
 import initDistube from './utils/distube.config';
@@ -21,11 +22,11 @@ client.once('ready', () => {
     },
   });
 
-  const channel = client.guilds
-    .resolve('310489953157120023')
-    ?.channels.resolve('310489953157120023') as TextChannel;
+  // const channel = client.guilds
+  //   .resolve('310489953157120023')
+  //   ?.channels.resolve('310489953157120023') as TextChannel;
 
-  channel.send("Hello! I'm online now. 😊");
+  // channel.send("Hello! I'm online now. 😊");
 
   initEventLoop();
 });

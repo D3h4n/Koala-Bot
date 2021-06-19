@@ -21,6 +21,7 @@ import toggleLottosCommand from './economy/toggleLottos.config';
 import coinFlipCommand from './misc/coinFlip.config';
 import helpCommand from './misc/help.config';
 import rngCommand from './misc/rng.config';
+import calculateCommand from './misc/calculate.config';
 import chooseCommand from './misc/choose.config';
 import teamsCommand from './misc/teams.config';
 import voteCommand from './misc/vote.config';
@@ -69,6 +70,7 @@ commands
   .set('coinflip', new coinFlipCommand())
   .set('help', new helpCommand())
   .set('rng', new rngCommand())
+  .set('calculate', new calculateCommand())
   .set('choose', new chooseCommand())
   .set('teams', new teamsCommand())
   .set('vote', new voteCommand())
