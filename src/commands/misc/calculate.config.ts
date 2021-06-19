@@ -15,9 +15,9 @@ export default class calculateCommand extends Command {
     let input = args.slice(1).join('');
 
     try {
-      let result = this.calculateExpression(input); // calculate value of expression
+      let result: number | string = this.calculateExpression(input); // calculate value of expression
 
-      message.channel.send(`\`Result: ${result}\``); // output value
+      message.channel.send(`\`Result: ${result}\``); // output result
     } catch (error) {
       message.channel.send(error);
     }
@@ -30,25 +30,17 @@ export default class calculateCommand extends Command {
    * @return value of the expression
    */
   calculateExpression(expression: string): number {
-    let operations = ['+', '-', '*', '/', '^']; // possible operatations in order of precedence
+    let operations = ['E+', 'E-', '+', '-', '*', '/', '^']; // possible operatations in order of precedence
     let operation = '\0'; // string to store operation
-
-    // format expression
-    expression = expression.toLowerCase();
 
     // assume blank expression has a value of 0
     if (!expression.length) {
       return 0;
     }
 
-    // replace constants
-    expression = expression.replace('pi', Math.PI.toString());
-    expression = expression.replace('e', Math.E.toString());
-
     // Calculate value of subexpressions in parentheses / functions
     try {
       expression = this.calculateFunction(expression, 'sqrt', Math.sqrt);
-
       expression = this.calculateFunction(expression, 'fact', this.factorial);
 
       expression = this.calculateFunction(expression, 'log', Math.log10);
@@ -78,6 +70,10 @@ export default class calculateCommand extends Command {
 
     // if no operand is found return value of expression
     if (operation == '\0') {
+      // replace constants
+      expression = expression.replace('pi', Math.PI.toString());
+      expression = expression.replace('e', Math.E.toString());
+
       return Number.parseFloat(expression);
     }
 
@@ -86,6 +82,18 @@ export default class calculateCommand extends Command {
 
     // perform operation on operands and return result
     switch (operation) {
+      case 'E+':
+        return (
+          this.calculateExpression(operands[0]) *
+          Math.pow(10, this.calculateExpression(operands[1]))
+        );
+
+      case 'E-':
+        return (
+          this.calculateExpression(operands[0]) *
+          Math.pow(10, -this.calculateExpression(operands[1]))
+        );
+
       case '-':
         return (
           this.calculateExpression(operands[0]) -
@@ -166,12 +174,12 @@ export default class calculateCommand extends Command {
         endIdx - 1
       );
 
-      let value = this.calculateExpression(subexpression);
+      let value = func(this.calculateExpression(subexpression));
 
       // replace subexpression with value
       expression =
         expression.substring(0, startIdx) +
-        func(value) +
+        value.toString().replace('e', 'E') +
         expression.substring(endIdx);
 
       // find next subexpression
@@ -265,7 +273,7 @@ export default class calculateCommand extends Command {
     result[0] = expression.substring(0, position);
 
     // split second half
-    result[1] = expression.substring(position + 1);
+    result[1] = expression.substring(position + operation.length);
 
     return result;
   }
