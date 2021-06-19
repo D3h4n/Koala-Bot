@@ -17,6 +17,15 @@ export default class playSkipCommand extends Command {
 
     distube
       .playSkip(message, query)
+      .then(() => {
+        let repeatMode = distube.setRepeatMode(message);
+
+        if (repeatMode === 0) {
+          distube.setRepeatMode(message, 2);
+        } else {
+          distube.setRepeatMode(message, 0);
+        }
+      })
       .catch(() => message.channel.send('`Could not find that song`'));
   }
 }

@@ -17,3 +17,5 @@ commands to practice problem solving with limited tools.
 - create system for command aliases
   - [ ] create a map of aliases to commands
   - [ ] edit command search to check for aliases if command is not found
+- misc
+  - [x] stop repeats when a song is skipped
