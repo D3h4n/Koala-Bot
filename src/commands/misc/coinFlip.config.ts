@@ -4,7 +4,7 @@ import config from '../../utils/config';
 
 export default class coinFlipCommand extends Command {
   constructor() {
-    super('coinflip', [
+    super('Coin Flip', 'coinflip', [
       'Flip one or more coins',
       'Usage:',
       '$coinflip',

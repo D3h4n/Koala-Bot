@@ -3,10 +3,12 @@ import Command from '../common.commands.config';
 
 export default class calculateCommand extends Command {
   constructor() {
-    super('calculate', [
-      'Calculate a mathematical expression',
-      'Usage: $calculate <expression>',
-    ]);
+    super(
+      'Calculate',
+      'calculate',
+      ['Calculate a mathematical expression', 'Usage: $calculate <expression>'],
+      ['calc']
+    );
   }
 
   action(message: Message, args: string[]) {
@@ -31,13 +33,35 @@ export default class calculateCommand extends Command {
     let operations = ['+', '-', '*', '/', '^']; // possible operatations in order of precedence
     let operation = '\0'; // string to store operation
 
+    // format expression
+    expression = expression.replace(' ', '');
+    expression = expression.toLowerCase();
+
     // assume blank expression has a value of 0
-    if (!expression) {
+    if (!expression.length) {
       return 0;
     }
 
-    // Calculate value of subexpressions in parentheses
+    // replace constants
+    expression = expression.replace('pi', Math.PI.toString());
+    expression = expression.replace('e', Math.E.toString());
+
+    // Calculate value of subexpressions in parentheses / functions
     try {
+      expression = this.calculateFunction(expression, 'sqrt', Math.sqrt);
+
+      expression = this.calculateFunction(expression, 'log', Math.log10);
+      expression = this.calculateFunction(expression, 'ln', Math.log);
+
+      expression = this.calculateFunction(expression, 'arcsin', Math.asin);
+      expression = this.calculateFunction(expression, 'sin', Math.sin);
+
+      expression = this.calculateFunction(expression, 'arccos', Math.acos);
+      expression = this.calculateFunction(expression, 'cos', Math.cos);
+
+      expression = this.calculateFunction(expression, 'arctan', Math.atan);
+      expression = this.calculateFunction(expression, 'tan', Math.tan);
+
       expression = this.calculateSubexpressions(expression);
     } catch (error) {
       throw error;
@@ -96,6 +120,55 @@ export default class calculateCommand extends Command {
   }
 
   /**
+   * Replace function with their respective values
+   *
+   * @param expression - mathematical expression
+   * @param funcName - name of function
+   * @param func - method
+   * @returns - resultant expression
+   */
+
+  calculateFunction(
+    expression: string,
+    funcName: string,
+    func: (number) => number
+  ) {
+    let startIdx = expression.indexOf(funcName);
+
+    while (startIdx != -1) {
+      // find related close parenthesis
+      let endIdx: number;
+
+      try {
+        endIdx = this.findCloseParenthesis(
+          expression,
+          startIdx + funcName.length
+        );
+      } catch (error) {
+        throw error;
+      }
+
+      let subexpression = expression.substring(
+        startIdx + funcName.length + 1,
+        endIdx - 1
+      );
+
+      let value = this.calculateExpression(subexpression);
+
+      // replace subexpression with value
+      expression =
+        expression.substring(0, startIdx) +
+        func(value) +
+        expression.substring(endIdx);
+
+      // find next subexpression
+      startIdx = expression.indexOf(funcName);
+    }
+
+    return expression;
+  }
+
+  /**
    * Replace Subexpression in parentheses with their value
    *
    * @param expression
@@ -149,7 +222,7 @@ export default class calculateCommand extends Command {
     for (; parenthesesCount != 0; endIdx++) {
       // exit program if invalid number of parentheses
       if (endIdx == length) {
-        throw 'Invalid number of parentheses';
+        throw '`Invalid number of parentheses`';
       }
 
       if (expression.charAt(endIdx) == '(') {

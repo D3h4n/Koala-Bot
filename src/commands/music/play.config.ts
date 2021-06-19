@@ -4,13 +4,18 @@ import { distube } from '../../index';
 
 export default class playCommand extends Command {
   constructor() {
-    super('play', [
-      'Add a song to the queue',
-      'Usage: $play <song>',
-      'OR',
-      'Resume a song',
-      'Usage: $play',
-    ]);
+    super(
+      'Play',
+      'play',
+      [
+        'Add a song to the queue',
+        'Usage: $play <song>',
+        'OR',
+        'Resume a song',
+        'Usage: $play',
+      ],
+      ['p']
+    );
   }
 
   async action(message: Message, args: string[]) {

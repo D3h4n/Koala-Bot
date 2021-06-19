@@ -7,7 +7,7 @@ export default class dailyCommand extends Command {
   randomRange: number;
 
   constructor() {
-    super('daily', ['earn daily currency', 'Usage: $daily']);
+    super('Daily', 'daily', ['earn daily currency', 'Usage: $daily']);
 
     this.avgGain = 100;
     this.randomRange = 20;

@@ -4,7 +4,12 @@ import Command from '../common.commands.config';
 
 export default class balanceCommand extends Command {
   constructor() {
-    super('balance', ['check your balance', 'usage: $balance']);
+    super(
+      'Balance',
+      'balance',
+      ['check your balance', 'usage: $balance'],
+      ['bal']
+    );
   }
 
   async action({ author, member, channel }: Message) {

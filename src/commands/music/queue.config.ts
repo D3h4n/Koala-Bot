@@ -7,7 +7,7 @@ import { client, distube } from '../../index';
 
 export default class queueCommand extends Command {
   constructor() {
-    super('queue', [`Get's the song queue`, 'Usage: $queue']);
+    super('Queue', 'queue', [`Get's the song queue`, 'Usage: $queue'], ['q']);
   }
 
   async action(message: Message, args: string[]) {

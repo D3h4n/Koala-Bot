@@ -6,7 +6,12 @@ export default class loopCommand extends Command {
   isLooping: boolean;
 
   constructor() {
-    super('loop', ['Loop the entire queue or stop looping', 'Usage: $loop']);
+    super(
+      'Loop',
+      'loop',
+      ['Loop the entire queue or stop looping', 'Usage: $loop'],
+      ['lp']
+    );
 
     this.isLooping = false;
   }

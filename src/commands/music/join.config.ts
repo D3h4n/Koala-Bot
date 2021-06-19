@@ -3,7 +3,7 @@ import { Message } from 'discord.js';
 
 export default class joinCommand extends Command {
   constructor() {
-    super('join', ['Add bot to voice channel', 'Usage: $join']);
+    super('Join', 'join', ['Add bot to voice channel', 'Usage: $join'], ['j']);
   }
 
   action(message: Message) {

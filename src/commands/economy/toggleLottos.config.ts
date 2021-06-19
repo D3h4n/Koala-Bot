@@ -4,7 +4,10 @@ import { Message } from 'discord.js';
 
 export default class toggleLottosCommand extends Command {
   constructor() {
-    super('togglelottos', ['Turn lottos on and off', 'Usage: $togglelottos']);
+    super('Toggle Lottos', 'togglelottos', [
+      'Turn lottos on and off',
+      'Usage: $togglelottos',
+    ]);
   }
 
   action(message: Message) {

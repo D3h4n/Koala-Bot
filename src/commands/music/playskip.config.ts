@@ -4,7 +4,12 @@ import { distube } from '../../index';
 
 export default class playSkipCommand extends Command {
   constructor() {
-    super('playskip', ['Immediately play a song', '$playskip <song>']);
+    super(
+      'Play Skip',
+      'playskip',
+      ['Immediately play a song', '$playskip <song>'],
+      ['ps']
+    );
   }
 
   async action(message: Message, args: string[]) {

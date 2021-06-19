@@ -5,7 +5,12 @@ import { google } from 'googleapis';
 
 export default class youtubeCommand extends Command {
   constructor() {
-    super('youtube', ['Search youtube', 'Usage: $youtube <query>']);
+    super(
+      'Youtube',
+      'youtube',
+      ['Search youtube', 'Usage: $youtube <query>'],
+      ['yt']
+    );
   }
 
   action(message: Message, args: string[]) {

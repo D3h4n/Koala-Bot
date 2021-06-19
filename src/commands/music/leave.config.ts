@@ -4,7 +4,7 @@ import { client } from '../../index';
 
 export default class leaveCommand extends Command {
   constructor() {
-    super('leave', ['Leave voice channel', 'Usage: $leave']);
+    super('Leave', 'leave', ['Leave voice channel', 'Usage: $leave']);
   }
 
   action(message: Message) {

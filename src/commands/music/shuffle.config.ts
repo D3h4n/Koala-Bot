@@ -4,7 +4,12 @@ import { distube } from '../../index';
 
 export default class shuffleCommand extends Command {
   constructor() {
-    super('shuffle', ['shuffle the queue', 'Usage: $shuffle']);
+    super(
+      'Shuffle',
+      'shuffle',
+      ['shuffle the queue', 'Usage: $shuffle'],
+      ['shf']
+    );
   }
 
   action(message: Message) {

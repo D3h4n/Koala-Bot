@@ -3,7 +3,12 @@ import Command from '../common.commands.config';
 
 export default class chooseCommand extends Command {
   constructor() {
-    super('choose', ['Usage:', '$choose <option 1> <option2> ... <option n>']);
+    super(
+      'Choose',
+      'choose',
+      ['Usage:', '$choose <option 1> <option2> ... <option n>'],
+      ['ch']
+    );
   }
 
   action(message: Message, args: string[]) {

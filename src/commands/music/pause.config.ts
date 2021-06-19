@@ -4,7 +4,7 @@ import { Message } from 'discord.js';
 
 export default class pauseCommand extends Command {
   constructor() {
-    super('pause', ['Pause song', 'Usage: $pause']);
+    super('Pause', 'pause', ['Pause song', 'Usage: $pause'], ['pa']);
   }
 
   action(message: Message) {

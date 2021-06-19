@@ -5,7 +5,7 @@ export default class insultCommand extends Command {
   insults: Array<string>;
 
   constructor() {
-    super('insult', [
+    super('Insult', 'insult', [
       'Insult someone or yourself',
       'Usage: $insult or $insult @friend',
     ]);

@@ -1,7 +1,7 @@
 import { Message, MessageEmbed, MessageReaction, User } from 'discord.js';
 import config from '../../utils/config';
 import Command from '../common.commands.config';
-import commands from '../index.commands.setup';
+import commands, { commandAliases } from '../index.commands.setup';
 
 export default class helpCommand extends Command {
   commandList: string[];
@@ -9,10 +9,12 @@ export default class helpCommand extends Command {
   numPages: number;
 
   constructor() {
-    super('help', [
-      'Get information about a command',
-      'Usage: $help or $help <command>',
-    ]);
+    super(
+      'Help',
+      'help',
+      ['Get information about a command', 'Usage: $help or $help <command>'],
+      ['hp']
+    );
     this.commandList = [];
     this.pageLength = config.helpPageLength;
   }
@@ -26,8 +28,10 @@ export default class helpCommand extends Command {
       // push each command to the command list
       commands.forEach((command) => {
         this.commandList.push(
-          `**${command.commandName}**\n` +
-            command.help.reduce((res, msg) => res + '\n' + msg) +
+          `**${command.commandTitle}**\n` +
+            command.help.join('\n') +
+            (command.aliases?.length &&
+              '\nAliases: ' + command.aliases?.join(', ')) +
             '\n'
         );
       });
@@ -87,13 +91,20 @@ export default class helpCommand extends Command {
 
     // args[1] was not a number
     // check if it was a command
-    if (commands.has(args[1])) {
+    let query = args[1].toLowerCase();
+
+    if (commands.has(query) || commandAliases.has(query)) {
+      console.log(query);
+      let command = commands.get(commandAliases.get(query) ?? query);
+
       // create a message embed with the help message of the command
       let helpMsg = new MessageEmbed({
-        title: args[1],
-        description: commands
-          .get(args[1])!
-          .help.reduce((res, msg) => res + '\n' + msg),
+        title: command!.commandTitle,
+        description:
+          command!.help.join('\n') +
+          (command!.aliases?.length &&
+            '\nAliases: ' + command!.aliases?.join(', ')) +
+          '\n',
       });
 
       // send message and return

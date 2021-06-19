@@ -9,7 +9,7 @@ import { IUser } from '../../models/user.model';
 
 export default class lottoCommand extends Command {
   constructor() {
-    super('lotto', [
+    super('Lotto', 'lotto', [
       'Play the lotto to win BIG',
       'Usage: $lotto <5 numbers between 1 and 30 inclusive>',
     ]);

@@ -4,7 +4,7 @@ import Command from '../common.commands.config';
 
 export default class rngCommand extends Command {
   constructor() {
-    super('rng', [
+    super('RNG', 'rng', [
       'Generate a random number',
       'Usage:',
       '$rng',

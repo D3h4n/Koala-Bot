@@ -4,7 +4,12 @@ import { distube } from '../../index';
 
 export default class volumeCommand extends Command {
   constructor() {
-    super('volume', ['Set the volume of the bot', 'Usage: $volume <percent>']);
+    super(
+      'Volume',
+      'volume',
+      ['Set the volume of the bot', 'Usage: $volume <percent>'],
+      ['vol']
+    );
   }
 
   action(message: Message, args: string[]) {

@@ -3,7 +3,10 @@ import Command from '../common.commands.config';
 
 export default class echoCommand extends Command {
   constructor() {
-    super('echo', ['I repeat whatever you want', 'Usage: $echo <text>']);
+    super('Echo', 'echo', [
+      'I repeat whatever you want',
+      'Usage: $echo <text>',
+    ]);
   }
 
   action(message: Message, args: string[]) {

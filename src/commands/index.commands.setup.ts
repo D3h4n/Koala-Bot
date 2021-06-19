@@ -95,3 +95,13 @@ commands
   .set('youtube', new youtubeCommand());
 
 export default commands;
+
+const commandAliasesMap = new Map<string, string>();
+
+commands.forEach((command) => {
+  command.aliases?.forEach((alias) => {
+    commandAliasesMap.set(alias, command.commandName);
+  });
+});
+
+export const commandAliases = (() => commandAliasesMap)();

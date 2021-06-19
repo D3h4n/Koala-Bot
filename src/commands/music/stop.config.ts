@@ -4,7 +4,7 @@ import { distube } from '../../index';
 
 export default class stopCommand extends Command {
   constructor() {
-    super('stop', ['Stop the queue', 'Usage: $stop']);
+    super('Stop', 'stop', ['Stop the queue', 'Usage: $stop']);
   }
 
   action(message: Message) {

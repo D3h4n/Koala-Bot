@@ -4,7 +4,7 @@ import Command from '../common.commands.config';
 
 export default class voteCommand extends Command {
   constructor() {
-    super('vote', [
+    super('Vote', 'vote', [
       'Put something up for vote',
       'Usage: $vote <timelimit [minutes]> <query>',
     ]);

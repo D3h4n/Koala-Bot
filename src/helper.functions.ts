@@ -1,4 +1,4 @@
-import commands from './commands/index.commands.setup';
+import commands, { commandAliases } from './commands/index.commands.setup';
 import config from './utils/config';
 import { Message } from 'discord.js';
 import { client } from './index';
@@ -23,7 +23,7 @@ const parseCommand = function (input: string) {
 
   // check if quotations are completed
   if ((input.match(/"/g)?.length ?? 0) % 2 !== 0) {
-    throw new Error('Incomplete quotes');
+    throw new Error('`Incomplete quotes`');
   }
 
   // add space to the end of the command
@@ -64,14 +64,16 @@ export default function handleMessage(message: Message) {
     try {
       args = parseCommand(message.content.slice(config.prefix.length).trim());
     } catch (error) {
-      message.channel.send('`' + error + '`');
+      message.channel.send(error);
       return;
     }
 
     let commandName = args[0].toLowerCase();
 
     // check for the correct command and execute it
-    commands.get(commandName)?.action(message, args);
+    commands
+      .get(commandAliases.get(commandName) ?? commandName)
+      ?.action(message, args);
 
     log(message);
   }

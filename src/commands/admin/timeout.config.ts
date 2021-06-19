@@ -4,7 +4,7 @@ import config from '../../utils/config';
 
 export default class timeoutCommand extends Command {
   constructor() {
-    super('timeout', [
+    super('Timeout', 'timeout', [
       'Put a user in timeout',
       'Usage: $timeout @<user> <minutes>',
       `Max timeout ${config.timeoutMaxLimit / 60000} minutes`,

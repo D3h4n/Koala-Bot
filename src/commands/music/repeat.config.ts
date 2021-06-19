@@ -6,7 +6,7 @@ export default class repeatCommand extends Command {
   isRepeating: boolean;
 
   constructor() {
-    super('repeat', [
+    super('Repeat', 'repeat', [
       'Repeat the currently playing song or stop repeating',
       'Usage: $repeat',
     ]);

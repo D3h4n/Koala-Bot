@@ -4,7 +4,10 @@ import Command from '../common.commands.config';
 
 export default class giftCommand extends Command {
   constructor() {
-    super('gift', ['Gift someone currency', 'Usage: $gift <@user> <amount>']);
+    super('Gift', 'gift', [
+      'Gift someone currency',
+      'Usage: $gift <@user> <amount>',
+    ]);
   }
 
   async action(message: Message, args: string[]) {

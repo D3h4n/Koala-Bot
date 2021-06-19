@@ -6,10 +6,12 @@ import SearchResult from 'distube/typings/SearchResult';
 
 export default class PlayTopCommand extends Command {
   constructor() {
-    super('playtop', [
-      'Add song to the top of the queue',
-      'Usage: $playtop <song>',
-    ]);
+    super(
+      'Play Top',
+      'playtop',
+      ['Add song to the top of the queue', 'Usage: $playtop <song>'],
+      ['pt']
+    );
   }
 
   async action(message: Message, args: string[]) {

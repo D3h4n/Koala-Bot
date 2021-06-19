@@ -5,7 +5,10 @@ export default class helloCommand extends Command {
   greetings: string[];
 
   constructor() {
-    super('hello', ['Greet someone', 'Usage: $hello or $hello @friend']);
+    super('Hello', 'hello', [
+      'Greet someone',
+      'Usage: $hello or $hello @friend',
+    ]);
 
     this.greetings = [
       'Hi',
@@ -21,9 +24,8 @@ export default class helloCommand extends Command {
 
   action(message: Message, _: string[]) {
     // get a random greeting from greetings array
-    let greeting = this.greetings[
-      Math.floor(Math.random() * this.greetings.length)
-    ];
+    let greeting =
+      this.greetings[Math.floor(Math.random() * this.greetings.length)];
 
     // greet user that called command
     message.channel.send(`${greeting} ${message.author.toString()}`);

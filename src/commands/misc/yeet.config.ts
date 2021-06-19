@@ -3,7 +3,7 @@ import Command from '../common.commands.config';
 
 export default class yeetCommand extends Command {
   constructor() {
-    super('yeet', [
+    super('Yeet', 'yeet', [
       'Move a bunch of people between voice channels',
       'NB:// You have to be in the voice channel',
       'Usage: $yeet <new voice channel>',

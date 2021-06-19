@@ -4,7 +4,7 @@ import economyServices from './economy.services';
 
 export default class betCommand extends Command {
   constructor() {
-    super('bet', [
+    super('Bet', 'bet', [
       'Guess a number between 1 and 5 to win money',
       'Usage: $bet <amount> <guess>',
     ]);

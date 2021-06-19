@@ -4,7 +4,7 @@ import { distube } from '../../index';
 
 export default class skipCommand extends Command {
   constructor() {
-    super('skip', ['Skip the current song', 'Usage: $skip']);
+    super('Skip', 'skip', ['Skip the current song', 'Usage: $skip'], ['fs']);
   }
 
   action(message: Message) {
