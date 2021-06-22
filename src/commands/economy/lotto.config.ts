@@ -38,6 +38,7 @@ export default class lottoCommand extends Command {
         .setTitle('Lotto')
         .setDescription([
           `**End Date:** ${lotto.endDate.toDateString()}`,
+          `**End Time:** ${lotto.endDate.getHours()}:${lotto.endDate.getMinutes()}`,
           `**Entries:** ${lotto.guesses.length}`,
           `**Entered:** ${lotto.users.includes(user?.id)}`,
           `**Ended:** ${lotto.done}`,
@@ -143,6 +144,7 @@ export default class lottoCommand extends Command {
         .setTitle(`\`Lotto ends in ${timeString}\``)
         .setDescription([
           `**End Date:** ${lotto.endDate.toDateString()}`,
+          `**End Time:** ${lotto.endDate.getHours()}:${lotto.endDate.getMinutes()}`,
           `**Entries:** ${lotto.guesses.length}`,
         ])
         .setAuthor(client.user?.username, client.user?.displayAvatarURL());
@@ -208,8 +210,10 @@ export default class lottoCommand extends Command {
 
     // check if there are any guesses
     if (!guesses || !guesses.length) {
-      lottoChannel.send('`Nobody wanted to play` :sob::weary:');
-      lotto.done = true;
+      lotto.endDate = lottoCommand.generateEndDate();
+      lottoChannel.send(
+        `\`Extending lotto time to ${lotto.endDate.toDateString()} ${lotto.endDate.getHours()}:${lotto.endDate.getMinutes()}\``
+      );
       lotto.save();
       return;
     }
@@ -268,9 +272,7 @@ export default class lottoCommand extends Command {
     guildId: string,
     lottoChannel: TextChannel
   ) {
-    const endDate = new Date(
-      Math.ceil(new Date().getTime() / config.lottoLength) * config.lottoLength
-    );
+    const endDate = lottoCommand.generateEndDate();
 
     await economyServices.createLotto(guildId, endDate);
 
@@ -279,8 +281,17 @@ export default class lottoCommand extends Command {
     response
       .setTitle('New Lotto')
       .setAuthor(client.user?.username, client.user?.displayAvatarURL())
-      .setDescription(`**End Date:** ${endDate.toDateString()}`);
+      .setDescription([
+        `**End Date:** ${endDate.toDateString()}`,
+        `**End Time:** ${endDate.getHours()}:${endDate.getMinutes()}`,
+      ]);
 
     lottoChannel.send(response);
+  }
+
+  private static generateEndDate() {
+    return new Date(
+      Math.ceil(new Date().getTime() / config.lottoLength) * config.lottoLength
+    );
   }
 }
