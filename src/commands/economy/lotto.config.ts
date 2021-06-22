@@ -187,12 +187,9 @@ export default class lottoCommand extends Command {
     } else if (correctNums > 3) {
       earnings = 5000;
     } else {
-      const found = new Map<number, null>();
-
       guess.forEach((num) => {
-        if (!found.has(num) && nums.includes(num)) {
+        if (nums.includes(num)) {
           earnings += 100;
-          found.set(num, null);
         }
       });
     }
