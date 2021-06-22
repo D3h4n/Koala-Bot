@@ -2,6 +2,8 @@ import commands, { commandAliases } from './commands/index.commands.setup';
 import config from './utils/config';
 import { Message } from 'discord.js';
 import { client } from './index';
+import lottoModel from './models/lotto.model';
+import economyServices from './commands/economy/economy.services';
 
 // functions
 const log = function logEveryCommand({
@@ -77,4 +79,21 @@ export default function handleMessage(message: Message) {
 
     log(message);
   }
+}
+
+export async function dataBaseCleanup() {
+  console.log('[server] running database cleanup');
+
+  // cleanup old lottos/guesses
+  let lottos = await lottoModel.find({ done: true });
+
+  lottos.forEach(async (lotto) => {
+    let guesses = await economyServices.getGuesses(lotto.id);
+
+    guesses.forEach((guess) => {
+      guess.delete();
+    });
+
+    await lotto.delete();
+  });
 }

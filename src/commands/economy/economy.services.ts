@@ -2,6 +2,7 @@ import userRecord from '../../models/user.model';
 import Lotto from '../../models/lotto.model';
 import Guess from '../../models/lotto-guess.model';
 import { isValidObjectId } from 'mongoose';
+import config from '../../utils/config';
 
 class economyServices {
   static instance: economyServices;
@@ -53,6 +54,10 @@ class economyServices {
   }
 
   async addGuess(lottoId: string, userId: string, nums: number[]) {
+    if (!config.runLottos) {
+      throw '`Lottos are not running`';
+    }
+
     // get lotto
     const lotto = await Lotto.findById(lottoId);
 
@@ -61,9 +66,27 @@ class economyServices {
     }
 
     // check if user already made guess
-    if (lotto.guesses.includes(userId)) {
+    if (lotto.users.includes(userId)) {
       throw '`You already made a guess`';
     }
+
+    let numMap = new Map<number, null>();
+
+    nums.forEach((num) => {
+      if (numMap.has(num)) {
+        throw '`Numbers cannot be repeated`';
+      }
+
+      if (num > 30) {
+        throw '`Number cannot be greater than 30`';
+      }
+
+      if (num < 1) {
+        throw '`Number cannot be less than 1`';
+      }
+
+      numMap.set(num, null);
+    });
 
     const guess = new Guess({ lottoId, userId, guess: nums });
 

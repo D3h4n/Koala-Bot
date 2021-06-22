@@ -13,7 +13,7 @@ commands to practice problem solving with limited tools.
   - [x] create some means to generate currency
   - [x] allow for transfers of currecy between accounts
   - [ ] allow for the creation of bets to be fulfilled
-  - [ ] garbage collection for database to reduce waste
+  - [x] garbage collection for database to reduce waste
 - create system for command aliases
   - [x] create a map of aliases to commands
   - [x] edit command search to check for aliases if command is not found

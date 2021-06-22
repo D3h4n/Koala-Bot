@@ -71,14 +71,6 @@ export default class lottoCommand extends Command {
     // add guess if lotto found
     const guessNums = args.slice(1, 6).map((str) => Number(str));
 
-    // check if all guess are numbers
-    for (let num of guessNums) {
-      if (Number.isNaN(num) || num < 1 || num > 30) {
-        message.channel.send(`\`${num} is not a valid number\``);
-        return;
-      }
-    }
-
     economyServices
       .addGuess(lotto.id, user.id, guessNums)
       .then(() => {
@@ -166,7 +158,13 @@ export default class lottoCommand extends Command {
     const nums: number[] = [];
 
     for (let i = 0; i < 5; i++) {
-      nums.push(Math.floor(Math.random() * 30) + 1);
+      let newNum = Math.floor(Math.random() * 30) + 1;
+
+      if (!nums.includes(newNum)) {
+        nums.push(newNum);
+      } else {
+        i--;
+      }
     }
 
     return nums;
