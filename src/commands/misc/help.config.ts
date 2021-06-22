@@ -30,8 +30,9 @@ export default class helpCommand extends Command {
         this.commandList.push(
           `**${command.commandTitle}**\n` +
             command.help.join('\n') +
-            (command.aliases?.length &&
-              '\nAliases: ' + command.aliases?.join(', ')) +
+            (command.aliases?.length
+              ? '\nAliases: ' + command.aliases?.join(', ')
+              : '') +
             '\n'
         );
       });
@@ -92,18 +93,17 @@ export default class helpCommand extends Command {
     // args[1] was not a number
     // check if it was a command
     let query = args[1].toLowerCase();
+    let command = commands.get(commandAliases.get(query) ?? query);
 
-    if (commands.has(query) || commandAliases.has(query)) {
-      console.log(query);
-      let command = commands.get(commandAliases.get(query) ?? query);
-
+    if (command) {
       // create a message embed with the help message of the command
       let helpMsg = new MessageEmbed({
-        title: command!.commandTitle,
+        title: command.commandTitle,
         description:
-          command!.help.join('\n') +
-          (command!.aliases?.length &&
-            '\nAliases: ' + command!.aliases?.join(', ')) +
+          command.help.join('\n') +
+          (command.aliases?.length
+            ? '\nAliases: ' + command.aliases?.join(', ')
+            : '') +
           '\n',
       });
 
