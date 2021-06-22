@@ -2,6 +2,7 @@ import Discord from 'discord.js';
 import Command from './common.commands.config';
 
 // admin
+import purgeCommand from './admin/purge.config';
 import timeoutCommand from './admin/timeout.config';
 
 // chat
@@ -51,6 +52,7 @@ let commands = new Discord.Collection<string, Command>();
 // add commands to map
 commands
   // admin commands
+  .set('purge', new purgeCommand())
   .set('timeout', new timeoutCommand())
 
   // chat commands
