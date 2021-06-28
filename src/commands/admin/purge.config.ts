@@ -3,23 +3,16 @@ import Command from '../common.commands.config';
 
 export default class purgeCommand extends Command {
   constructor() {
-    super('Purge', 'purge', [
-      'Remove all messages from a chat',
-      '$Usage: $purge <chat name>',
-    ]);
+    super(
+      'Purge',
+      'purge',
+      ['Remove all messages from a chat', '$Usage: $purge <chat name>'],
+      [],
+      ['MANAGE_MESSAGES']
+    );
   }
 
   action(message: Message, args: string[]) {
-    if (
-      !message.member?.hasPermission('MANAGE_MESSAGES', {
-        checkAdmin: true,
-        checkOwner: true,
-      })
-    ) {
-      message.channel.send("`You don't have the correct permissions`");
-      return;
-    }
-
     const channelName = args.slice(1).join(' ');
 
     const channel = message.guild?.channels.cache.get(message.channel.id);

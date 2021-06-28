@@ -4,18 +4,16 @@ import { Message } from 'discord.js';
 
 export default class toggleLottosCommand extends Command {
   constructor() {
-    super('Toggle Lottos', 'togglelottos', [
-      'Turn lottos on and off',
-      'Usage: $togglelottos',
-    ]);
+    super(
+      'Toggle Lottos',
+      'togglelottos',
+      ['Turn lottos on and off', 'Usage: $togglelottos'],
+      ['tlotto'],
+      ['ADMINISTRATOR']
+    );
   }
 
   action(message: Message) {
-    if (!message.member?.hasPermission('ADMINISTRATOR')) {
-      message.channel.send('`Only admins can toggle lottos for now`');
-      return;
-    }
-
     config.runLottos = !config.runLottos;
 
     if (config.runLottos) {

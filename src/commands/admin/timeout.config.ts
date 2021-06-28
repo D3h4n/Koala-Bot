@@ -4,20 +4,20 @@ import config from '../../utils/config';
 
 export default class timeoutCommand extends Command {
   constructor() {
-    super('Timeout', 'timeout', [
-      'Put a user in timeout',
-      'Usage: $timeout @<user> <minutes>',
-      `Max timeout ${config.timeoutMaxLimit / 60000} minutes`,
-    ]);
+    super(
+      'Timeout',
+      'timeout',
+      [
+        'Put a user in timeout',
+        'Usage: $timeout @<user> <minutes>',
+        `Max timeout ${config.timeoutMaxLimit / 60000} minutes`,
+      ],
+      [],
+      ['MANAGE_ROLES', 'KICK_MEMBERS']
+    );
   }
 
   action(message: Message, args: string[]) {
-    // check if user had valid roles
-    if (!message.member?.hasPermission('MANAGE_ROLES')) {
-      message.channel.send("`You're not cool enough`");
-      return;
-    }
-
     // get first mentioned member
     const memberToTimeout = message.mentions.members?.first();
 

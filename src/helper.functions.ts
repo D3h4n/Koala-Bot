@@ -75,7 +75,7 @@ export default function handleMessage(message: Message) {
     // check for the correct command and execute it
     commands
       .get(commandAliases.get(commandName) ?? commandName)
-      ?.action(message, args);
+      ?.callCommand(message, args);
 
     log(message);
   }

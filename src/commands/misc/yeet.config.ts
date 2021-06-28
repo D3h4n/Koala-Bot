@@ -3,25 +3,20 @@ import Command from '../common.commands.config';
 
 export default class yeetCommand extends Command {
   constructor() {
-    super('Yeet', 'yeet', [
-      'Move a bunch of people between voice channels',
-      'NB:// You have to be in the voice channel',
-      'Usage: $yeet <new voice channel>',
-    ]);
+    super(
+      'Yeet',
+      'yeet',
+      [
+        'Move a bunch of people between voice channels',
+        'NB:// You have to be in the voice channel',
+        'Usage: $yeet <new voice channel>',
+      ],
+      [],
+      ['MOVE_MEMBERS']
+    );
   }
 
   action({ member, guild, channel }: Message, args: string[]) {
-    // check if user has permission to move members
-    if (
-      !member?.hasPermission('MOVE_MEMBERS', {
-        checkAdmin: true,
-        checkOwner: true,
-      })
-    ) {
-      channel.send("`You don't have permission to do that`");
-      return;
-    }
-
     const voiceChannel = member?.voice.channel; // connected voice channel
 
     // get channel name
