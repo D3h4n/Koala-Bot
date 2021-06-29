@@ -11,6 +11,7 @@ export default {
       ? 'happy noises | $help'
       : 'in maintenance', // bot status
   prefix: '$', // command prefix
+  onlineMessage: process.env.NODE_ENV === 'production',
   mainColor: 0x181818, // accent colour of embedded messages
   msgTimeout: 1e4, // time limit for message deletion
   helpPageLength: 5, // length of help pages
@@ -23,5 +24,4 @@ export default {
   runLottos: false, // toggle lottos
   lottoLength: 7.2e6, // number of ms each lotto lasts
   lottoChannelId: '842552370960400415',
-  onlineMessage: true,
 };
