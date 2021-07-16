@@ -1,6 +1,6 @@
 import commands, { commandAliases } from './commands/index.commands.setup';
 import config from './utils/config';
-import { Message } from 'discord.js';
+import { Message, TextChannel } from 'discord.js';
 import { client } from './index';
 import lottoModel from './models/lotto.model';
 import economyServices from './commands/economy/economy.services';
@@ -96,4 +96,14 @@ export async function dataBaseCleanup() {
 
     await lotto.delete();
   });
+}
+
+export async function postureCheck() {
+  console.log('[server] sending posture check');
+
+  const channel = (await client.channels.resolve(
+    config.postureChannelId
+  )) as TextChannel;
+
+  channel.send('‼ WEEE WOOO WEE WOO POSTURE CHECK ‼');
 }

@@ -1,8 +1,12 @@
-import { dataBaseCleanup } from '../helper.functions';
+import { dataBaseCleanup, postureCheck } from '../helper.functions';
 import lottoConfig from '../commands/economy/lotto.config';
 import config from './config';
 
-const events: Array<() => void> = [lottoConfig.checkLotto, dataBaseCleanup];
+const events: Array<() => void> = [
+  lottoConfig.checkLotto,
+  dataBaseCleanup,
+  postureCheck,
+];
 
 function eventLoop() {
   console.log('[server] executing event loop');

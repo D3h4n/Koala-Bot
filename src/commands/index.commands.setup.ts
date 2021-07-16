@@ -4,6 +4,7 @@ import Command from './common.commands.config';
 // admin
 import purgeCommand from './admin/purge.config';
 import timeoutCommand from './admin/timeout.config';
+import yeetCommand from './admin/yeet.config';
 
 // chat
 import helloCommand from './chat/hello.config';
@@ -26,7 +27,6 @@ import calculateCommand from './misc/calculate.config';
 import chooseCommand from './misc/choose.config';
 import teamsCommand from './misc/teams.config';
 import voteCommand from './misc/vote.config';
-import yeetCommand from './misc/yeet.config';
 
 // music
 import joinCommand from './music/join.config';

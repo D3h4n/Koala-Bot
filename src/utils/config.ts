@@ -24,4 +24,5 @@ export default {
   runLottos: false, // toggle lottos
   lottoLength: 7.2e6, // number of ms each lotto lasts
   lottoChannelId: '842552370960400415',
+  postureChannelId: '310489953157120023',
 };
