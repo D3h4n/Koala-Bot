@@ -99,9 +99,11 @@ export async function dataBaseCleanup() {
 }
 
 export async function postureCheck() {
-  let hour = new Date().getHours();
+  let date = new Date();
 
-  if (hour < 10 || hour > 22) {
+  let hour = date.getUTCHours();
+
+  if (hour > 2 && hour < 14) {
     return;
   }
 
