@@ -98,12 +98,16 @@ export async function dataBaseCleanup() {
   });
 }
 
+function checkTimeFrequency(date: Date): boolean {
+  return date.getTime() % config.postureFrequency == 0;
+}
+
 export async function postureCheck() {
   let date = new Date();
 
   let hour = date.getUTCHours();
 
-  if (hour > 2 && hour < 14) {
+  if (!checkTimeFrequency(date) && hour > 2 && hour < 14) {
     return;
   }
 
