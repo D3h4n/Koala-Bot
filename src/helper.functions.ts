@@ -99,6 +99,12 @@ export async function dataBaseCleanup() {
 }
 
 export async function postureCheck() {
+  let hour = new Date().getHours();
+
+  if (hour < 10 || hour > 22) {
+    return;
+  }
+
   console.log('[server] sending posture check');
 
   const channel = (await client.channels.resolve(
