@@ -98,16 +98,18 @@ export async function dataBaseCleanup() {
   });
 }
 
-function checkTimeFrequency(date: Date): boolean {
-  return date.getTime() % config.postureFrequency == 0;
+function checkTimeFrequency(date) {
+  let diff = date.getTime() % config.postureFrequency;
+
+  return diff < 1e4 || diff > config.postureFrequency - 1e4;
 }
 
 export async function postureCheck() {
   let date = new Date();
 
-  let hour = date.getUTCHours();
+  let hours = date.getUTCHours();
 
-  if (!checkTimeFrequency(date) && hour > 2 && hour < 14) {
+  if (!checkTimeFrequency(date) || (hours > 2 && hours < 14)) {
     return;
   }
 
