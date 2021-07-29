@@ -105,6 +105,8 @@ function checkTimeFrequency(date) {
 }
 
 export async function postureCheck() {
+  if (!config.runPostureChecks) return;
+
   let date = new Date();
 
   let hours = date.getUTCHours();
