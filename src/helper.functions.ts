@@ -104,7 +104,7 @@ function checkTimeFrequency(date) {
   return diff < 1e4 || diff > config.postureFrequency - 1e4;
 }
 
-export async function postureCheck() {
+export function postureCheck() {
   if (!config.runPostureChecks) return;
 
   let date = new Date();
@@ -117,9 +117,9 @@ export async function postureCheck() {
 
   console.log('[server] sending posture check');
 
-  const channel = (await client.channels.resolve(
+  const channel = client.channels.resolve(
     config.postureChannelId
-  )) as TextChannel;
+  ) as TextChannel;
 
   channel.send('‼ WEEE WOOO WEE WOO POSTURE CHECK ‼');
 }
