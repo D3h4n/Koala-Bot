@@ -53,6 +53,12 @@ const parseCommand = function (input: string) {
   return args;
 };
 
+const checkTime = function checkTimeFrequency(date: Date, frequency: number) {
+  let diff = date.getTime() % frequency;
+
+  return diff < 1e4 || diff > frequency - 1e4;
+};
+
 export default function handleMessage(message: Message) {
   if (
     // check for valid message
@@ -82,6 +88,8 @@ export default function handleMessage(message: Message) {
 }
 
 export async function dataBaseCleanup() {
+  if (!checkTime(new Date(), config.cleanUpFrequency)) return;
+
   console.log('[server] running database cleanup');
 
   // cleanup old lottos/guesses
@@ -98,12 +106,6 @@ export async function dataBaseCleanup() {
   });
 }
 
-function checkTimeFrequency(date) {
-  let diff = date.getTime() % config.postureFrequency;
-
-  return diff < 1e4 || diff > config.postureFrequency - 1e4;
-}
-
 export function postureCheck() {
   if (!config.runPostureChecks) return;
 
@@ -111,7 +113,7 @@ export function postureCheck() {
 
   let hours = date.getUTCHours();
 
-  if (!checkTimeFrequency(date) || (hours > 2 && hours < 14)) {
+  if (!checkTime(date, config.postureFrequency) || (hours > 2 && hours < 14)) {
     return;
   }
 

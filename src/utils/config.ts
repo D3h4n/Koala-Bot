@@ -27,4 +27,5 @@ export default {
   runPostureChecks: false,
   postureChannelId: '310489953157120023', // channelId to send posture checks
   postureFrequency: 3.6e6, // time between posture checks (ms)
+  cleanUpFrequency: 6.048e8,
 };
