@@ -7,12 +7,7 @@ export default class togglePostureCheckCommand extends Command {
     super(
       'Toggle Posture Check',
       'toggleposturecheck',
-      [
-        'Toggle Posture checks',
-        'Usage:',
-        '$tpc',
-        '$tpc <frequency in minutes>',
-      ],
+      ['Toggle Posture checks', 'Usage:', '$tpc', '$tpc <frequency in hours>'],
       ['tpc'],
       ['MANAGE_CHANNELS']
     );
@@ -30,8 +25,8 @@ export default class togglePostureCheckCommand extends Command {
 
     config.postureChannelId = message.channel.id;
     config.runPostureChecks = true;
-    config.postureFrequency = Number(args[1]) * 6e4 || config.postureFrequency;
-    console.log(config.postureFrequency);
+    config.postureFrequency =
+      Number(args[1]) * 3.6e5 || config.postureFrequency;
     return message.channel.send(
       `\`Running posture checks in this channel every ${args[1]} minutes\``
     );
