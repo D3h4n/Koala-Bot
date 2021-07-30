@@ -1,6 +1,7 @@
 import Command from '../common.commands.config';
 import config from '../../utils/config';
 import { Message } from 'discord.js';
+import economyServices from './economy.services';
 
 export default class toggleLottosCommand extends Command {
   constructor() {
@@ -13,12 +14,20 @@ export default class toggleLottosCommand extends Command {
     );
   }
 
-  action(message: Message) {
+  async action(message: Message) {
     config.runLottos = !config.runLottos;
 
     if (config.runLottos) {
-      message.channel.send('`Running Lottos`');
+      config.lottoChannelId = message.channel.id;
+      message.channel.send('`Running Lottos in this channel`');
     } else {
+      const lotto = await economyServices.getLotto();
+
+      if (lotto) {
+        lotto.done = true;
+        lotto.save();
+      }
+
       message.channel.send('`Stopped Lottos`');
     }
   }

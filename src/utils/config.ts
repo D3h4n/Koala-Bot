@@ -23,9 +23,9 @@ export default {
   eventLoopTimeDelay: 1.8e6, // time between each event loop (ms)
   runLottos: false, // toggle lottos
   lottoLength: 7.2e6, // time each lotto lasts (ms)
-  lottoChannelId: '842552370960400415', // channelId to send lottos
+  lottoChannelId: '', // channelId to send lottos
   runPostureChecks: false,
-  postureChannelId: '310489953157120023', // channelId to send posture checks
+  postureChannelId: '', // channelId to send posture checks
   postureFrequency: 3.6e6, // time between posture checks (ms)
   cleanUpFrequency: 6.048e8,
 };

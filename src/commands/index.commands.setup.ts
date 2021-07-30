@@ -5,6 +5,7 @@ import Command from './common.commands.config';
 import purgeCommand from './admin/purge.config';
 import timeoutCommand from './admin/timeout.config';
 import yeetCommand from './admin/yeet.config';
+import togglePostureCheckCommand from './admin/togglePostureCheck';
 
 // chat
 import helloCommand from './chat/hello.config';
@@ -54,6 +55,7 @@ commands
   // admin commands
   .set('purge', new purgeCommand())
   .set('timeout', new timeoutCommand())
+  .set('toggleposturecheck', new togglePostureCheckCommand())
 
   // chat commands
   .set('echo', new echoCommand())
