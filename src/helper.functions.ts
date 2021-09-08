@@ -3,7 +3,8 @@ import config from './utils/config';
 import { Message, TextChannel } from 'discord.js';
 import { client } from './index';
 import lottoModel from './models/lotto.model';
-import economyServices from './commands/economy/economy.services';
+import economyServices from './services/economy.services';
+import guildServices from './services/guild.services';
 
 // functions
 const log = function logEveryCommand({
@@ -106,22 +107,34 @@ export async function dataBaseCleanup() {
   });
 }
 
-export function postureCheck() {
-  if (!config.runPostureChecks) return;
+export async function postureCheck() {
+  const guilds = await guildServices.GetGuilds();
 
-  let date = new Date();
+  guilds.forEach((guild) => {
+    if (!guild.runPostureCheck) return;
 
-  let hours = date.getUTCHours();
+    let date = new Date();
 
-  if (!checkTime(date, config.postureFrequency) || (hours > 2 && hours < 14)) {
-    return;
-  }
+    let hours = date.getUTCHours();
 
-  console.log('[server] sending posture check');
+    if (
+      !checkTime(date, guild.postureCheckFrequency!) ||
+      (hours > 2 && hours < 14)
+    ) {
+      return;
+    }
 
-  const channel = client.channels.resolve(
-    config.postureChannelId
-  ) as TextChannel;
+    console.log(`[server] sending posture check for guild ${guild.guildName}`);
 
-  channel.send('‼ WEEE WOOO WEE WOO POSTURE CHECK ‼');
+    const channel = client.channels.resolve(
+      guild.postureCheckChannelId!
+    ) as TextChannel;
+
+    if (!channel) {
+      console.error('Channel not found');
+      return;
+    }
+
+    channel.send(guild.postureCheckMessage!);
+  });
 }

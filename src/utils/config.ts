@@ -11,7 +11,7 @@ export default {
       ? 'happy noises | $help'
       : 'in maintenance', // bot status
   prefix: '$', // command prefix
-  onlineMessage: process.env.NODE_ENV === 'production',
+  onlineMessage: process.env.NODE_ENV === 'production', // boolean to display online message
   mainColor: 0x181818, // accent colour of embedded messages
   msgTimeout: 1e4, // time limit for message deletion (ms)
   helpPageLength: 5, // length of help pages
@@ -21,11 +21,5 @@ export default {
   timeoutMaxLimit: 6e5, // limit for timeouts (ms)
   maxRandomNumbers: 20, // limit of random numbers
   eventLoopTimeDelay: 1.8e6, // time between each event loop (ms)
-  runLottos: false, // toggle lottos
-  lottoLength: 7.2e6, // time each lotto lasts (ms)
-  lottoChannelId: '', // channelId to send lottos
-  runPostureChecks: false,
-  postureChannelId: '', // channelId to send posture checks
-  postureFrequency: 3.6e6, // time between posture checks (ms)
   cleanUpFrequency: 6.048e8,
 };

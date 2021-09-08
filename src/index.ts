@@ -6,6 +6,7 @@ import initMongoose from './utils/mongoose.config';
 import commands from './commands/index.commands.setup';
 import initEventLoop from './utils/timer.config';
 import handleMessage from './helper.functions';
+import guildServices from './services/guild.services';
 
 export const client = new Client(); // initialize client
 
@@ -34,6 +35,16 @@ client.once('ready', () => {
 
 // runs every time a message is sent in the server
 client.on('message', handleMessage);
+
+client.on('guildCreate', (guild) => {
+  console.log(`Joined new guild ${guild.name}`);
+  guildServices.CreateGuild(guild).catch(console.error);
+});
+
+client.on('guildDelete', (guild) => {
+  console.log(`Left Guild ${guild.name}`);
+  guildServices.DeleteGuild(guild.id).catch(console.error);
+});
 
 export const distube = initDistube(
   new Distube(client, {

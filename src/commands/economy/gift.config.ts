@@ -1,5 +1,5 @@
 import { Message } from 'discord.js';
-import economyServices from './economy.services';
+import economyServices from '../../services/economy.services';
 import Command from '../common.commands.config';
 
 export default class giftCommand extends Command {

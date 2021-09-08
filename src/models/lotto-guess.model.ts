@@ -21,4 +21,4 @@ const lottoGuessSchema = new Schema({
   },
 });
 
-export default model<IGuess>('lottoGuess', lottoGuessSchema);
+export default model<IGuess>('LottoGuess', lottoGuessSchema);

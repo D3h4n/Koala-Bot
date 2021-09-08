@@ -1,8 +1,8 @@
-import userRecord from '../../models/user.model';
-import Lotto from '../../models/lotto.model';
-import Guess from '../../models/lotto-guess.model';
+import userRecord from '../models/user.model';
+import Lotto from '../models/lotto.model';
+import Guess from '../models/lotto-guess.model';
 import { isValidObjectId } from 'mongoose';
-import config from '../../utils/config';
+import guildServices from './guild.services';
 
 class economyServices {
   static instance: economyServices;
@@ -33,9 +33,14 @@ class economyServices {
     return await userRecord.findOne({ discordId });
   }
 
-  async getLotto(id?: string) {
+  async getLotto(id?: string, guildId?: string) {
     if (id && isValidObjectId(id)) {
       const lotto = await Lotto.findById(id);
+      return lotto;
+    }
+
+    if (guildId) {
+      const lotto = await Lotto.findOne({ guildId }).sort({ createdAt: -1 });
       return lotto;
     }
 
@@ -54,10 +59,6 @@ class economyServices {
   }
 
   async addGuess(lottoId: string, userId: string, nums: number[]) {
-    if (!config.runLottos) {
-      throw '`Lottos are not running`';
-    }
-
     // get lotto
     const lotto = await Lotto.findById(lottoId);
 
@@ -65,6 +66,11 @@ class economyServices {
       throw '`Lotto not found`';
     }
 
+    const guild = await guildServices.GetGuild(lotto.guildId);
+
+    if (!guild.runLotto) {
+      throw '`Lottos are not running`';
+    }
     // check if user already made guess
     if (lotto.users.includes(userId)) {
       throw '`You already made a guess`';

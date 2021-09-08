@@ -1,11 +1,12 @@
 import Command from '../common.commands.config';
-import economyServices from './economy.services';
-import config from '../../utils/config';
+import economyServices from '../../services/economy.services';
 import { Message, MessageEmbed, TextChannel } from 'discord.js';
 import { Document } from 'mongoose';
 import { ILotto } from '../../models/lotto.model';
 import { client } from '../../index';
 import { IUser } from '../../models/user.model';
+import guildServices from '../../services/guild.services';
+import { IGuild } from '../../models/guild.model';
 
 export default class lottoCommand extends Command {
   constructor() {
@@ -96,61 +97,65 @@ export default class lottoCommand extends Command {
   }
 
   public static async checkLotto() {
-    if (!config.runLottos) {
-      return;
-    }
+    const guilds = await guildServices.GetGuilds();
 
-    console.log('[server] checking for end of lotto');
-    const lotto = await economyServices.getLotto();
-
-    const lottoChannel = client.channels.cache.get(
-      config.lottoChannelId
-    ) as TextChannel;
-
-    // check if latest lotto is done
-    if (!lotto || lotto.done) {
-      lottoCommand.createNewLotto('310489953157120023', lottoChannel);
-      return;
-    }
-
-    // check if lotto should have ended
-    const today = new Date();
-
-    if (today.valueOf() > lotto.endDate.valueOf()) {
-      lottoCommand.endLotto(lotto, lottoChannel);
-      return;
-    }
-
-    const difTime = Math.round(
-      (lotto.endDate.valueOf() - today.valueOf()) / 6e4
-    );
-
-    if (difTime <= 5) {
-      const response = new MessageEmbed();
-      const hours = Math.floor(difTime / 60); // calculate hours remaining
-      const minutes = difTime % 60; // calculate minutes remaining
-
-      let timeString = 'Less than a minute';
-
-      if (hours > 0 && minutes > 0) {
-        timeString = `${hours} Hours and ${minutes} Minutes`;
-      } else if (hours > 0) {
-        timeString = `${hours} Hour${hours > 1 ? 's' : ''}`;
-      } else if (minutes > 0) {
-        timeString = `${minutes} Minute${minutes > 1 ? 's' : ''}`;
+    guilds.forEach(async (guild: IGuild) => {
+      if (!guild.runLotto) {
+        return;
       }
 
-      response
-        .setTitle(`\`Lotto ends in ${timeString}\``)
-        .setDescription([
-          `**End Date:** ${lotto.endDate.toDateString()}`,
-          `**End Time:** ${lotto.endDate.getHours()}:${lotto.endDate.getMinutes()}`,
-          `**Entries:** ${lotto.guesses.length}`,
-        ])
-        .setAuthor(client.user?.username, client.user?.displayAvatarURL());
+      console.log(`[server] checking for end of lotto in ${guild.guildName}`);
+      const lotto = await economyServices.getLotto(undefined, guild.guildId);
 
-      lottoChannel.send(response);
-    }
+      const lottoChannel = client.channels.cache.get(
+        guild.lottoChannelId!
+      ) as TextChannel;
+
+      // check if latest lotto is done
+      if (!lotto || lotto.done) {
+        lottoCommand.createNewLotto(guild.guildId, lottoChannel);
+        return;
+      }
+
+      // check if lotto should have ended
+      const today = new Date();
+
+      if (today.valueOf() > lotto.endDate.valueOf()) {
+        lottoCommand.endLotto(lotto, lottoChannel);
+        return;
+      }
+
+      const difTime = Math.round(
+        (lotto.endDate.valueOf() - today.valueOf()) / 6e4
+      );
+
+      if (difTime <= 5) {
+        const response = new MessageEmbed();
+        const hours = Math.floor(difTime / 60); // calculate hours remaining
+        const minutes = difTime % 60; // calculate minutes remaining
+
+        let timeString = 'Less than a minute';
+
+        if (hours > 0 && minutes > 0) {
+          timeString = `${hours} Hours and ${minutes} Minutes`;
+        } else if (hours > 0) {
+          timeString = `${hours} Hour${hours > 1 ? 's' : ''}`;
+        } else if (minutes > 0) {
+          timeString = `${minutes} Minute${minutes > 1 ? 's' : ''}`;
+        }
+
+        response
+          .setTitle(`\`Lotto ends in ${timeString}\``)
+          .setDescription([
+            `**End Date:** ${lotto.endDate.toDateString()}`,
+            `**End Time:** ${lotto.endDate.getHours()}:${lotto.endDate.getMinutes()}`,
+            `**Entries:** ${lotto.guesses.length}`,
+          ])
+          .setAuthor(client.user?.username, client.user?.displayAvatarURL());
+
+        lottoChannel.send(response);
+      }
+    });
   }
 
   /**
@@ -203,6 +208,7 @@ export default class lottoCommand extends Command {
     lotto: ILotto & Document<any, any>,
     lottoChannel: TextChannel
   ) {
+    const guild = await guildServices.GetGuild(lotto.guildId);
     const nums = lottoCommand.generateNumbers(); // get winning numbers
 
     // get entries for lotto
@@ -210,7 +216,7 @@ export default class lottoCommand extends Command {
 
     // check if there are any guesses
     if (!guesses || !guesses.length) {
-      lotto.endDate = lottoCommand.generateEndDate();
+      lotto.endDate = lottoCommand.generateEndDate(guild);
       lottoChannel.send(
         `\`Extending lotto time to ${lotto.endDate.toDateString()} ${lotto.endDate.getHours()}:${lotto.endDate.getMinutes()}\``
       );
@@ -265,14 +271,24 @@ export default class lottoCommand extends Command {
     ]);
 
     lottoChannel.send(response);
-    lottoCommand.createNewLotto(lotto.guildId, lottoChannel);
+    try {
+      lottoCommand.createNewLotto(lotto.guildId, lottoChannel);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   private static async createNewLotto(
     guildId: string,
     lottoChannel: TextChannel
   ) {
-    const endDate = lottoCommand.generateEndDate();
+    const guild = await guildServices.GetGuild(guildId).catch(console.error);
+
+    if (!guild) {
+      return false;
+    }
+
+    const endDate = lottoCommand.generateEndDate(guild);
 
     await economyServices.createLotto(guildId, endDate);
 
@@ -287,11 +303,14 @@ export default class lottoCommand extends Command {
       ]);
 
     lottoChannel.send(response);
+
+    return true;
   }
 
-  private static generateEndDate() {
+  private static generateEndDate(guild: IGuild) {
     return new Date(
-      Math.ceil(new Date().getTime() / config.lottoLength) * config.lottoLength
+      Math.ceil(new Date().getTime() / guild.lottoFrequency!) *
+        guild.lottoFrequency!
     );
   }
 }

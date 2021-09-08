@@ -1,1 +1,2 @@
-npm start
+forever start dist/index.js
+Pause
