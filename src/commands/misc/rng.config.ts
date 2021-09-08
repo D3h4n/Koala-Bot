@@ -44,28 +44,34 @@ export default class rngCommand extends Command {
     }
 
     // Error handling for input
+    // assert min is valid
     if (Number.isNaN(min)) {
       return message.channel.send(`${args[1]} is not a number!!`);
     }
 
+    // assert max is valid
     if (Number.isNaN(max)) {
       return message.channel.send(`${args[2]} is not a number!!`);
     }
 
+    // assert count is valid
     if (Number.isNaN(count)) {
       return message.channel.send(`${args[3]} is not a number!!`);
     }
 
+    // swap min and max if min is larger than max
     if (min > max) {
       let temp = min;
       min = max;
       max = temp;
     }
 
+    // assert count is greater than 0
     if (count < 1) {
       return message.channel.send('`Count is too small`');
     }
 
+    // assert count is less than maxRandomNumbers
     if (count > config.maxRandomNumbers) {
       return message.channel.send('`Count is too big`');
     }

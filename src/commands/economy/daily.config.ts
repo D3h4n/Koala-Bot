@@ -14,11 +14,13 @@ export default class dailyCommand extends Command {
   }
 
   async action({ author, channel, member }: Message) {
+    // get user record or create new record
     const user =
       (await economyServices.getUserByDiscord(author.id)) ??
-      (await economyServices.createUser(author.id, author.username)); // get user
+      (await economyServices.createUser(author.id, author.username));
 
-    const today = new Date(); // get today's date
+    // get today's date
+    const today = new Date();
 
     // check last time user got daily
     if (user.nextDaily.valueOf() > today.valueOf()) {
@@ -26,14 +28,14 @@ export default class dailyCommand extends Command {
         (user.nextDaily.valueOf() - today.valueOf()) / 60000
       );
 
-      channel.send([
+      return channel.send([
         'Stop being greedy.',
         `You have to wait \`${this.generateTimeString(remainingTime)}\`.`,
       ]);
-      return;
     }
 
-    const gain = this.generateGain(); // calculate daily gain
+    // calculate daily gain
+    const gain = this.generateGain();
 
     // update record
     user.balance += gain;
@@ -50,9 +52,15 @@ export default class dailyCommand extends Command {
         `**Balance:** $${user.balance}`,
       ]);
 
-    channel.send(response);
+    return channel.send(response);
   }
 
+  /**
+   * Generate daily gain amount based on average
+   * gain and some random fluctuation
+   *
+   * @returns daily gain amount
+   */
   generateGain() {
     return (
       this.avgGain +
@@ -65,6 +73,7 @@ export default class dailyCommand extends Command {
     const hours = Math.floor(remainingTime / 60); // calculate hours remaining
     const minutes = remainingTime % 60; // calculate minutes remaining
 
+    // return string with appropraite labels
     if (hours > 0 && minutes > 0) {
       return `${hours} Hours and ${minutes} Minutes`;
     }

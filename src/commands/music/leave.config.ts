@@ -8,13 +8,16 @@ export default class leaveCommand extends Command {
   }
 
   action(message: Message) {
+    // get voice connection
     let voice = client.voice?.connections.first();
 
+    // check if bot is connected to a channel
     if (!voice?.channel.id) {
       message.channel.send("`I'm not in a voice channel`");
       return;
     }
 
+    // disconnect bot
     voice?.disconnect();
   }
 }

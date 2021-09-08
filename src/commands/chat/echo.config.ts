@@ -10,19 +10,13 @@ export default class echoCommand extends Command {
   }
 
   action(message: Message, args: string[]) {
-    let response: string;
+    // get message content to send
+    let response = args.slice(1).join(' ');
 
-    args.shift();
-
-    response = args?.join(' ');
-
+    // delete commmand message
     message.delete({ timeout: 100 });
 
-    if (response) {
-      message.channel.send(response);
-      return;
-    }
-
-    message.channel.send('I have nothing to say.');
+    // send message content
+    message.channel.send(response || 'I have nothing to say.');
   }
 }

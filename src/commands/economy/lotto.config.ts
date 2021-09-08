@@ -17,27 +17,29 @@ export default class lottoCommand extends Command {
   }
 
   async action(message: Message, args: string[]) {
-    let lotto = await economyServices.getLotto();
-
-    if (!lotto) {
-      message.channel.send('`No lottos found`');
-      return;
-    }
-
-    if (lotto.done || args.length <= 2) {
-      lotto = args[2] ? await economyServices.getLotto(args[2]) : lotto;
+    // if user provides a lotto id display lotto
+    if (args.length <= 2) {
+      // get lotto and user records
+      let lotto = await economyServices.getLotto(args[1], message.guild?.id);
       const user = await economyServices.getUserByDiscord(message.author.id);
 
+      // assert lotto exists
       if (!lotto) {
-        message.channel.send('`No lottos found with that ID`');
-        return;
+        return message.channel.send('`No lottos found with that ID`');
       }
 
+      // assert user exists
+      if (!user) {
+        return message.channel.send('`No user found`');
+      }
+
+      // send information about lotto
       const response = new MessageEmbed();
 
       response
         .setTitle('Lotto')
         .setDescription([
+          `**Lotto Id:** ${lotto.id}`,
           `**End Date:** ${lotto.endDate.toDateString()}`,
           `**End Time:** ${lotto.endDate.getHours()}:${lotto.endDate.getMinutes()}`,
           `**Entries:** ${lotto.guesses.length}`,
@@ -49,36 +51,68 @@ export default class lottoCommand extends Command {
           message.author.displayAvatarURL()
         );
 
-      message.channel.send(response);
-      return;
+      return message.channel.send(response);
+    }
+
+    // if user does not provide an id
+    // get latest lotto for guild
+    let lotto = await economyServices.getLotto(undefined, message.guild?.id);
+
+    // assert that lotto was found
+    if (!lotto) {
+      return message.channel.send('`No lottos found`');
+    }
+
+    if (lotto.done) {
+      const user = await economyServices.getUserByDiscord(message.author.id);
+      // send information about lotto
+      const response = new MessageEmbed();
+
+      response
+        .setTitle('Lotto')
+        .setDescription([
+          `**Lotto Id:** ${lotto.id}`,
+          `**End Date:** ${lotto.endDate.toDateString()}`,
+          `**End Time:** ${lotto.endDate.getHours()}:${lotto.endDate.getMinutes()}`,
+          `**Entries:** ${lotto.guesses.length}`,
+          `**Entered:** ${lotto.users.includes(user?.id)}`,
+          `**Ended:** ${lotto.done}`,
+        ])
+        .setAuthor(
+          message.member?.displayName,
+          message.author.displayAvatarURL()
+        );
+
+      return message.channel.send(response);
     }
 
     // check if enough numbers
     if (args.length < 6) {
-      message.channel.send('`Must guess 5 numbers between 1 and 30`');
-      return;
+      return message.channel.send('`Must guess 5 numbers between 1 and 30`');
     }
 
     // check if user has enough money
     const user = await economyServices.getUserByDiscord(message.author.id);
 
     if (!user || user.balance < 20) {
-      message.channel.send([
+      return message.channel.send([
         "You don't have enough money",
         '`$20 Entry Fee required`',
       ]);
-      return;
     }
 
     // add guess if lotto found
     const guessNums = args.slice(1, 6).map((str) => Number(str));
 
-    economyServices
+    // add guess to lotto
+    return economyServices
       .addGuess(lotto.id, user.id, guessNums)
       .then(() => {
+        // charge user for lotto
         user.balance -= 20;
         user.save();
 
+        // send reponse to channel
         const response = new MessageEmbed();
 
         response
@@ -89,51 +123,58 @@ export default class lottoCommand extends Command {
           )
           .setDescription([`**Numbers:** ${args.slice(1, 6).join(' ')}`]);
 
-        message.channel.send(response);
+        return message.channel.send(response);
       })
-      .catch((error) => {
-        message.channel.send(error);
-      });
+      .catch(message.channel.send);
   }
 
   public static async checkLotto() {
+    // get list of guilds
     const guilds = await guildServices.GetGuilds();
 
-    guilds.forEach(async (guild: IGuild) => {
+    // iterate through each guild
+    guilds.forEach(async (guild: IGuild & Document<any, any>) => {
+      // assert that lottos are running for that guild
       if (!guild.runLotto) {
         return;
       }
 
+      // log message
       console.log(`[server] checking for end of lotto in ${guild.guildName}`);
+
+      // get latest lotto for guild
       const lotto = await economyServices.getLotto(undefined, guild.guildId);
 
+      // get lotto channel for guild
       const lottoChannel = client.channels.cache.get(
         guild.lottoChannelId!
       ) as TextChannel;
 
       // check if latest lotto is done
       if (!lotto || lotto.done) {
-        lottoCommand.createNewLotto(guild.guildId, lottoChannel);
+        lottoCommand.createNewLotto(guild, lottoChannel);
         return;
       }
 
       // check if lotto should have ended
       const today = new Date();
 
+      // end lotto if it should've ended
       if (today.valueOf() > lotto.endDate.valueOf()) {
         lottoCommand.endLotto(lotto, lottoChannel);
         return;
       }
 
+      // calculate remaining time for lotto in minutes
       const difTime = Math.round(
         (lotto.endDate.valueOf() - today.valueOf()) / 6e4
       );
 
       if (difTime <= 5) {
-        const response = new MessageEmbed();
         const hours = Math.floor(difTime / 60); // calculate hours remaining
         const minutes = difTime % 60; // calculate minutes remaining
 
+        // generate string representing remaining time
         let timeString = 'Less than a minute';
 
         if (hours > 0 && minutes > 0) {
@@ -144,9 +185,12 @@ export default class lottoCommand extends Command {
           timeString = `${minutes} Minute${minutes > 1 ? 's' : ''}`;
         }
 
+        // send information about lotto
+        const response = new MessageEmbed();
         response
           .setTitle(`\`Lotto ends in ${timeString}\``)
           .setDescription([
+            `**Lotto Id:** ${lotto.id}`,
             `**End Date:** ${lotto.endDate.toDateString()}`,
             `**End Time:** ${lotto.endDate.getHours()}:${lotto.endDate.getMinutes()}`,
             `**Entries:** ${lotto.guesses.length}`,
@@ -159,7 +203,9 @@ export default class lottoCommand extends Command {
   }
 
   /**
-   * Generate a list of 5 numbers
+   * Generate lotto numbers
+   *
+   * @returns list of numbers
    */
   private static generateNumbers() {
     const nums: number[] = [];
@@ -177,6 +223,14 @@ export default class lottoCommand extends Command {
     return nums;
   }
 
+  /**
+   * Calculate earnings for guess based on lotto numbers
+   *
+   *
+   * @param nums lotto numbers
+   * @param guess guess numbers
+   * @returns earnings amount
+   */
   private static calculateEarnings(nums: number[], guess: number[]) {
     let correctNums = 0;
     let earnings = 0;
@@ -204,17 +258,26 @@ export default class lottoCommand extends Command {
     return earnings;
   }
 
+  /**
+   * End a lotto and calculate earnigns for each guess
+   *
+   *
+   * @param lotto lotto record
+   * @param lottoChannel lotto channel
+   * @returns
+   */
   private static async endLotto(
     lotto: ILotto & Document<any, any>,
     lottoChannel: TextChannel
   ) {
+    // get guild record and generate lotto numbers
     const guild = await guildServices.GetGuild(lotto.guildId);
-    const nums = lottoCommand.generateNumbers(); // get winning numbers
+    const nums = lottoCommand.generateNumbers();
 
     // get entries for lotto
     const guesses = await economyServices.getGuesses(lotto.id);
 
-    // check if there are any guesses
+    // check if there aren't any guesses extend lotto time
     if (!guesses || !guesses.length) {
       lotto.endDate = lottoCommand.generateEndDate(guild);
       lottoChannel.send(
@@ -224,15 +287,18 @@ export default class lottoCommand extends Command {
       return;
     }
 
-    const winners: Array<{ user: IUser; earnings: number }> = [];
+    const winners: Array<{ user: IUser; earnings: number }> = []; // array storing winners and their earnings
 
+    // iterate through each guess
     for (let entry of guesses) {
       const user = await economyServices.getUserById(entry.userId); // get user record
 
+      // assert that user exists
       if (!user) {
         continue;
       }
 
+      // calculate earnings
       const earnings = lottoCommand.calculateEarnings(nums, entry.guess);
 
       // update user with earnings
@@ -247,7 +313,7 @@ export default class lottoCommand extends Command {
     lotto.done = true;
     lotto.save();
 
-    // send response
+    // generate and send response
     const response = new MessageEmbed();
 
     response.setTitle('Lotto').setDescription([
@@ -271,40 +337,39 @@ export default class lottoCommand extends Command {
     ]);
 
     lottoChannel.send(response);
-    try {
-      lottoCommand.createNewLotto(lotto.guildId, lottoChannel);
-    } catch (error) {
-      console.error(error);
-    }
+
+    // create new lotto after old one has ended
+    lottoCommand.createNewLotto(guild, lottoChannel).catch(console.error);
   }
 
   private static async createNewLotto(
-    guildId: string,
+    guild: IGuild & Document<any, any>,
     lottoChannel: TextChannel
   ) {
-    const guild = await guildServices.GetGuild(guildId).catch(console.error);
-
+    // assert guild exists
     if (!guild) {
-      return false;
+      return;
     }
 
+    // generate new end date
     const endDate = lottoCommand.generateEndDate(guild);
 
-    await economyServices.createLotto(guildId, endDate);
+    // create new lotto
+    const lotto = await economyServices.createLotto(guild.guildId, endDate);
 
+    // generate and send response
     const response = new MessageEmbed();
 
     response
       .setTitle('New Lotto')
       .setAuthor(client.user?.username, client.user?.displayAvatarURL())
       .setDescription([
+        `**Lotto Id:** ${lotto.id}`,
         `**End Date:** ${endDate.toDateString()}`,
         `**End Time:** ${endDate.getHours()}:${endDate.getMinutes()}`,
       ]);
 
     lottoChannel.send(response);
-
-    return true;
   }
 
   private static generateEndDate(guild: IGuild) {

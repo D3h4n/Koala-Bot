@@ -3,34 +3,31 @@ import { distube } from '../../index';
 import Command from '../common.commands.config';
 
 export default class repeatCommand extends Command {
-  isRepeating: boolean;
-
   constructor() {
     super('Repeat', 'repeat', [
       'Repeat the currently playing song or stop repeating',
       'Usage: $repeat',
     ]);
-
-    this.isRepeating = false;
   }
 
   action(message: Message) {
-    let nowPlaying = distube.getQueue(message)?.songs?.[0];
+    // get playing song
+    const queue = distube.getQueue(message);
+    const nowPlaying = queue?.songs?.[0];
 
+    // assert song exists
     if (!nowPlaying) {
       return message.channel.send('`Error repeating song`');
     }
 
-    if (this.isRepeating) {
+    // if queue is already repeating, stop it
+    if (queue.repeatMode === 1) {
       distube.setRepeatMode(message, 0);
-
-      this.isRepeating = false;
       return message.channel.send(`\`Stopped repeating ${nowPlaying.name}\``);
     }
 
+    // if queue isn't repeating stop it
     distube.setRepeatMode(message, 1);
-
-    this.isRepeating = true;
     return message.channel.send(`\`Repeating ${nowPlaying.name}\``);
   }
 }

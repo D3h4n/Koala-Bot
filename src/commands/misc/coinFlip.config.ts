@@ -30,11 +30,14 @@ export default class coinFlipCommand extends Command {
       times = Math.min(times, config.maxRandomNumbers);
     }
 
+    // generate results of flips
     for (let i = 0; i < times; i++) {
       flips.push(Math.round(Math.random()) ? 'Heads' : 'Tails');
     }
 
+    // if more than one flip
     if (times > 1) {
+      // generate and send message embed of flips
       let response = new MessageEmbed();
 
       response
@@ -49,6 +52,7 @@ export default class coinFlipCommand extends Command {
       return message.channel.send(response);
     }
 
+    // return one flip
     return message.channel.send(`\`${flips[0]}\``);
   }
 }

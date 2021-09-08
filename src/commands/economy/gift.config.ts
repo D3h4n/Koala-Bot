@@ -16,6 +16,13 @@ export default class giftCommand extends Command {
 
     const authorRecord = await economyServices.getUserByDiscord(authorId);
 
+    if (!authorRecord) {
+      message.channel.send(
+        '`You have no money. Try collecting your daily first.`'
+      );
+      return;
+    }
+
     // get receiverRecord
     const receiverUser = message.mentions.users.first();
 
@@ -38,13 +45,6 @@ export default class giftCommand extends Command {
     const receiverRecord = await economyServices.getUserByDiscord(
       receiverUser.id
     );
-
-    if (!authorRecord) {
-      message.channel.send(
-        '`You have no money. Try collecting your daily first.`'
-      );
-      return;
-    }
 
     if (!receiverRecord) {
       message.channel.send('`That user was not found`');

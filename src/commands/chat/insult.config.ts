@@ -45,19 +45,25 @@ export default class insultCommand extends Command {
   }
 
   action(message: Message) {
+    // get user to insult
     let user =
       message.mentions.users.first()?.toString() ?? message.author.toString();
 
+    // choose an insult format
     let insultFormat = this.insultFormats[this.rand(this.insultFormats.length)];
 
+    // generate insult from format
     let insult = this.parseFormat(insultFormat, user);
 
+    // send insult
     return message.channel.send(insult);
   }
 
   parseFormat(insultFormat: string, user: string) {
+    // replace user specifier with user mention
     let insult = insultFormat.replace('{user}', user);
 
+    // replace other format specifiers with random words
     for (let type of this.wordTypes) {
       insult = insult.replace(
         `{${type}}`,
@@ -65,9 +71,11 @@ export default class insultCommand extends Command {
       );
     }
 
+    // return instul
     return insult;
   }
 
+  // generate random number
   rand(max: number) {
     return Math.floor(Math.random() * max);
   }

@@ -23,14 +23,12 @@ export default class timeoutCommand extends Command {
 
     // check if the member exists
     if (!memberToTimeout) {
-      message.channel.send("`I don't know who that is homie`");
-      return;
+      return message.channel.send("`I don't know who that is homie`");
     }
 
     // check that the member can be timedout
     if (!memberToTimeout.manageable) {
-      message.channel.send('`That user is too stronk`');
-      return;
+      return message.channel.send('`That user is too stronk`');
     }
 
     // calculate timeout
@@ -38,23 +36,20 @@ export default class timeoutCommand extends Command {
 
     // check if time is within range
     if (timeout < 1000) {
-      message.channel.send('`That time is too short`');
-      return;
+      return message.channel.send('`That time is too short`');
     }
 
     if (timeout > config.timeoutMaxLimit) {
-      message.channel.send('`That time is too large`');
-      return;
+      return message.channel.send('`That time is too large`');
     }
 
     // add timeout and handle errors
     if (!this.addTimeout(memberToTimeout, timeout)) {
-      message.channel.send('`Some kinda error or something`');
-      return;
+      return message.channel.send('`Some kinda error or something`');
     }
 
     // send prompt after timeout
-    message.channel.send(
+    return message.channel.send(
       `Timed out ${memberToTimeout.toString()} for ${timeout / 1000} seconds`
     );
   }

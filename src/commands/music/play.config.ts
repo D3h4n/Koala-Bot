@@ -19,11 +19,15 @@ export default class playCommand extends Command {
   }
 
   async action(message: Message, args: string[]) {
+    // generate query from args
     let query = args.slice(1).join(' ');
 
+    // if no query resume queue
     if (!query) {
       try {
+        // check if queue is paused
         if (distube.getQueue(message).pause) {
+          // resume queue and send response
           distube.resume(message);
           message.channel.send('`Resuming song`');
         }
@@ -34,6 +38,7 @@ export default class playCommand extends Command {
       return;
     }
 
+    // if query then search for and play query
     distube
       .play(message, query)
       .catch(() => message.channel.send('`Could not find that song`'));

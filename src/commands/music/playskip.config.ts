@@ -13,24 +13,18 @@ export default class playSkipCommand extends Command {
   }
 
   async action(message: Message, args: string[]) {
+    // get query
     let query = args.slice(1).join(' ');
 
+    // assert query exists
     if (!query) {
       message.channel.send('`Add a song to find!!!!`');
       return;
     }
 
+    // playskip query
     distube
       .playSkip(message, query)
-      .then(() => {
-        let repeatMode = distube.setRepeatMode(message);
-
-        if (repeatMode === 0) {
-          distube.setRepeatMode(message, 2);
-        } else {
-          distube.setRepeatMode(message, 0);
-        }
-      })
       .catch(() => message.channel.send('`Could not find that song`'));
   }
 }

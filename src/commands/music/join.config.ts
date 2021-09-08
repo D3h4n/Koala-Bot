@@ -7,18 +7,19 @@ export default class joinCommand extends Command {
   }
 
   action(message: Message) {
-    const { voice } = message.member!;
+    // get voice channel of member
+    const channel = message.member!.voice.channel;
 
-    try {
-      voice.channel
-        ?.join()
-        .then((voiceConnection) =>
-          message.channel.send(
-            `Joined channel ${voiceConnection.channel.toString()}`
-          )
-        );
-    } catch (err) {
-      message.channel.send('`Error joining voice channel`');
-    }
+    channel
+      ?.join()
+      .then((voiceConnection) =>
+        message.channel.send(
+          `Joined channel ${voiceConnection.channel.toString()}`
+        )
+      )
+      .catch((err) => {
+        message.channel.send('`Error joining voice channel`');
+        console.error(err);
+      });
   }
 }

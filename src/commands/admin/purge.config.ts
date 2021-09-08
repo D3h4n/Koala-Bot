@@ -1,4 +1,4 @@
-import { Message } from 'discord.js';
+import { Message, NewsChannel, TextChannel } from 'discord.js';
 import Command from '../common.commands.config';
 
 export default class purgeCommand extends Command {
@@ -12,25 +12,27 @@ export default class purgeCommand extends Command {
     );
   }
 
-  action(message: Message, args: string[]) {
+  async action(message: Message, args: string[]) {
+    // get channel name
     const channelName = args.slice(1).join(' ');
 
+    // get channel
     const channel = message.guild?.channels.cache.get(message.channel.id);
 
+    // check if channel names match
     if (channel?.name !== channelName) {
-      message.channel.send(`\`To confirm type "$purge ${channel?.name}"\``);
-      return;
+      return message.channel.send(
+        `\`To confirm type "$purge ${channel?.name}"\``
+      );
     }
 
-    channel
-      .clone()
-      .then((newChannel) => {
-        if (newChannel.isText()) {
-          newChannel.send('`Channel Succesfully Purged`');
-        }
-      })
-      .catch(console.error);
+    // clone old channel
+    let newChannel = (await channel.clone().catch(console.error)) as
+      | TextChannel
+      | NewsChannel;
 
-    channel.delete();
+    // delete old channel
+    await channel.delete().catch(console.error);
+    return newChannel.send('`Channel Succesfully Purged`');
   }
 }

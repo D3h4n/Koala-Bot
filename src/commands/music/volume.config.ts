@@ -13,24 +13,24 @@ export default class volumeCommand extends Command {
   }
 
   action(message: Message, args: string[]) {
-    let volume = parseInt(args[1]);
+    // get volume value
+    let volume = Number(args[1]);
 
-    if (Number.isNaN(volume)) {
-      message.channel.send('`Volume must be a number between 0 and 100`');
-      return;
+    // assert valid volume value
+    if (Number.isNaN(volume) || volume < 0 || volume > 100) {
+      return message.channel.send(
+        '`Volume must be a number between 0 and 100`'
+      );
     }
 
-    if (volume < 0) volume = 0;
-
-    if (volume > 100) volume = 100;
-
+    // set volume
     try {
       distube.setVolume(message, volume);
     } catch (error) {
-      message.channel.send('`Error setting volume`');
-      return;
+      return message.channel.send('`Error setting volume`');
     }
 
-    message.channel.send(`\`Volume set to ${volume}\``);
+    // send response
+    return message.channel.send(`\`Volume set to ${volume}\``);
   }
 }

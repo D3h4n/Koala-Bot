@@ -18,12 +18,14 @@ export default class balanceCommand extends Command {
       (await economyServices.getUserByDiscord(author.id)) ??
       (await economyServices.createUser(author.id, author.username));
 
+    // create response with balance
     const response = new MessageEmbed();
 
     response
       .setAuthor(member?.displayName, author.displayAvatarURL())
       .setDescription(`**Balance:** $${user.balance}`);
 
+    // send response
     channel.send(response);
   }
 }

@@ -14,13 +14,16 @@ export default class youtubeCommand extends Command {
   }
 
   action(message: Message, args: string[]) {
+    // get search query
     let search = args.slice(1).join(' ');
 
+    // assert search is valid
     if (!search.length) {
       message.channel.send("I can't search nothing");
       return;
     }
 
+    // perform search
     google
       .youtube('v3')
       .search.list({
@@ -30,18 +33,21 @@ export default class youtubeCommand extends Command {
         q: search,
         maxResults: 1,
       })
-      .then((res) => {
-        let result = res.data.items?.[0];
-
+      .then((res) => res.data.items?.[0]) // get first result
+      .then((result) => {
+        // get id
         let id = result?.id;
 
         if (id?.videoId) {
+          // send video link if video
           message.channel.send(`https://www.youtube.com/watch?v=${id.videoId}`);
         } else if (id?.channelId) {
+          // send channel link if channel
           message.channel.send(
             `https://www.youtube.com/channel/${id.channelId}`
           );
         } else {
+          // send repsonse if no results are found
           message.channel.send(`No results found`);
         }
       })
