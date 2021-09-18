@@ -8,8 +8,10 @@ export default class leaveCommand extends Command {
   }
 
   action(message: Message) {
-    // get voice connection
-    let voice = client.voice?.connections.first();
+    // get voice connection in guild
+    let voice = client.voice?.connections.find(
+      (connection) => connection.channel.guild.id === message.guild?.id
+    );
 
     // check if bot is connected to a channel
     if (!voice?.channel.id) {
