@@ -1,4 +1,5 @@
 import { Message, NewsChannel, TextChannel } from 'discord.js';
+import config from '../../utils/config';
 import Command from '../common.commands.config';
 
 export default class purgeCommand extends Command {
@@ -33,6 +34,8 @@ export default class purgeCommand extends Command {
 
     // delete old channel
     await channel.delete().catch(console.error);
-    return newChannel.send('`Channel Succesfully Purged`');
+    return (await newChannel.send('`Channel Succesfully Purged`')).delete({
+      timeout: config.msgTimeout * 20,
+    });
   }
 }
