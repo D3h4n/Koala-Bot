@@ -22,9 +22,8 @@ export default class purgeCommand extends Command {
 
     // check if channel names match
     if (channel?.name !== channelName) {
-      return message.channel.send(
-        `\`To confirm type "$purge ${channel?.name}"\``
-      );
+      message.channel.send(`\`To confirm type "$purge ${channel?.name}"\``);
+      return;
     }
 
     // clone old channel
@@ -34,8 +33,8 @@ export default class purgeCommand extends Command {
 
     // delete old channel
     await channel.delete().catch(console.error);
-    return (await newChannel.send('`Channel Succesfully Purged`')).delete({
-      timeout: config.msgTimeout * 20,
-    });
+    let msg = await newChannel.send('`Channel Succesfully Purged`');
+
+    await msg.delete({ timeout: config.msgTimeout * 2 });
   }
 }
