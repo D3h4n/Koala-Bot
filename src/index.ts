@@ -17,7 +17,7 @@ const commands: Map<string, Command> = new Map<string, Command>();
   for await (const f of getFiles("dist/commands")) {
     if (f.endsWith(".js")) {
       const command: Command = new (require(f).default)();
-      
+   
       commands.set(command.name, command);
     }
   }
@@ -34,6 +34,14 @@ client.once('ready', () => {
     }
   ).then(() => console.log(`Loaded ${commands.size} commands`)).catch(console.error);
   
+  client.guilds.cache.get('310489953157120023')?.commands.cache.each(command => {
+    let permissions = commands.get(command.name)?.permissions;
+
+    if (permissions) {
+      command.permissions.add({ permissions });
+    }
+  })
+
   client.user!.setPresence({
     status: 'online',
     activities: [

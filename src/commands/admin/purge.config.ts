@@ -8,7 +8,13 @@ export default class purgeCommand extends Command {
     super(
       'purge',
       'Remove all messages from a chat',
-      ['MANAGE_MESSAGES']
+      [
+        {
+          id: '829531557785894923',
+          type: 'ROLE',
+          permission: true
+        }
+      ]
     );
     this.addStringOption(
       option => option

@@ -1,4 +1,5 @@
 import { CommandInteraction, GuildMember, MessageEmbed, VoiceChannel } from 'discord.js';
+import {ChannelType} from 'discord-api-types/v9'
 import Command from '../../common.commands.config';
 
 export default class yeetCommand extends Command {
@@ -6,8 +7,18 @@ export default class yeetCommand extends Command {
     super(
       'yeet',
       'Move a bunch of people between voice channels',
-      ['MOVE_MEMBERS']
+      [
+        {
+          id: '829531557785894923',
+          type: 'ROLE',
+          permission: true
+        }
+      ]
     );
+
+    this.addChannelOption(option => (
+      option.setName('channel').setDescription('Channel to yeet to').setRequired(true).addChannelType(ChannelType.GuildVoice)
+    ))
   }
 
   action(interaction: CommandInteraction) {
@@ -16,7 +27,7 @@ export default class yeetCommand extends Command {
     const voiceChannel = member.voice.channel;
 
     // get channel name
-    const newChannel = interaction.options.data[0].channel as VoiceChannel;
+    const newChannel = interaction.options.getChannel('channel') as VoiceChannel;
 
     // check if user is in a voice channel
     if (!voiceChannel) {

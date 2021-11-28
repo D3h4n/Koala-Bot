@@ -9,7 +9,13 @@ export default class toggleLottosCommand extends Command {
     super(
       'togglelottos',
       'Turn lottos on and off',
-      ['ADMINISTRATOR']
+      [
+        {
+          id: '829531557785894923',
+          type: 'ROLE',
+          permission: true
+        }
+      ]
     );
 
     this.addNumberOption(option=>(

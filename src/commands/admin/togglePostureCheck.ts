@@ -7,7 +7,13 @@ export default class togglePostureCheckCommand extends Command {
     super(
       'toggleposturecheck',
       'Toggle Posture checks',
-      ['MANAGE_CHANNELS']
+      [
+        {
+          id: '829531557785894923',
+          type: 'ROLE',
+          permission: true
+        }
+      ]
     );
   }
 
