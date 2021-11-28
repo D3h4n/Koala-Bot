@@ -1,10 +1,12 @@
-import commands, { commandAliases } from './index.commands.setup';
+import {commands, commandAliases } from './index';
 import config from './utils/config';
 import { Message, TextChannel } from 'discord.js';
 import { client } from './index';
 import lottoModel from './models/lotto.model';
 import economyServices from './services/economy.services';
 import guildServices from './services/guild.services';
+import {promises} from 'fs';
+import {resolve} from 'path';
 
 // functions
 const log = function logEveryCommand({
@@ -137,4 +139,16 @@ export async function postureCheck() {
 
     channel.send(guild.postureCheckMessage!);
   });
+}
+
+export async function* getFiles(dir: string): AsyncGenerator<string, void, void> {
+  const dirents = await (await promises.readdir(dir, { withFileTypes: true }));
+  for (const dirent of dirents) {
+    const res = resolve(dir, dirent.name);
+    if (dirent.isDirectory()) {
+      yield* getFiles(res);
+    } else {
+      yield res;
+    }
+  }
 }

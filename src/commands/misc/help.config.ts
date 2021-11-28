@@ -1,7 +1,7 @@
 import { Message, MessageEmbed, MessageReaction, User } from 'discord.js';
 import config from '../../utils/config';
 import Command from '../../common.commands.config';
-import commands, { commandAliases } from '../../index.commands.setup';
+import { commands, commandAliases } from '../../index';
 
 export default class helpCommand extends Command {
   commandList: string[];
