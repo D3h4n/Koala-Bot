@@ -62,7 +62,9 @@ export default class teamsCommand extends Command {
       .setColor(config.mainColor)
       .setDescription(this.generateDescription(teams).join('\n'));
 
-    //TODO: return interaction.reply(res);
+    interaction.reply({
+      embeds: [res]
+    });
   }
 
   generateDescription(teams: string[][]) {

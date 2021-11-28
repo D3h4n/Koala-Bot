@@ -8,7 +8,7 @@ export interface IGuild {
   lottoFrequency?: number;
   runPostureCheck?: boolean;
   postureCheckChannelId?: string;
-  postureCheckMessage?: string;
+  postureCheckMessage?: string | null;
   postureCheckFrequency?: number;
 }
 

@@ -23,8 +23,9 @@ export default class balanceCommand extends Command {
       .setAuthor((interaction.member as GuildMember)?.displayName!, interaction.user.displayAvatarURL())
       .setDescription(`**Balance:** $${user.balance}`);
 
-    //TODO: Figure out channel responses
     // send response
-    // channel.send(response);
+    interaction.reply({
+      embeds: [response]
+    });
   }
 }

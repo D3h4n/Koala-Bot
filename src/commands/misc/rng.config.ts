@@ -64,7 +64,10 @@ export default class rngCommand extends Command {
         .setDescription(['**Results:**', ...numbers].join(' '))
         .setColor(config.mainColor);
       
-      //TODO: return interaction.reply(response);
+      interaction.reply({
+        embeds: [response]
+      });
+      return; 
     }
 
     return interaction.reply(`\`${numbers[0]}\``);

@@ -1,7 +1,7 @@
 import { CommandInteraction, TextChannel } from 'discord.js';
 import config from '../../utils/config';
 import Command from '../../common.commands.config';
-// import config from '../../utils/config';
+import { ChannelType } from 'discord-api-types/v9';
 
 export default class purgeCommand extends Command {
   constructor() {
@@ -16,26 +16,29 @@ export default class purgeCommand extends Command {
         }
       ]
     );
-    this.addStringOption(
+    this.addChannelOption(
       option => option
         .setName("channel")
         .setDescription("Name of this channel")
+        .addChannelType(ChannelType.GuildText)
         .setRequired(true)
     );
   }
 
   async action(interaction: CommandInteraction) {
-    const channelName = interaction.options.getString('channel');
+    const channel = interaction.options.getChannel('channel', true) as TextChannel;
 
-    let channel = interaction.channel as TextChannel;
-
-    if (channelName === channel.name) {
+    if (channel === interaction.channel) {
       let newChannel = await channel.clone();
 
       interaction.deleteReply();
       channel.delete("Purging");
 
-      setTimeout((await newChannel.send('`New channel created`')).delete, config.msgTimeout);
+      let msg = await newChannel.send('`Channel Successfully purged`');
+
+      setTimeout(() => {
+        msg.delete().catch(console.error);
+      }, config.msgTimeout)
     }
   }  
 }

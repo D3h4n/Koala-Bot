@@ -56,8 +56,11 @@ export default class lottoCommand extends Command {
           (interaction.member as GuildMember)?.displayName,
           interaction.user.displayAvatarURL()
         );
-      //TODO: FIgure out reponse
-      // return interaction.reply(response);
+
+      interaction.reply({
+        embeds: [response]
+      });
+      return;
     }
 
     // if user does not provide an id
@@ -89,8 +92,10 @@ export default class lottoCommand extends Command {
           interaction.user.displayAvatarURL()
         );
 
-      //TODO: FIgure out reponse
-      // return interaction.reply(response);
+      interaction.reply({
+        embeds: [response]
+      });
+      return;
     }
 
     // check if enough numbers
@@ -131,8 +136,10 @@ export default class lottoCommand extends Command {
           .setDescription(`**Numbers:** ${guessNums.join(' ')}`);
 
 
-        //TODO: Figure out response  
-        // return interaction.reply(response);
+        interaction.reply({
+          embeds: [response]
+        });
+        return;
       })
       .catch(interaction.reply);
   }
@@ -206,8 +213,9 @@ export default class lottoCommand extends Command {
           ].join('\n'))
           .setAuthor(client.user?.username!, client.user?.displayAvatarURL());
 
-        //TODO: Figure out response
-        // lottoChannel.send(response);
+        lottoChannel.send({
+          embeds: [response]
+        });
       }
     });
   }
@@ -346,8 +354,9 @@ export default class lottoCommand extends Command {
         }),
     ].join('\n'));
 
-    //TODO: Figure out response
-    // lottoChannel.send(response);
+    lottoChannel.send({
+      embeds: [response]
+    });
 
     // create new lotto after old one has ended
     lottoCommand.createNewLotto(guild, lottoChannel).catch(console.error);
@@ -355,7 +364,7 @@ export default class lottoCommand extends Command {
 
   private static async createNewLotto(
     guild: IGuild & Document<any, any>,
-    _lottoChannel: TextChannel
+    lottoChannel: TextChannel
   ) {
     // assert guild exists
     if (!guild) {
@@ -380,8 +389,9 @@ export default class lottoCommand extends Command {
         `**End Time:** ${endDate.getHours()}:${endDate.getMinutes()}`,
       ].join('\n'));
     
-    //TODO: Figure out response
-    // lottoChannel.send(response);
+    lottoChannel.send({
+      embeds: [response]
+    });
   }
 
   private static generateEndDate(guild: IGuild) {

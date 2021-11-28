@@ -37,9 +37,11 @@ export default class coinFlipCommand extends Command {
           (interaction.member as GuildMember)?.displayName,
           interaction.user.displayAvatarURL()
         );
-      
-      //TODO: Figure out responses
-      // return interaction.reply(response);
+        
+      interaction.reply({
+        embeds: [response]
+      });
+      return;
     }
 
     // return one flip

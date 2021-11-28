@@ -48,8 +48,9 @@ export default class dailyCommand extends Command {
       .setAuthor((interaction.member as GuildMember)?.displayName, interaction.user.displayAvatarURL())
       .setDescription(`**Earned:** $${gain}\n**Balance:** $${user.balance}`);
 
-    //TODO: Figure out reponse
-    // interaction.reply(response); 
+    interaction.reply({
+      embeds: [response]
+    }); 
   }
 
   /**

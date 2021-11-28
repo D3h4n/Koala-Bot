@@ -15,6 +15,14 @@ export default class togglePostureCheckCommand extends Command {
         }
       ]
     );
+
+    this.addNumberOption(option=>(
+      option.setName('frequency').setDescription('How often to run posture checks')
+    ));
+
+    this.addStringOption(option=>(
+      option.setName('message').setDescription('The message to send for each posture check')
+    ))
   }
 
   async action(interaction: CommandInteraction) {
@@ -37,17 +45,17 @@ export default class togglePostureCheckCommand extends Command {
       return; 
     }
 
-    // if posture checks are not running
-    const args = interaction.options.data;
-
     // calculate posture frequency
-    let postureCheckFrequency = Math.round(Number(args[1]) * 3.6e6);
-
+    let frequency = interaction.options.getNumber('frequency');
+    
     // assert valid posture frequency
-    if (Number.isNaN(postureCheckFrequency)) {
-      interaction.reply(`\`${args[1].value} is not a valid number\``);
+    if (!frequency) {
+      interaction.reply(`\`Please specify a valid frequency\``);
       return;
     }
+
+    let postureCheckFrequency = Math.round(frequency * 3.6e6);
+
 
     // update guild with new info
     guildServices.UpdateGuild({
@@ -55,12 +63,12 @@ export default class togglePostureCheckCommand extends Command {
       postureCheckChannelId: interaction?.channel?.id,
       runPostureCheck: true,
       postureCheckFrequency,
-      postureCheckMessage: args[2].value as string | undefined,
+      postureCheckMessage: interaction.options.getString('message'),
     });
 
     // send message
     interaction.reply(
-      `\`Running posture checks in this channel every ${args[1]} hours\``
+      `\`Running posture checks in this channel every ${frequency} hours\``
     );
   }
 }

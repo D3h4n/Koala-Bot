@@ -7,16 +7,29 @@ export default class chooseCommand extends Command {
       'choose',
       'Let the bot decide your fate',
     );
+
+    this.addStringOption(option =>(
+      option.setName('option1').setDescription('The first option to choose from').setRequired(true)
+    ));
+
+    this.addStringOption(option => (
+      option.setName('option2').setDescription('The second option to choose from').setRequired(true)
+    ));
+
+    for (let i = 3; i <= 9; i++) {
+      this.addStringOption(option => (
+        option.setName(`option${i}`).setDescription('An option to choose from').setRequired(false)
+      ));
+    }
   }
 
   action(interaction: CommandInteraction) {
-    // check if there are any args
-    if (interaction.options.data.length === 1) {
-      return interaction.reply('`There is nothing to choose!`');
-    }
-
     // generate random result
-    let result = interaction.options.data[Math.floor(Math.random() * (interaction.options.data.length - 1)) + 1].value;
+    let options = interaction.options.data.map(a => a.value);
+
+    console.log(options);
+    
+    const result = options[Math.floor(Math.random() * options.length)];
 
     // return result
     return interaction.reply(result?.toString()!);

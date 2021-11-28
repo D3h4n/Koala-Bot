@@ -3,6 +3,9 @@ import config from '../../utils/config';
 import Command from '../../common.commands.config';
 
 export default class voteCommand extends Command {
+  static yesEmote = '✔';
+  static noEmote = '❌';
+  
   constructor() {
     super(
       'vote',
@@ -19,9 +22,6 @@ export default class voteCommand extends Command {
   }
 
   async action(interaction: CommandInteraction) {
-    const yesEmote = '✔';
-    const noEmote = '❌';
-
     const timeLimit = interaction.options.getNumber('timelimit', true) * 60000; // time limit in milliseconds
 
     // check if timeLimit is a number
@@ -54,35 +54,42 @@ export default class voteCommand extends Command {
     const displayName = (interaction.member as GuildMember)?.displayName!;
     const displayAvatarURL = interaction.user.displayAvatarURL();
 
+    interaction.deferReply();
+
     // send initial message
     let sentMessage = await (interaction.channel as TextChannel).send(query);
     //   this.generateMessage(query, displayName, displayAvatarURL)
     // );
 
     // add reactions
-    const yesReaction = await sentMessage.react(yesEmote);
-    const noReaction = await sentMessage.react(noEmote);
+    const yesReaction = await sentMessage.react(voteCommand.yesEmote);
+    const noReaction = await sentMessage.react(voteCommand.noEmote);
 
     // initialize counts and userMap
     let yesCount = 0;
     let noCount = 0;
 
     // filter for reaction collections
-    const filter = (reaction: MessageReaction, user: User) =>
-      [yesEmote, noEmote].includes(reaction.emoji.name!) &&
-      !reaction.me &&
-      !user.bot;
+    // const filter = (reaction: MessageReaction, user: User) => (
+      // [voteCommand.yesEmote, voteCommand.noEmote].includes(reaction.emoji.name!) &&
+      // !reaction.me &&
+      // !user.bot
+    // )
+
+    const filter = () => true;
 
     // create reaction collector
     const collector = sentMessage.createReactionCollector({
       filter,
-      time: config.queueTimeLimit,
+      time: timeLimit,
       dispose: true
     });
 
     collector
       .on('collect', (reaction: MessageReaction, { id }: User) => {
-        const result = reaction.emoji.name === yesEmote;
+        const result = reaction.emoji.name === voteCommand.yesEmote;
+        
+        console.log(reaction); //FIXME: remove print later
 
         // remove user from opposite reaction if they reacted before
         const reactionUsers = (result ? noReaction : yesReaction).users;
@@ -96,13 +103,15 @@ export default class voteCommand extends Command {
         noCount += Number(!result);
       })
       .on('remove', (reaction: MessageReaction) => {
-        const result = reaction.emoji.name === yesEmote;
+        const result = reaction.emoji.name === voteCommand.yesEmote;
+
+        console.log(result); //FIXME: remove print later
 
         // update counts
         yesCount = Math.max(0, yesCount - Number(result));
         noCount = Math.max(0, noCount - Number(!result));
       })
-      .on('end', () => {
+      .on('end', async () => {
         // find final result
         let result = 'Tie';
 
@@ -127,12 +136,12 @@ export default class voteCommand extends Command {
         ].join('\n'));
 
         // update message
-        //TODO: sentMessage.edit(response);
+        interaction.editReply({
+          embeds: [response]
+        });
 
         // remove all reactions
-        yesReaction.remove();
-        noReaction.remove();
-        sentMessage.reactions.removeAll();
+        await sentMessage.delete();
       });
   }
 

@@ -1,4 +1,4 @@
-import { Client, TextChannel, Intents } from 'discord.js';
+import { Client, TextChannel, Intents, Collection } from 'discord.js';
 import {REST} from '@discordjs/rest';
 import {Routes} from 'discord-api-types/v9';
 import config from './utils/config';
@@ -11,7 +11,7 @@ import Command from './common.commands.config';
 export const client = new Client({ intents: [Intents.FLAGS.GUILDS]}); // initialize client
 
 // create a map of commands
-const commands: Map<string, Command> = new Map<string, Command>();
+const commands: Collection<string, Command> = new Collection<string, Command>();
 
 (async () => {
   for await (const f of getFiles("dist/commands")) {
@@ -26,11 +26,11 @@ const commands: Map<string, Command> = new Map<string, Command>();
 // log that bot is running
 client.once('ready', () => {
   const rest = new REST({version: "9"}).setToken(config.token!);
-
+    
   rest.put(
     Routes.applicationGuildCommands(client.user!.id, '310489953157120023'), 
     {
-      body: [...commands.values()].map(command => command.toJSON())
+      body: commands.map(command => command.toJSON())
     }
   ).then(() => console.log(`Loaded ${commands.size} commands`)).catch(console.error);
   
