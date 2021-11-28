@@ -81,10 +81,8 @@ export default function handleMessage(message: Message) {
 
     let commandName = args[0].toLowerCase();
 
-    // check for the correct command and execute it
-    commands
-      .get(commandAliases.get(commandName) ?? commandName)
-      ?.callCommand(message, args);
+    // search command in commands and aliases and run
+    (commands.get(commandName) ?? commandAliases.get(commandName))?.callCommand(message, args);
 
     log(message);
   }

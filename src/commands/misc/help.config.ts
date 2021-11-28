@@ -93,7 +93,7 @@ export default class helpCommand extends Command {
     // args[1] was not a number
     // check if it was a command
     let query = args[1].toLowerCase();
-    let command = commands.get(commandAliases.get(query) ?? query);
+    let command = commands.get(query) ?? commandAliases.get(query);
 
     if (command) {
       // create a message embed with the help message of the command

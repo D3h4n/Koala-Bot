@@ -12,25 +12,20 @@ export const client = new Client(); // initialize client
 
 // create a map of commands
 export const commands = new Collection<string, Command>();
-export const commandAliases = new Map<string, string>();
+export const commandAliases = new Map<string, Command>();
 
 (async () => {
   for await (const f of getFiles("dist/commands")) {
     if (f.endsWith(".js")) {
-      const command = require(f).default;
+      const command: Command = new (require(f).default)();
       
-      const instance: Command = new command();
-      
-      commands.set(instance.commandName, instance);
+      commands.set(command.commandName, command);
+      command.aliases?.forEach((alias) => {
+        commandAliases.set(alias, command);
+      });
     }
   }
-})().then(async () => {
-  commands.forEach((command) => {
-    command.aliases?.forEach((alias) => {
-      commandAliases.set(alias, command.commandName);
-    });
-  });
-})
+})();
 
 // log that bot is running
 client.once('ready', () => {
