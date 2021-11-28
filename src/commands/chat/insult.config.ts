@@ -1,4 +1,4 @@
-import { Message } from 'discord.js';
+import { CommandInteraction } from 'discord.js';
 import Command from '../../common.commands.config';
 
 export default class insultCommand extends Command {
@@ -11,10 +11,10 @@ export default class insultCommand extends Command {
   expl: Array<string>;
 
   constructor() {
-    super('Insult', 'insult', [
+    super(
+      'insult', 
       'Insult someone or yourself',
-      'Usage: $insult or $insult <@User>',
-    ]);
+    );
 
     this.wordTypes = ['adjective', 'adverb', 'noun', 'verb', 'expl'];
 
@@ -42,21 +42,24 @@ export default class insultCommand extends Command {
       'Yuh {expl} {adjective} {noun}, {user}',
       'Go and {expl} {verb} {adverb}, {adjective} {noun}, {user}',
     ];
+
+    this.addUserOption(option => (
+      option.setName('user').setDescription('user to insult').setRequired(false)
+    ));
   }
 
-  action(message: Message) {
+  action(interaction: CommandInteraction) {
     // get user to insult
-    let user =
-      message.mentions.users.first()?.toString() ?? message.author.toString();
+    let user = interaction.options.getUser('user') ?? interaction.user;
 
     // choose an insult format
     let insultFormat = this.insultFormats[this.rand(this.insultFormats.length)];
 
     // generate insult from format
-    let insult = this.parseFormat(insultFormat, user);
+    let insult = this.parseFormat(insultFormat, user.toString());
 
     // send insult
-    return message.channel.send(insult);
+    interaction.reply(insult);
   }
 
   parseFormat(insultFormat: string, user: string) {

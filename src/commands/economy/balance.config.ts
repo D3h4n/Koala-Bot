@@ -1,31 +1,30 @@
-import { Message, MessageEmbed } from 'discord.js';
+import { CommandInteraction, GuildMember, MessageEmbed } from 'discord.js';
 import economyServices from '../../services/economy.services';
 import Command from '../../common.commands.config';
 
 export default class balanceCommand extends Command {
   constructor() {
     super(
-      'Balance',
       'balance',
-      ['check your balance', 'usage: $balance'],
-      ['bal']
+      'check your balance',
     );
   }
 
-  async action({ author, member, channel }: Message) {
+  async action(interaction: CommandInteraction) {
     // get user or create new user if doesn't exist
     const user =
-      (await economyServices.getUserByDiscord(author.id)) ??
-      (await economyServices.createUser(author.id, author.username));
+      (await economyServices.getUserByDiscord(interaction.user.id)) ??
+      (await economyServices.createUser(interaction.user.id, interaction.user.username));
 
     // create response with balance
     const response = new MessageEmbed();
 
     response
-      .setAuthor(member?.displayName, author.displayAvatarURL())
+      .setAuthor((interaction.member as GuildMember)?.displayName!, interaction.user.displayAvatarURL())
       .setDescription(`**Balance:** $${user.balance}`);
 
+    //TODO: Figure out channel responses
     // send response
-    channel.send(response);
+    // channel.send(response);
   }
 }

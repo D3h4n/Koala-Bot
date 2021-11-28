@@ -1,49 +1,49 @@
-import { Message, MessageEmbed, MessageReaction, User } from 'discord.js';
+import { CommandInteraction, GuildMember, MessageEmbed, MessageReaction, TextChannel, User } from 'discord.js';
 import config from '../../utils/config';
 import Command from '../../common.commands.config';
 
 export default class voteCommand extends Command {
   constructor() {
-    super('Vote', 'vote', [
+    super(
+      'vote',
       'Put something up for vote',
-      'Usage: $vote <timelimit [minutes]> <query>',
-    ]);
+    );
+
+    this.addNumberOption(option=>(
+      option.setName('timelimit').setDescription('Time limit of voting').setRequired(true)
+    ));
+
+    this.addStringOption(option=>
+      option.setName('query').setDescription('The thing to vote on').setRequired(true)
+    );
   }
 
-  async action(message: Message, args: string[]) {
+  async action(interaction: CommandInteraction) {
     const yesEmote = '✔';
     const noEmote = '❌';
 
-    args.shift(); // remove first element
-
-    const timeLimit = Number(args.shift()) * 60000; // time limit in milliseconds
+    const timeLimit = interaction.options.getNumber('timelimit', true) * 60000; // time limit in milliseconds
 
     // check if timeLimit is a number
     if (Number.isNaN(timeLimit)) {
-      message.channel.send('`Invalid time limit`');
+      interaction.reply('`Invalid time limit`');
       return;
     }
 
     // check if timeLimit is too small
     if (timeLimit < 30000) {
-      message.channel.send('`Time limit cannot be less than 30 seconds`');
+      interaction.reply('`Time limit cannot be less than 30 seconds`');
       return;
     }
 
     // check if timeLimit is too large
     if (timeLimit > 600000) {
-      message.channel.send('`Timelimit cannot be more than 10 minutes`');
-      return;
-    }
-
-    // check for remaining args
-    if (!args.length) {
-      message.channel.send('`No query`');
+      interaction.reply('`Timelimit cannot be more than 10 minutes`');
       return;
     }
 
     // generate query
-    let query = args.join(' ');
+    let query = interaction.options.getString('query', true);
 
     // add question mark if there is none
     if (!query.endsWith('?')) {
@@ -51,13 +51,13 @@ export default class voteCommand extends Command {
     }
 
     // get the displayName and AvatarURL of author
-    const displayName = message.member?.displayName!;
-    const displayAvatarURL = message.author.displayAvatarURL();
+    const displayName = (interaction.member as GuildMember)?.displayName!;
+    const displayAvatarURL = interaction.user.displayAvatarURL();
 
     // send initial message
-    let sentMessage = await message.channel.send(
-      this.generateMessage(query, displayName, displayAvatarURL)
-    );
+    let sentMessage = await (interaction.channel as TextChannel).send(query);
+    //   this.generateMessage(query, displayName, displayAvatarURL)
+    // );
 
     // add reactions
     const yesReaction = await sentMessage.react(yesEmote);
@@ -69,14 +69,15 @@ export default class voteCommand extends Command {
 
     // filter for reaction collections
     const filter = (reaction: MessageReaction, user: User) =>
-      [yesEmote, noEmote].includes(reaction.emoji.name) &&
+      [yesEmote, noEmote].includes(reaction.emoji.name!) &&
       !reaction.me &&
       !user.bot;
 
     // create reaction collector
-    const collector = sentMessage.createReactionCollector(filter, {
-      time: timeLimit,
-      dispose: true,
+    const collector = sentMessage.createReactionCollector({
+      filter,
+      time: config.queueTimeLimit,
+      dispose: true
     });
 
     collector
@@ -123,10 +124,10 @@ export default class voteCommand extends Command {
           `Yes: ${yesCount}`,
           `No: ${noCount}`,
           `\nResult: ${result}`,
-        ]);
+        ].join('\n'));
 
         // update message
-        sentMessage.edit(response);
+        //TODO: sentMessage.edit(response);
 
         // remove all reactions
         yesReaction.remove();

@@ -1,48 +1,34 @@
-import { PermissionString, Message } from 'discord.js';
+import { CommandInteraction, GuildMember, PermissionString } from 'discord.js';
+import { SlashCommandBuilder } from '@discordjs/builders';
 
-export default abstract class Command {
-  commandTitle: string;
-  commandName: string;
-  help: string[];
-  aliases: string[];
-  permissions: PermissionString[];
+export default abstract class Command extends SlashCommandBuilder {
+  perms: PermissionString[] | undefined
+
 
   constructor(
-    commandTitle: string,
-    commandName: string,
-    help: string[],
-    aliases?: string[],
+    name: string,
+    description: string,
     permissions?: PermissionString[]
   ) {
-    this.commandTitle = commandTitle;
-    this.commandName = commandName;
-    this.help = help;
-    this.aliases = aliases ?? [];
-    this.permissions = permissions ?? [];
+    super();
+    this.setName(name);
+    this.setDescription(description);
+    this.perms = permissions;
   }
 
-  callCommand(message: Message, args: string[]): any {
-    if (!this.checkPermission(message))
-      return message.channel.send('`You do not have the correct permissions`');
-
-    this.action(message, args);
-  }
-
-  abstract action(message: Message, args: string[]): void;
-
-  checkPermission(message: Message): boolean {
-    if (!this.permissions?.length) return true;
-
-    for (let perm of this.permissions) {
-      if (
-        !message.member?.hasPermission(perm, {
-          checkAdmin: true,
-          checkOwner: true,
-        })
-      )
-        return false;
+  response (interaction: CommandInteraction) {
+    if (this.perms) {
+      let member = interaction.member as GuildMember;
+      for (let perm of this.perms) {
+        if (!member.permissions.has(perm, true)) {
+          interaction.reply('You should be able to see this');
+          return;
+        }
+      }
     }
 
-    return true;
+    this.action(interaction);
   }
+
+  abstract action(interaction: CommandInteraction): void;
 }

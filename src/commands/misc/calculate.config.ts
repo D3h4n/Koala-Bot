@@ -1,25 +1,27 @@
-import { Message } from 'discord.js';
+import { CommandInteraction } from 'discord.js';
 import Command from '../../common.commands.config';
 
 export default class calculateCommand extends Command {
   constructor() {
     super(
-      'Calculate',
       'calculate',
-      ['Calculate a mathematical expression', 'Usage: $calculate <expression>'],
-      ['calc']
+      'Calculate a mathematical expression'
     );
+
+    this.addStringOption(option => (
+      option.setName('expression').setDescription('Expression to calculate').setRequired(true)
+    ))
   }
 
-  action(message: Message, args: string[]) {
-    let input = args.slice(1).join('');
+  action(interaction: CommandInteraction) {
+    let input = interaction.options.getString('expression');
 
     try {
-      let result: number | string = this.calculateExpression(input); // calculate value of expression
+      let result: number | string = this.calculateExpression(input!); // calculate value of expression
 
-      message.channel.send(`\`Result: ${result}\``); // output result
+      interaction.reply(`\`Result: ${result}\``); // output result
     } catch (error) {
-      message.channel.send(error);
+      interaction.reply(error);
     }
   }
 

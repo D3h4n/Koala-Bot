@@ -1,14 +1,14 @@
-import { Message } from 'discord.js';
+import { CommandInteraction } from 'discord.js';
 import Command from '../../common.commands.config';
 
 export default class helloCommand extends Command {
   greetings: string[];
 
   constructor() {
-    super('Hello', 'hello', [
+    super(
+      'hello',
       'Greet someone',
-      'Usage: $hello or $hello @friend',
-    ]);
+    );
 
     this.greetings = [
       'Hi',
@@ -22,13 +22,13 @@ export default class helloCommand extends Command {
     ];
   }
 
-  action(message: Message, _: string[]) {
+  action(interaction: CommandInteraction) {
     // get a random greeting from greetings array
     let greeting =
       this.greetings[Math.floor(Math.random() * this.greetings.length)];
 
     // greet user that called command
-    message.channel.send(`${greeting} ${message.author.toString()}`);
+    interaction.reply(`${greeting} ${interaction.user.toString()}`);
     return;
   }
 }

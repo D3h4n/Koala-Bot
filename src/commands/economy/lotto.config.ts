@@ -1,6 +1,6 @@
 import Command from '../../common.commands.config';
 import economyServices from '../../services/economy.services';
-import { Message, MessageEmbed, TextChannel } from 'discord.js';
+import { CommandInteraction, GuildMember, MessageEmbed, TextChannel } from 'discord.js';
 import { Document } from 'mongoose';
 import { ILotto } from '../../models/lotto.model';
 import { client } from '../../index';
@@ -10,27 +10,33 @@ import { IGuild } from '../../models/guild.model';
 
 export default class lottoCommand extends Command {
   constructor() {
-    super('Lotto', 'lotto', [
+    super(
+      'lotto',
       'Play the lotto to win BIG',
-      'Usage: $lotto <5 numbers between 1 and 30 inclusive>',
-    ]);
+    );
+
+    this.addStringOption(option => 
+      option.setName('lottoid').setDescription('ID of lotto').setRequired(false)
+    )
   }
 
-  async action(message: Message, args: string[]) {
+  async action(interaction: CommandInteraction) {
     // if user provides a lotto id display lotto
-    if (args.length <= 2) {
+    if (interaction.options.data.length <= 2) {
       // get lotto and user records
-      let lotto = await economyServices.getLotto(args[1], message.guild?.id);
-      const user = await economyServices.getUserByDiscord(message.author.id);
+      let lotto = await economyServices.getLotto(interaction.options.getString('lottoid') ?? undefined, interaction.guild?.id);
+      const user = await economyServices.getUserByDiscord(interaction.user.id);
 
       // assert lotto exists
       if (!lotto) {
-        return message.channel.send('`No lottos found with that ID`');
+        interaction.reply('`No lottos found with that ID`');
+        return; 
       }
 
       // assert user exists
       if (!user) {
-        return message.channel.send('`No user found`');
+        interaction.reply('`No user found`');
+        return;
       }
 
       // send information about lotto
@@ -45,26 +51,26 @@ export default class lottoCommand extends Command {
           `**Entries:** ${lotto.guesses.length}`,
           `**Entered:** ${lotto.users.includes(user?.id)}`,
           `**Ended:** ${lotto.done}`,
-        ])
+        ].join('\n'))
         .setAuthor(
-          message.member?.displayName,
-          message.author.displayAvatarURL()
+          (interaction.member as GuildMember)?.displayName,
+          interaction.user.displayAvatarURL()
         );
-
-      return message.channel.send(response);
+      //TODO: FIgure out reponse
+      // return interaction.reply(response);
     }
 
     // if user does not provide an id
     // get latest lotto for guild
-    let lotto = await economyServices.getLotto(undefined, message.guild?.id);
+    let lotto = await economyServices.getLotto(undefined, interaction.guild?.id);
 
     // assert that lotto was found
     if (!lotto) {
-      return message.channel.send('`No lottos found`');
+      return interaction.reply('`No lottos found`');
     }
 
     if (lotto.done) {
-      const user = await economyServices.getUserByDiscord(message.author.id);
+      const user = await economyServices.getUserByDiscord(interaction.user.id);
       // send information about lotto
       const response = new MessageEmbed();
 
@@ -77,32 +83,33 @@ export default class lottoCommand extends Command {
           `**Entries:** ${lotto.guesses.length}`,
           `**Entered:** ${lotto.users.includes(user?.id)}`,
           `**Ended:** ${lotto.done}`,
-        ])
+        ].join('\n'))
         .setAuthor(
-          message.member?.displayName,
-          message.author.displayAvatarURL()
+          (interaction.member as GuildMember)?.displayName,
+          interaction.user.displayAvatarURL()
         );
 
-      return message.channel.send(response);
+      //TODO: FIgure out reponse
+      // return interaction.reply(response);
     }
 
     // check if enough numbers
-    if (args.length < 6) {
-      return message.channel.send('`Must guess 5 numbers between 1 and 30`');
+    if (interaction.options.data.length < 6) {
+      interaction.reply('`Must guess 5 numbers between 1 and 30`');
+      return;
     }
 
     // check if user has enough money
-    const user = await economyServices.getUserByDiscord(message.author.id);
+    const user = await economyServices.getUserByDiscord(interaction.user.id);
 
     if (!user || user.balance < 20) {
-      return message.channel.send([
-        "You don't have enough money",
-        '`$20 Entry Fee required`',
-      ]);
+      interaction.reply("You don't have enough money");
+      interaction.followUp('`$20 Entry Fee required`');
+      return; 
     }
 
     // add guess if lotto found
-    const guessNums = args.slice(1, 6).map((str) => Number(str));
+    const guessNums = interaction.options.data.slice(0, 5).map(({value}) => Number(value));
 
     // add guess to lotto
     return economyServices
@@ -118,14 +125,16 @@ export default class lottoCommand extends Command {
         response
           .setTitle('New Guess Added')
           .setAuthor(
-            message.member?.displayName,
-            message.author.displayAvatarURL()
+            (interaction.member as GuildMember)?.displayName,
+            interaction.user.displayAvatarURL()
           )
-          .setDescription([`**Numbers:** ${args.slice(1, 6).join(' ')}`]);
+          .setDescription(`**Numbers:** ${guessNums.join(' ')}`);
 
-        return message.channel.send(response);
+
+        //TODO: Figure out response  
+        // return interaction.reply(response);
       })
-      .catch(message.channel.send);
+      .catch(interaction.reply);
   }
 
   public static async checkLotto() {
@@ -194,10 +203,11 @@ export default class lottoCommand extends Command {
             `**End Date:** ${lotto.endDate.toDateString()}`,
             `**End Time:** ${lotto.endDate.getHours()}:${lotto.endDate.getMinutes()}`,
             `**Entries:** ${lotto.guesses.length}`,
-          ])
-          .setAuthor(client.user?.username, client.user?.displayAvatarURL());
+          ].join('\n'))
+          .setAuthor(client.user?.username!, client.user?.displayAvatarURL());
 
-        lottoChannel.send(response);
+        //TODO: Figure out response
+        // lottoChannel.send(response);
       }
     });
   }
@@ -334,9 +344,10 @@ export default class lottoCommand extends Command {
             member?.displayName || user.username
           }:* $${earnings}`;
         }),
-    ]);
+    ].join('\n'));
 
-    lottoChannel.send(response);
+    //TODO: Figure out response
+    // lottoChannel.send(response);
 
     // create new lotto after old one has ended
     lottoCommand.createNewLotto(guild, lottoChannel).catch(console.error);
@@ -344,7 +355,7 @@ export default class lottoCommand extends Command {
 
   private static async createNewLotto(
     guild: IGuild & Document<any, any>,
-    lottoChannel: TextChannel
+    _lottoChannel: TextChannel
   ) {
     // assert guild exists
     if (!guild) {
@@ -362,14 +373,15 @@ export default class lottoCommand extends Command {
 
     response
       .setTitle('New Lotto')
-      .setAuthor(client.user?.username, client.user?.displayAvatarURL())
+      .setAuthor(client.user?.username!, client.user?.displayAvatarURL())
       .setDescription([
         `**Lotto Id:** ${lotto.id}`,
         `**End Date:** ${endDate.toDateString()}`,
         `**End Time:** ${endDate.getHours()}:${endDate.getMinutes()}`,
-      ]);
-
-    lottoChannel.send(response);
+      ].join('\n'));
+    
+    //TODO: Figure out response
+    // lottoChannel.send(response);
   }
 
   private static generateEndDate(guild: IGuild) {

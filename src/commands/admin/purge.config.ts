@@ -1,40 +1,35 @@
-import { Message, NewsChannel, TextChannel } from 'discord.js';
+import { CommandInteraction, TextChannel } from 'discord.js';
 import config from '../../utils/config';
 import Command from '../../common.commands.config';
+// import config from '../../utils/config';
 
 export default class purgeCommand extends Command {
   constructor() {
     super(
-      'Purge',
       'purge',
-      ['Remove all messages from a chat', '$Usage: $purge <chat name>'],
-      [],
+      'Remove all messages from a chat',
       ['MANAGE_MESSAGES']
+    );
+    this.addStringOption(
+      option => option
+        .setName("channel")
+        .setDescription("Name of this channel")
+        .setRequired(true)
     );
   }
 
-  async action(message: Message, args: string[]) {
-    // get channel name
-    const channelName = args.slice(1).join(' ');
+  async action(interaction: CommandInteraction) {
+    const channelName = interaction.options.getString('channel');
 
-    // get channel
-    const channel = message.guild?.channels.cache.get(message.channel.id);
+    let channel = interaction.channel as TextChannel;
 
-    // check if channel names match
-    if (channel?.name !== channelName) {
-      message.channel.send(`\`To confirm type "$purge ${channel?.name}"\``);
-      return;
+    if (channelName === channel.name) {
+      let newChannel = await channel.clone();
+
+      interaction.deleteReply();
+      channel.delete("Purging");
+
+      setTimeout((await newChannel.send('`New channel created`')).delete, config.msgTimeout);
     }
-
-    // clone old channel
-    let newChannel = (await channel.clone().catch(console.error)) as
-      | TextChannel
-      | NewsChannel;
-
-    // delete old channel
-    await channel.delete().catch(console.error);
-    let msg = await newChannel.send('`Channel Succesfully Purged`');
-
-    await msg.delete({ timeout: config.msgTimeout * 2 });
-  }
+  }  
 }

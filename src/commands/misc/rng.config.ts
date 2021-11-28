@@ -1,63 +1,31 @@
-import { Message, MessageEmbed } from 'discord.js';
+import { CommandInteraction, GuildMember, MessageEmbed } from 'discord.js';
 import config from '../../utils/config';
 import Command from '../../common.commands.config';
 
 export default class rngCommand extends Command {
   constructor() {
-    super('RNG', 'rng', [
+    super(
+      'rng', 
       'Generate a random number',
-      'Usage:',
-      '$rng',
-      '$rng <max>',
-      '$rng <min> <max>',
-      '$rng <min> <max> <count>',
-    ]);
+    );
+
+    this.addNumberOption(option=> (
+      option.setName('max').setDescription('Highest number')
+    ));
+
+    this.addNumberOption(option=> (
+      option.setName('min').setDescription('Lowest number')
+    ));
+    
+    this.addNumberOption(option=> (
+      option.setName('count').setDescription('Amount of numbers to generate')
+    ));
   }
 
-  action(message: Message, args: string[]) {
-    let max: number = 10;
-    let min: number = 1;
-    let count: number = 1;
-
-    switch (args.length) {
-      // no args: default values
-      case 1:
-        break;
-
-      // one arg: max
-      case 2:
-        max = Number(args[1]);
-        break;
-
-      // two args: min and max
-      case 3:
-        min = Number(args[1]);
-        max = Number(args[2]);
-        break;
-
-      // three or more args: min, max and count
-      default:
-        min = Number(args[1]);
-        max = Number(args[2]);
-        count = Number(args[3]);
-        break;
-    }
-
-    // Error handling for input
-    // assert min is valid
-    if (Number.isNaN(min)) {
-      return message.channel.send(`${args[1]} is not a number!!`);
-    }
-
-    // assert max is valid
-    if (Number.isNaN(max)) {
-      return message.channel.send(`${args[2]} is not a number!!`);
-    }
-
-    // assert count is valid
-    if (Number.isNaN(count)) {
-      return message.channel.send(`${args[3]} is not a number!!`);
-    }
+  action(interaction: CommandInteraction) {
+    let max: number = interaction.options.getNumber('max') ?? 10;
+    let min: number = interaction.options.getNumber('min') ?? 1;
+    let count: number = interaction.options.getNumber('count') ?? 1;
 
     // swap min and max if min is larger than max
     if (min > max) {
@@ -68,12 +36,12 @@ export default class rngCommand extends Command {
 
     // assert count is greater than 0
     if (count < 1) {
-      return message.channel.send('`Count is too small`');
+      return interaction.reply('`Count is too small`');
     }
 
     // assert count is less than maxRandomNumbers
     if (count > config.maxRandomNumbers) {
-      return message.channel.send('`Count is too big`');
+      return interaction.reply('`Count is too big`');
     }
 
     // generate array of random numbers
@@ -90,15 +58,15 @@ export default class rngCommand extends Command {
       response
         .setTitle('Random Numbers')
         .setAuthor(
-          message.member?.displayName,
-          message.author.displayAvatarURL()
+          (interaction.member as GuildMember)?.displayName,
+          interaction.user.displayAvatarURL()
         )
-        .setDescription(['**Results:**', ...numbers])
+        .setDescription(['**Results:**', ...numbers].join(' '))
         .setColor(config.mainColor);
-
-      return message.channel.send(response);
+      
+      //TODO: return interaction.reply(response);
     }
 
-    return message.channel.send(`\`${numbers[0]}\``);
+    return interaction.reply(`\`${numbers[0]}\``);
   }
 }

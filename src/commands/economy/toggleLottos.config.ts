@@ -1,5 +1,5 @@
 import Command from '../../common.commands.config';
-import { Message } from 'discord.js';
+import { CommandInteraction } from 'discord.js';
 import economyServices from '../../services/economy.services';
 import guildServices from '../../services/guild.services';
 import config from '../../utils/config';
@@ -7,17 +7,19 @@ import config from '../../utils/config';
 export default class toggleLottosCommand extends Command {
   constructor() {
     super(
-      'Toggle Lottos',
       'togglelottos',
-      ['Turn lottos on and off', 'Usage:', '$togglelottos <frequency (hours)>'],
-      ['tlotto'],
+      'Turn lottos on and off',
       ['ADMINISTRATOR']
     );
+
+    this.addNumberOption(option=>(
+      option.setName('frequency').setDescription('How often to run lottos (hours)').setRequired(false)
+    ))
   }
 
-  async action(message: Message, args: string[]) {
+  async action(interaction: CommandInteraction) {
     // get guild id
-    const guildId = message.guild?.id;
+    const guildId = interaction.guild?.id;
 
     // assert guild id exists
     if (!guildId) {
@@ -31,16 +33,16 @@ export default class toggleLottosCommand extends Command {
     // check if guild is running lottos
     if (!guild.runLotto) {
       // check for number of arguments
-      if (args.length < 2) {
-        message.channel.send('`Must include frequency`');
+      if (interaction.options.data.length < 1) {
+        interaction.reply('`Must include frequency`');
         return;
       }
 
-      let lottoFrequency = Math.round(Number(args[1]) * 3.6e6); // convert time to ms
+      let lottoFrequency = Math.round(interaction.options.getNumber('frequency')! * 3.6e6); // convert time to ms
 
       // assert valid lotto frequency
       if (Number.isNaN(lottoFrequency) || lottoFrequency === 0) {
-        message.channel.send(`\`${args[1]} is not a valid number\``);
+        interaction.reply(`\`${interaction.options.data[0].value} is not a valid number\``);
         return;
       }
 
@@ -53,12 +55,12 @@ export default class toggleLottosCommand extends Command {
       guild = await guildServices.UpdateGuild({
         guildId: guild.guildId,
         runLotto: !guild.runLotto,
-        lottoChannelId: message.channel.id,
+        lottoChannelId: interaction.channel?.id,
         lottoFrequency,
       });
 
       // send response
-      message.channel.send(
+      interaction.reply(
         `\`Running Lottos in this channel every ${
           lottoFrequency * 3.6e6
         } hours\``
@@ -80,7 +82,7 @@ export default class toggleLottosCommand extends Command {
       }
 
       // send response
-      message.channel.send('`Stopped Lottos`');
+      interaction.reply('`Stopped Lottos`');
     }
   }
 }

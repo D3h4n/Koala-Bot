@@ -1,34 +1,23 @@
-import { Message, MessageEmbed } from 'discord.js';
+import { CommandInteraction, GuildMember, MessageEmbed } from 'discord.js';
 import Command from '../../common.commands.config';
 import config from '../../utils/config';
 
 export default class coinFlipCommand extends Command {
   constructor() {
-    super('Coin Flip', 'coinflip', [
-      'Flip one or more coins',
-      'Usage:',
-      '$coinflip',
-      '$coinflip <number>',
-    ]);
+    super(
+      'coinflip', 
+      'Flip one or more coins'
+    );
+      
+    this.addNumberOption(option=> 
+      option.setName('amount').setDescription('Amount of coins to flip')
+    )
   }
 
-  action(message: Message, args: string[]) {
+  action(interaction: CommandInteraction) {
     // set default values
     let flips: string[] = [];
-    let times = 1;
-
-    // check for 1 arg
-    if (args.length > 1) {
-      times = parseInt(args[1]);
-
-      if (Number.isNaN(times))
-        return message.channel.send('`Argument must be a number`');
-
-      if (times < 1)
-        return message.channel.send('`The number of flips is too small`');
-
-      times = Math.min(times, config.maxRandomNumbers);
-    }
+    let times = interaction.options.getNumber('amount') ?? 1;
 
     // generate results of flips
     for (let i = 0; i < times; i++) {
@@ -42,17 +31,18 @@ export default class coinFlipCommand extends Command {
 
       response
         .setTitle('Coin Flips')
+        .setDescription(['**Results:**', ...flips].join(''))
+        .setColor(config.mainColor)
         .setAuthor(
-          message.member?.displayName,
-          message.author.displayAvatarURL()
-        )
-        .setDescription(['**Results:**', ...flips])
-        .setColor(config.mainColor);
-
-      return message.channel.send(response);
+          (interaction.member as GuildMember)?.displayName,
+          interaction.user.displayAvatarURL()
+        );
+      
+      //TODO: Figure out responses
+      // return interaction.reply(response);
     }
 
     // return one flip
-    return message.channel.send(`\`${flips[0]}\``);
+    return interaction.reply(`\`${flips[0]}\``);
   }
 }

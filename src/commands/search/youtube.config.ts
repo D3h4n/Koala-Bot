@@ -1,25 +1,27 @@
 import Command from '../../common.commands.config';
 import config from '../../utils/config';
-import { Message } from 'discord.js';
+import { CommandInteraction } from 'discord.js';
 import { google } from 'googleapis';
 
 export default class youtubeCommand extends Command {
   constructor() {
     super(
-      'Youtube',
       'youtube',
-      ['Search youtube', 'Usage: $youtube <query>'],
-      ['yt']
+      'Search youtube'
     );
+
+    this.addStringOption(option=>
+      option.setName('query').setDescription('Thing to search').setRequired(true)
+    )
   }
 
-  action(message: Message, args: string[]) {
+  action(interaction: CommandInteraction) {
     // get search query
-    let search = args.slice(1).join(' ');
+    let search = interaction.options.data.map(a => a.value).join(' ').trim();
 
     // assert search is valid
     if (!search.length) {
-      message.channel.send("I can't search nothing");
+      interaction.reply("I can't search nothing");
       return;
     }
 
@@ -40,15 +42,15 @@ export default class youtubeCommand extends Command {
 
         if (id?.videoId) {
           // send video link if video
-          message.channel.send(`https://www.youtube.com/watch?v=${id.videoId}`);
+          interaction.reply(`https://www.youtube.com/watch?v=${id.videoId}`);
         } else if (id?.channelId) {
           // send channel link if channel
-          message.channel.send(
+          interaction.reply(
             `https://www.youtube.com/channel/${id.channelId}`
           );
         } else {
           // send repsonse if no results are found
-          message.channel.send(`No results found`);
+          interaction.reply(`No results found`);
         }
       })
       .catch(console.error);

@@ -1,37 +1,43 @@
-import { Message, MessageEmbed } from 'discord.js';
+import { CommandInteraction, MessageEmbed } from 'discord.js';
 import config from '../../utils/config';
 import Command from '../../common.commands.config';
 
 export default class teamsCommand extends Command {
   constructor() {
-    super('Teams', 'teams', [
+    super('teams', 
       'Split a list of names into teams',
-      'Usage:',
-      '$teams <no. teams> <name 1> <name 2> ... <name n>',
-    ]);
+    );
+
+    this.addNumberOption(option=>
+      option.setName('numteams').setDescription('The number of teams to make').setRequired(true)
+    )
   }
 
-  action(message: Message, args: string[]) {
+  action(interaction: CommandInteraction) {
     // get number of teams
-    let numTeams = parseInt(args[1]);
+    let numTeams = interaction.options.getNumber('numteams');
 
-    // check for valid number
-    if (Number.isNaN(numTeams))
-      return message.channel.send(`${args[1]} is not a number`);
+    if (!numTeams) {
+      return;
+    }
 
     // get list of names
-    let names = args.slice(2);
+    let names = interaction.options.data.slice(1).map(a => a.value?.toString());
 
     // check for valid number of teams
-    if (numTeams < 2)
-      return message.channel.send('`Too small number of teams`');
+    if (numTeams < 2) {
+      interaction.reply('`Too small number of teams`');
+      return; 
+    }
 
     // check if there are enough names to form teams
-    if (numTeams > names.length)
-      return message.channel.send('`Too little names to make teams`');
+    if (numTeams > names.length) {
+      interaction.reply('`Too little names to make teams`');
+      return; 
+    }
 
     // create map to store teams
-    let teams: Map<number, Array<string>> = new Map();
+    let teams: string[][] = []; 
 
     // split names into teams randomly
     for (let i = 0; names.length > 0; i++) {
@@ -39,13 +45,13 @@ export default class teamsCommand extends Command {
       let [name] = names.splice(Math.floor(Math.random() * names.length), 1);
 
       // get corresponding team
-      let team = teams.get(i % numTeams) ?? [];
+      let team = teams[i % numTeams] ?? [];
 
       // add name to team
-      team.push(name);
+      team.push(name!);
 
       // update team in map
-      teams.set(i % numTeams, team);
+      teams[i % numTeams] = team;
     }
 
     // create embedded message of teams
@@ -54,14 +60,14 @@ export default class teamsCommand extends Command {
     res
       .setTitle(`${numTeams} Random Teams`)
       .setColor(config.mainColor)
-      .setDescription(this.generateDescription(teams));
+      .setDescription(this.generateDescription(teams).join('\n'));
 
-    return message.channel.send(res);
+    //TODO: return interaction.reply(res);
   }
 
-  generateDescription(teams: Map<number, string[]>) {
+  generateDescription(teams: string[][]) {
     // generate text for each team
-    return [...teams.values()].map(
+    return [...teams].map(
       (team, idx) =>
         `**Team ${idx + 1}:**\n` +
         team.reduce((prev, curr) => prev + ', ' + curr) +

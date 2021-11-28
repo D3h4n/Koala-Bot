@@ -1,55 +1,55 @@
-import { Message, GuildMember } from 'discord.js';
+import {CommandInteraction, GuildMember} from 'discord.js';
 import Command from '../../common.commands.config';
-import config from '../../utils/config';
+// import config from '../../utils/config';
 
 export default class timeoutCommand extends Command {
   constructor() {
     super(
-      'Timeout',
       'timeout',
-      [
-        'Put a user in timeout',
-        'Usage: $timeout @<user> <minutes>',
-        `Max timeout ${config.timeoutMaxLimit / 60000} minutes`,
-      ],
-      [],
+      'Put a user in timeout',
       ['MANAGE_ROLES', 'KICK_MEMBERS']
     );
   }
 
-  action(message: Message, args: string[]) {
+  action(interaction: CommandInteraction) {
     // get first mentioned member
-    const memberToTimeout = message.mentions.members?.first();
+    const args = interaction.options.data;
+    const memberToTimeout = args[0].member as GuildMember;
+
 
     // check if the member exists
     if (!memberToTimeout) {
-      return message.channel.send("`I don't know who that is homie`");
+      interaction.channel?.send("`I don't know who that is homie`");
+      return;
     }
 
     // check that the member can be timedout
     if (!memberToTimeout.manageable) {
-      return message.channel.send('`That user is too stronk`');
+      interaction.reply('`That user is too stronk`');
+      return; 
     }
 
-    // calculate timeout
-    let timeout = (Number(args[2]) || 1) * 60000;
+    //TODO: calculate timeout
+    // let timeout = (args[1].value as number || 1) * 60000;
+    const timeout = 10000;
 
-    // check if time is within range
-    if (timeout < 1000) {
-      return message.channel.send('`That time is too short`');
-    }
+    // // check if time is within range
+    // if (timeout < 1000) {
+    //   return interaction.reply('`That time is too short`');
+    // }
 
-    if (timeout > config.timeoutMaxLimit) {
-      return message.channel.send('`That time is too large`');
-    }
+    // if (timeout > config.timeoutMaxLimit) {
+    //   return interaction.reply('`That time is too large`');
+    // }
 
     // add timeout and handle errors
     if (!this.addTimeout(memberToTimeout, timeout)) {
-      return message.channel.send('`Some kinda error or something`');
+      interaction.reply('`Some kinda error or something`');
+      return; 
     }
 
     // send prompt after timeout
-    return message.channel.send(
+    interaction.reply(
       `Timed out ${memberToTimeout.toString()} for ${timeout / 1000} seconds`
     );
   }

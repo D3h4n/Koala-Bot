@@ -1,29 +1,24 @@
-import { Message } from 'discord.js';
+import { CommandInteraction } from 'discord.js';
 import Command from '../../common.commands.config';
 
 export default class chooseCommand extends Command {
   constructor() {
     super(
-      'Choose',
       'choose',
-      ['Usage:', '$choose <option 1> <option2> ... <option n>'],
-      ['ch']
+      'Let the bot decide your fate',
     );
   }
 
-  action(message: Message, args: string[]) {
+  action(interaction: CommandInteraction) {
     // check if there are any args
-    if (args.length === 1) {
-      return message.channel.send('`There is nothing to choose!`');
+    if (interaction.options.data.length === 1) {
+      return interaction.reply('`There is nothing to choose!`');
     }
 
     // generate random result
-    let result = args[Math.floor(Math.random() * (args.length - 1)) + 1];
-
-    // return if result is a mention
-    if (result.match(/<@!\d+>/)) return message.channel.send(result);
+    let result = interaction.options.data[Math.floor(Math.random() * (interaction.options.data.length - 1)) + 1].value;
 
     // return result
-    return message.channel.send(`\`${result}\``);
+    return interaction.reply(result?.toString()!);
   }
 }

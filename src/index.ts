@@ -1,42 +1,47 @@
-import { Client, TextChannel, Collection } from 'discord.js';
-import Distube from 'distube';
+import { Client, TextChannel, Intents } from 'discord.js';
+import {REST} from '@discordjs/rest';
+import {Routes} from 'discord-api-types/v9';
 import config from './utils/config';
-import initDistube from './utils/distube.config';
 import initMongoose from './utils/mongoose.config';
 import initEventLoop from './utils/timer.config';
-import handleMessage, {getFiles} from './helper.functions';
+import {getFiles} from './helper.functions';
 import guildServices from './services/guild.services';
 import Command from './common.commands.config';
 
-export const client = new Client(); // initialize client
+export const client = new Client({ intents: [Intents.FLAGS.GUILDS]}); // initialize client
 
 // create a map of commands
-export const commands = new Collection<string, Command>();
-export const commandAliases = new Map<string, Command>();
+const commands: Map<string, Command> = new Map<string, Command>();
 
 (async () => {
   for await (const f of getFiles("dist/commands")) {
     if (f.endsWith(".js")) {
       const command: Command = new (require(f).default)();
       
-      commands.set(command.commandName, command);
-      command.aliases?.forEach((alias) => {
-        commandAliases.set(alias, command);
-      });
+      commands.set(command.name, command);
     }
   }
 })();
 
 // log that bot is running
 client.once('ready', () => {
-  console.log(`[server] Loaded ${commands.size} commands`);
+  const rest = new REST({version: "9"}).setToken(config.token!);
+
+  rest.put(
+    Routes.applicationGuildCommands(client.user!.id, '310489953157120023'), 
+    {
+      body: [...commands.values()].map(command => command.toJSON())
+    }
+  ).then(() => console.log(`Loaded ${commands.size} commands`)).catch(console.error);
   
   client.user!.setPresence({
     status: 'online',
-    activity: {
-      name: config.botStatus,
-      type: 'PLAYING',
-    },
+    activities: [
+      {
+        name: "gaming",
+        type: 'COMPETING'
+      }
+    ]
   });
   
   if (config.onlineMessage) {
@@ -50,12 +55,13 @@ client.once('ready', () => {
   initEventLoop();
 });
 
-// runs every time a message is sent in the server
-client.on('message', handleMessage);
+// runs for each interaction
+client.on('interactionCreate', async interaction => {
+  if (!interaction.isCommand()) return;
+  
+  let command = commands.get(interaction.commandName);
 
-client.on('interactionCreate', interaction => {
-  console.log(interaction);
-  // if (!interaction.isCommand()) return;
+  command?.action(interaction);
 });
 
 client.on('guildCreate', (guild) => {
@@ -68,13 +74,6 @@ client.on('guildDelete', (guild) => {
   guildServices.DeleteGuild(guild.id).catch(console.error);
 });
 
-export const distube = initDistube(
-  new Distube(client, {
-    searchSongs: false,
-    emitNewSongOnly: true,
-  })
-);
-  
-  initMongoose();
+initMongoose();
   
 client.login(config.token);

@@ -1,4 +1,4 @@
-import { Message, MessageEmbed } from 'discord.js';
+import { CommandInteraction, GuildMember, MessageEmbed } from 'discord.js';
 import Command from '../../common.commands.config';
 import economyServices from '../../services/economy.services';
 
@@ -7,17 +7,17 @@ export default class dailyCommand extends Command {
   randomRange: number;
 
   constructor() {
-    super('Daily', 'daily', ['earn daily currency', 'Usage: $daily']);
+    super('daily', 'earn daily currency');
 
     this.avgGain = 100;
     this.randomRange = 20;
   }
 
-  async action({ author, channel, member }: Message) {
+  async action(interaction: CommandInteraction) {
     // get user record or create new record
     const user =
-      (await economyServices.getUserByDiscord(author.id)) ??
-      (await economyServices.createUser(author.id, author.username));
+      (await economyServices.getUserByDiscord(interaction.user.id)) ??
+      (await economyServices.createUser(interaction.user.id, interaction.user.username));
 
     // get today's date
     const today = new Date();
@@ -28,10 +28,9 @@ export default class dailyCommand extends Command {
         (user.nextDaily.valueOf() - today.valueOf()) / 60000
       );
 
-      return channel.send([
-        'Stop being greedy.',
-        `You have to wait \`${this.generateTimeString(remainingTime)}\`.`,
-      ]);
+      interaction.reply('Stop being greedy.');
+      interaction.followUp(`You have to wait \`${this.generateTimeString(remainingTime)}\`.`);
+      return;
     }
 
     // calculate daily gain
@@ -46,13 +45,11 @@ export default class dailyCommand extends Command {
     const response = new MessageEmbed();
 
     response
-      .setAuthor(member?.displayName, author.displayAvatarURL())
-      .setDescription([
-        `**Earned:** $${gain}`,
-        `**Balance:** $${user.balance}`,
-      ]);
+      .setAuthor((interaction.member as GuildMember)?.displayName, interaction.user.displayAvatarURL())
+      .setDescription(`**Earned:** $${gain}\n**Balance:** $${user.balance}`);
 
-    return channel.send(response);
+    //TODO: Figure out reponse
+    // interaction.reply(response); 
   }
 
   /**

@@ -1,22 +1,20 @@
-import { Message } from 'discord.js';
+import { CommandInteraction } from 'discord.js';
 import Command from '../../common.commands.config';
 
 export default class echoCommand extends Command {
   constructor() {
-    super('Echo', 'echo', [
-      'I repeat whatever you want',
-      'Usage: $echo <text>',
-    ]);
+    super(
+      'echo', 
+      'I repeat whatever you want'
+    );
+
+    this.addStringOption(option => (
+      option.setName('message').setDescription('message to echo').setRequired(true)
+    ));
   }
 
-  action(message: Message, args: string[]) {
+  action(interaction: CommandInteraction) {
     // get message content to send
-    let response = args.slice(1).join(' ');
-
-    // delete commmand message
-    message.delete({ timeout: 100 });
-
-    // send message content
-    message.channel.send(response || 'I have nothing to say.');
+    interaction.reply(interaction.options.getString('message')!);
   }
 }
