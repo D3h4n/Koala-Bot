@@ -1,5 +1,5 @@
 import { Message } from 'discord.js';
-import Command from '../common.commands.config';
+import Command from '../../common.commands.config';
 
 export default class insultCommand extends Command {
   insultFormats: Array<string>;

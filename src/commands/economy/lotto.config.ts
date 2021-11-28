@@ -1,4 +1,4 @@
-import Command from '../common.commands.config';
+import Command from '../../common.commands.config';
 import economyServices from '../../services/economy.services';
 import { Message, MessageEmbed, TextChannel } from 'discord.js';
 import { Document } from 'mongoose';

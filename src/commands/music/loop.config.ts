@@ -1,6 +1,6 @@
 import { Message } from 'discord.js';
 import { distube } from '../../index';
-import Command from '../common.commands.config';
+import Command from '../../common.commands.config';
 
 export default class loopCommand extends Command {
   constructor() {

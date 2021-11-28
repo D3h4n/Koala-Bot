@@ -3,7 +3,7 @@ import Distube from 'distube';
 import config from './utils/config';
 import initDistube from './utils/distube.config';
 import initMongoose from './utils/mongoose.config';
-import commands from './commands/index.commands.setup';
+import commands from './index.commands.setup';
 import initEventLoop from './utils/timer.config';
 import handleMessage from './helper.functions';
 import guildServices from './services/guild.services';

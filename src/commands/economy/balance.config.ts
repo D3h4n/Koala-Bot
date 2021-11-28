@@ -1,6 +1,6 @@
 import { Message, MessageEmbed } from 'discord.js';
 import economyServices from '../../services/economy.services';
-import Command from '../common.commands.config';
+import Command from '../../common.commands.config';
 
 export default class balanceCommand extends Command {
   constructor() {

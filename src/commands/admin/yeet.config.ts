@@ -1,5 +1,5 @@
 import { Message, MessageEmbed } from 'discord.js';
-import Command from '../common.commands.config';
+import Command from '../../common.commands.config';
 
 export default class yeetCommand extends Command {
   constructor() {

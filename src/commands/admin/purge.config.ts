@@ -1,6 +1,6 @@
 import { Message, NewsChannel, TextChannel } from 'discord.js';
 import config from '../../utils/config';
-import Command from '../common.commands.config';
+import Command from '../../common.commands.config';
 
 export default class purgeCommand extends Command {
   constructor() {

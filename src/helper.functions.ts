@@ -1,4 +1,4 @@
-import commands, { commandAliases } from './commands/index.commands.setup';
+import commands, { commandAliases } from './index.commands.setup';
 import config from './utils/config';
 import { Message, TextChannel } from 'discord.js';
 import { client } from './index';

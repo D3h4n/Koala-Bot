@@ -1,4 +1,4 @@
-import Command from '../common.commands.config';
+import Command from '../../common.commands.config';
 import { Message } from 'discord.js';
 import economyServices from '../../services/economy.services';
 import guildServices from '../../services/guild.services';

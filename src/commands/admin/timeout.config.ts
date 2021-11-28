@@ -1,5 +1,5 @@
 import { Message, GuildMember } from 'discord.js';
-import Command from '../common.commands.config';
+import Command from '../../common.commands.config';
 import config from '../../utils/config';
 
 export default class timeoutCommand extends Command {

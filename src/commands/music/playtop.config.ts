@@ -1,4 +1,4 @@
-import Command from '../common.commands.config';
+import Command from '../../common.commands.config';
 import Song from 'distube/typings/Song';
 import { Message } from 'discord.js';
 import { distube } from '../../index';

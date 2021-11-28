@@ -1,6 +1,6 @@
 import { Message } from 'discord.js';
 import guildServices from '../../services/guild.services';
-import Command from '../common.commands.config';
+import Command from '../../common.commands.config';
 
 export default class togglePostureCheckCommand extends Command {
   constructor() {
