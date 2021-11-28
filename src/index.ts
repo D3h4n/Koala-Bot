@@ -46,8 +46,8 @@ client.once('ready', () => {
     status: 'online',
     activities: [
       {
-        name: "gaming",
-        type: 'COMPETING'
+        name: config.botStatus,
+        type: 'PLAYING'
       }
     ]
   });
