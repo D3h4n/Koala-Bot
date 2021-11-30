@@ -8,6 +8,7 @@ export default class timeoutCommand extends Command {
     super(
       'timeout',
       'Put a user in timeout',
+      '310489953157120023',
       [
         {
           id: '829531557785894923',
@@ -16,6 +17,8 @@ export default class timeoutCommand extends Command {
         }
       ]
     );
+
+    this.setDefaultPermission(false);
 
     this.addUserOption(option=>(
       option.setName('user').setDescription('User to timeout').setRequired(true)

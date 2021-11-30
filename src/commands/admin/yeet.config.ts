@@ -8,6 +8,7 @@ export default class yeetCommand extends Command {
     super(
       'yeet',
       'Move a bunch of people between voice channels',
+      '310489953157120023',
       [
         {
           id: '829531557785894923',
@@ -16,6 +17,8 @@ export default class yeetCommand extends Command {
         }
       ]
     );
+
+    this.setDefaultPermission(false);
 
     this.addChannelOption(option => (
       option.setName('channel').setDescription('Channel to yeet to').setRequired(true).addChannelType(ChannelType.GuildVoice)

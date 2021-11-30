@@ -2,17 +2,20 @@ import { CommandInteraction, ApplicationCommandPermissionData } from 'discord.js
 import { SlashCommandBuilder } from '@discordjs/builders';
 
 export default abstract class Command extends SlashCommandBuilder {
-  permissions: ApplicationCommandPermissionData[] | undefined
-  
+  permissions: ApplicationCommandPermissionData[] | undefined;
+  guildid: string | undefined;
+
   constructor(
     name: string,
     description: string,
-    permsissions?: ApplicationCommandPermissionData[]
+    guildid?: string,
+    permissions?: ApplicationCommandPermissionData[]
   ) {
     super();
     this.setName(name);
     this.setDescription(description);
-    this.permissions = permsissions;
+    this.permissions = permissions;
+    this.guildid = guildid;
   }
 
   abstract action(interaction: CommandInteraction): void;

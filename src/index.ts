@@ -1,55 +1,34 @@
-import { Client, TextChannel, Intents, Collection } from 'discord.js';
-import {REST} from '@discordjs/rest';
-import {Routes} from 'discord-api-types/v9';
+import { Client, TextChannel, Intents } from 'discord.js';
+import { registerGuildCommands, readCommands, handleInteraction } from './helper.functions';
+// import { registerApplicationCommands, updateGuildCommandPermission } from './helper.functions;
 import config from './utils/config';
 import initMongoose from './utils/mongoose.config';
 import initEventLoop from './utils/timer.config';
-import {getFiles} from './helper.functions';
 import guildServices from './services/guild.services';
-import Command from './common.commands.config';
 
-export const client = new Client({ intents: [Intents.FLAGS.GUILDS]}); // initialize client
+export const client = new Client({ intents: [Intents.FLAGS.GUILDS] }); // initialize client
 
-// create a map of commands
-const commands: Collection<string, Command> = new Collection<string, Command>();
-
-(async () => {
-  for await (const f of getFiles("dist/commands")) {
-    if (f.endsWith(".js")) {
-      const command: Command = new (require(f).default)();
-   
-      commands.set(command.name, command);
-    }
-  }
-})();
+(async () => await readCommands("dist/commands"))();
 
 // log that bot is running
-client.once('ready', () => {
-  const rest = new REST({version: "9"}).setToken(config.token!);
-    
-  rest.put(
-    Routes.applicationGuildCommands(client.user!.id, '310489953157120023'), 
-    {
-      body: commands.map(command => command.toJSON())
-    }
-  ).then(() => console.log(`Loaded ${commands.size} commands`)).catch(console.error);
-  
-  client.guilds.cache.get('310489953157120023')?.commands.cache.each(command => {
-    let permissions = commands.get(command.name)?.permissions;
+client.once('ready', async () => {
+  // await registerApplicationCommands(client.user!.id);
+  // await guildServices
+  //   .GetGuilds()
+  //   .then(guilds => {
+  //     guilds.forEach(guild => {
+  //       updateGuildCommandPermissions(guild.guildId);
+  //     })
+  //   })
+  //   .catch(console.error);
 
-    if (permissions) {
-      command.permissions.add({ permissions });
-    }
-  })
 
   client.user!.setPresence({
     status: 'online',
-    activities: [
-      {
-        name: config.botStatus,
-        type: 'PLAYING'
-      }
-    ]
+    activities: [{
+      name: config.botStatus,
+      type: 'PLAYING'
+    }]
   });
   
   if (config.onlineMessage) {
@@ -61,25 +40,29 @@ client.once('ready', () => {
   }
   
   initEventLoop();
+
+  console.log('Up and Running!!!');
 });
 
 // runs for each interaction
-client.on('interactionCreate', async interaction => {
-  if (!interaction.isCommand()) return;
-  
-  let command = commands.get(interaction.commandName);
-
-  command?.action(interaction);
-});
+client.on('interactionCreate', handleInteraction);
 
 client.on('guildCreate', (guild) => {
-  console.log(`Joined new guild ${guild.name}`);
-  guildServices.CreateGuild(guild).catch(console.error);
+  guildServices.CreateGuild(guild)
+    .then(() => registerGuildCommands(client.user?.id!, guild.id))
+    .then(() => {
+      console.log(`Joined new guild ${guild.name}`);
+      console.log('Sucessfully Registered commands');
+    })
+    .catch(console.error);
 });
 
 client.on('guildDelete', (guild) => {
-  console.log(`Left Guild ${guild.name}`);
-  guildServices.DeleteGuild(guild.id).catch(console.error);
+  guildServices.DeleteGuild(guild.id)
+    .then(() => {
+      console.log(`Left Guild ${guild.name}`);
+    })
+    .catch(console.error);
 });
 
 initMongoose();

@@ -31,7 +31,7 @@ export default class coinFlipCommand extends Command {
 
       response
         .setTitle('Coin Flips')
-        .setDescription(['**Results:**', ...flips].join(''))
+        .setDescription(['**Results:**', ...flips].join('\n'))
         .setColor(config.mainColor)
         .setAuthor(
           (interaction.member as GuildMember)?.displayName,

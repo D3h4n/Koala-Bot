@@ -8,6 +8,7 @@ export default class purgeCommand extends Command {
     super(
       'purge',
       'Remove all messages from a chat',
+      '310489953157120023',
       [
         {
           id: '829531557785894923',
@@ -16,6 +17,9 @@ export default class purgeCommand extends Command {
         }
       ]
     );
+
+    this.setDefaultPermission(false);
+    
     this.addChannelOption(
       option => option
         .setName("channel")

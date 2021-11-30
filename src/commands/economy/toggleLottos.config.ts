@@ -9,6 +9,7 @@ export default class toggleLottosCommand extends Command {
     super(
       'togglelottos',
       'Turn lottos on and off',
+      '310489953157120023',
       [
         {
           id: '829531557785894923',

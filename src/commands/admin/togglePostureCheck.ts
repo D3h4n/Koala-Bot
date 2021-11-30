@@ -7,6 +7,7 @@ export default class togglePostureCheckCommand extends Command {
     super(
       'toggleposturecheck',
       'Toggle Posture checks',
+      '310489953157120000',
       [
         {
           id: '829531557785894923',
@@ -15,6 +16,8 @@ export default class togglePostureCheckCommand extends Command {
         }
       ]
     );
+
+    this.setDefaultPermission(false);
 
     this.addNumberOption(option=>(
       option.setName('frequency').setDescription('How often to run posture checks')
