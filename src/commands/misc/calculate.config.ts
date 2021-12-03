@@ -1,5 +1,5 @@
 import { CommandInteraction } from 'discord.js';
-import Command from '../../common.commands.config';
+import Command from '../../utils/common.commands.config';
 
 export default class calculateCommand extends Command {
   constructor() {
@@ -19,7 +19,7 @@ export default class calculateCommand extends Command {
     try {
       let result: number | string = this.calculateExpression(input!); // calculate value of expression
 
-      interaction.reply(`\`Result: ${result}\``); // output result
+      interaction.reply(`\`${input} = ${result}\``); // output result
     } catch (error) {
       interaction.reply(error);
     }

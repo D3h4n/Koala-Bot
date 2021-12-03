@@ -1,6 +1,6 @@
 import { CommandInteraction } from 'discord.js';
 import guildServices from '../../services/guild.services';
-import Command from '../../common.commands.config';
+import Command from '../../utils/common.commands.config';
 
 export default class togglePostureCheckCommand extends Command {
   constructor() {
@@ -8,13 +8,7 @@ export default class togglePostureCheckCommand extends Command {
       'toggleposturecheck',
       'Toggle Posture checks',
       '310489953157120000',
-      [
-        {
-          id: '829531557785894923',
-          type: 'ROLE',
-          permission: true
-        }
-      ]
+      [ '829531557785894923' ]
     );
 
     this.setDefaultPermission(false);

@@ -1,33 +1,40 @@
-import { Client, TextChannel, Intents } from 'discord.js';
-import { registerGuildCommands, readCommands, handleInteraction } from './helper.functions';
-// import { registerApplicationCommands, updateGuildCommandPermission } from './helper.functions;
+import { Client, TextChannel, Intents, Collection } from 'discord.js';
+import { handleInteraction } from './utils/helper.functions';
 import config from './utils/config';
 import initMongoose from './utils/mongoose.config';
 import initEventLoop from './utils/timer.config';
 import guildServices from './services/guild.services';
+import Command from './utils/common.commands.config';
+import { readCommands, registerGuildCommands } from './utils/registerCommands';
 
 export const client = new Client({ intents: [Intents.FLAGS.GUILDS] }); // initialize client
 
-(async () => await readCommands("dist/commands"))();
+export let commands: Collection<string, Command>;
 
-// log that bot is running
-client.once('ready', async () => {
-  // await registerApplicationCommands(client.user!.id);
+(async () => {
+  commands = await readCommands("dist/commands")
+  
+  // await registerApplicationCommands(client.user!.id, commands);
+
   // await guildServices
   //   .GetGuilds()
   //   .then(guilds => {
   //     guilds.forEach(guild => {
-  //       updateGuildCommandPermissions(guild.guildId);
+  //       updateGuildCommandPermissions(guild.guildId, commands);
   //     })
   //   })
   //   .catch(console.error);
+  // await registerGuildCommands(client.user!.id, '310489953157120023', commands);
+  // await updateGuildCommandPermissions('310489953157120023', commands);
+})();
 
-
+// log that bot is running
+client.once('ready', async () => {
   client.user!.setPresence({
     status: 'online',
     activities: [{
       name: config.botStatus,
-      type: 'PLAYING'
+      type: 'PLAYING' 
     }]
   });
   
@@ -49,7 +56,7 @@ client.on('interactionCreate', handleInteraction);
 
 client.on('guildCreate', (guild) => {
   guildServices.CreateGuild(guild)
-    .then(() => registerGuildCommands(client.user?.id!, guild.id))
+    .then(() => registerGuildCommands(client.user?.id!, guild.id, commands))
     .then(() => {
       console.log(`Joined new guild ${guild.name}`);
       console.log('Sucessfully Registered commands');
@@ -68,3 +75,4 @@ client.on('guildDelete', (guild) => {
 initMongoose();
   
 client.login(config.token);
+

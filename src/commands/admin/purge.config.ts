@@ -1,6 +1,6 @@
 import { CommandInteraction, TextChannel } from 'discord.js';
 import config from '../../utils/config';
-import Command from '../../common.commands.config';
+import Command from '../../utils/common.commands.config';
 import { ChannelType } from 'discord-api-types/v9';
 
 export default class purgeCommand extends Command {
@@ -9,13 +9,7 @@ export default class purgeCommand extends Command {
       'purge',
       'Remove all messages from a chat',
       '310489953157120023',
-      [
-        {
-          id: '829531557785894923',
-          type: 'ROLE',
-          permission: true
-        }
-      ]
+      [ '829531557785894923' ]
     );
 
     this.setDefaultPermission(false);
@@ -35,7 +29,6 @@ export default class purgeCommand extends Command {
     if (channel === interaction.channel) {
       let newChannel = await channel.clone();
 
-      interaction.deleteReply();
       channel.delete("Purging");
 
       let msg = await newChannel.send('`Channel Successfully purged`');

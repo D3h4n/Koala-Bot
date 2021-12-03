@@ -1,5 +1,5 @@
 import { CommandInteraction } from 'discord.js';
-import Command from '../../common.commands.config';
+import Command from '../../utils/common.commands.config';
 
 export default class insultCommand extends Command {
   insultFormats: Array<string>;
@@ -13,7 +13,7 @@ export default class insultCommand extends Command {
   constructor() {
     super(
       'insult', 
-      'Insult someone or yourself',
+      'Insult someone or yourself'
     );
 
     this.wordTypes = ['adjective', 'adverb', 'noun', 'verb', 'expl'];

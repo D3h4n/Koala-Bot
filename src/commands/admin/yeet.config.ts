@@ -1,6 +1,6 @@
 import { CommandInteraction, MessageEmbed, VoiceChannel } from 'discord.js';
 import {ChannelType} from 'discord-api-types/v9'
-import Command from '../../common.commands.config';
+import Command from '../../utils/common.commands.config';
 import config from '../../utils/config';
 
 export default class yeetCommand extends Command {
@@ -9,13 +9,7 @@ export default class yeetCommand extends Command {
       'yeet',
       'Move a bunch of people between voice channels',
       '310489953157120023',
-      [
-        {
-          id: '829531557785894923',
-          type: 'ROLE',
-          permission: true
-        }
-      ]
+      [ '829531557785894923', "795005140977451018", "613883141857214500" ]
     );
 
     this.setDefaultPermission(false);

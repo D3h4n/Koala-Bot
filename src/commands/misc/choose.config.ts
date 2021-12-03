@@ -1,6 +1,6 @@
 import { CommandInteraction, Message } from 'discord.js';
 // import { CommandInteraction, Message, MessageReaction, User } from 'discord.js';
-import Command from '../../common.commands.config';
+import Command from '../../utils/common.commands.config';
 
 export default class chooseCommand extends Command {
   emotes = ['✔', '❌'];

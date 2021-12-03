@@ -9,12 +9,33 @@ export default abstract class Command extends SlashCommandBuilder {
     name: string,
     description: string,
     guildid?: string,
-    permissions?: ApplicationCommandPermissionData[]
+    roles?: string[],
+    users?: string[]
   ) {
     super();
     this.setName(name);
     this.setDescription(description);
-    this.permissions = permissions;
+    
+    if (roles) {
+      this.permissions = roles.map(id => ({
+        id,
+        type: 1,
+        permission: true
+      }));
+    }
+    
+    if (users) {
+      if (!this.permissions) {
+        this.permissions = [];
+      }
+
+      this.permissions.concat(users.map(id => ({
+        id,
+        type: 2,
+        permission: true
+      })))
+    }
+
     this.guildid = guildid;
   }
 

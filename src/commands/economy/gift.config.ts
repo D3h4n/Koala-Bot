@@ -1,6 +1,6 @@
 import { CommandInteraction } from 'discord.js';
 import economyServices from '../../services/economy.services';
-import Command from '../../common.commands.config';
+import Command from '../../utils/common.commands.config';
 
 export default class giftCommand extends Command {
   constructor() {

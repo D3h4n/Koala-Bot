@@ -1,5 +1,5 @@
 import { CommandInteraction } from 'discord.js';
-import Command from '../../common.commands.config';
+import Command from '../../utils/common.commands.config';
 import economyServices from '../../services/economy.services';
 
 export default class betCommand extends Command {

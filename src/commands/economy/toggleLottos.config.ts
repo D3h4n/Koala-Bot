@@ -1,4 +1,4 @@
-import Command from '../../common.commands.config';
+import Command from '../../utils/common.commands.config';
 import { CommandInteraction } from 'discord.js';
 import economyServices from '../../services/economy.services';
 import guildServices from '../../services/guild.services';
@@ -10,13 +10,7 @@ export default class toggleLottosCommand extends Command {
       'togglelottos',
       'Turn lottos on and off',
       '310489953157120023',
-      [
-        {
-          id: '829531557785894923',
-          type: 'ROLE',
-          permission: true
-        }
-      ]
+      [ '829531557785894923' ]
     );
 
     this.addNumberOption(option=>(

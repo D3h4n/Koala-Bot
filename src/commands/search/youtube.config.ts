@@ -1,4 +1,4 @@
-import Command from '../../common.commands.config';
+import Command from '../../utils/common.commands.config';
 import config from '../../utils/config';
 import { CommandInteraction } from 'discord.js';
 import { google } from 'googleapis';

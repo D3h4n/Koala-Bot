@@ -1,6 +1,6 @@
 import { CommandInteraction, MessageEmbed } from 'discord.js';
 import config from '../../utils/config';
-import Command from '../../common.commands.config';
+import Command from '../../utils/common.commands.config';
 
 export default class teamsCommand extends Command {
   constructor() {

@@ -1,5 +1,5 @@
 import {CommandInteraction, GuildMember} from 'discord.js';
-import Command from '../../common.commands.config';
+import Command from '../../utils/common.commands.config';
 import config from '../../utils/config';
 // import config from '../../utils/config';
 
@@ -9,13 +9,7 @@ export default class timeoutCommand extends Command {
       'timeout',
       'Put a user in timeout',
       '310489953157120023',
-      [
-        {
-          id: '829531557785894923',
-          type: 'ROLE',
-          permission: true
-        }
-      ]
+      [ '829531557785894923' ]
     );
 
     this.setDefaultPermission(false);
