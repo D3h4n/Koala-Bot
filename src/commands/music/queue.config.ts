@@ -1,68 +1,64 @@
-import Queue from 'distube/typings/Queue';
-import Song from 'distube/typings/Song';
+import { Queue, Song } from 'distube';
 import config from '../../utils/config';
-import Command from '../common.commands.config';
-import { Message, MessageEmbed, MessageReaction, User } from 'discord.js';
+import Command from '../../utils/common.commands.config';
+import { CommandInteraction, Message, MessageEmbed, MessageReaction, User } from 'discord.js';
 import { client, distube } from '../../index';
 
 export default class queueCommand extends Command {
   constructor() {
-    super('Queue', 'queue', [`Get's the song queue`, 'Usage: $queue'], ['q']);
+    super('queue', 'Display the song queue');
+
+    this.addNumberOption(option => (
+      option.setName("page").setDescription("The page you want to start on")
+    ))
   }
 
-  async action(message: Message, args: string[]) {
-    let queue = distube.getQueue(message);
+  async action(interaction: CommandInteraction) {
+    await interaction.deferReply();
+    let queue = distube.getQueue(interaction);
 
     if (!queue?.songs.length) {
       // check that the queue has songs
-      message.channel.send('`The queue is empty`');
+      interaction.editReply('`The queue is empty`');
       return;
     }
 
     try {
       let numPages = Math.ceil(queue.songs.length / config.queuePageLength);
-      let pageNumber = parseInt(args[1]) || 1; // set pageNumber
+      let pageNumber = interaction.options.getNumber("page") || 1// set pageNumber
 
       pageNumber =
         pageNumber < 1 ? 1 : pageNumber > numPages ? numPages : pageNumber;
 
       // send page one and get message object
-      let sentMsg = await message.channel.send(
-        this.generateResponse(queue, pageNumber)
-      );
+      await interaction.deleteReply();
 
       // add interative reactions
-      sentMsg
-        .react('◀')
+      let sentMsg = await interaction.followUp({
+        embeds: [this.generateResponse(queue, pageNumber)]
+      }) as Message;
+
+      sentMsg.react('◀')
         .then(() => sentMsg.react('▶'))
         .catch(console.error);
 
       // add reaction collector for message
-      let collector = sentMsg.createReactionCollector(
+      let collector = sentMsg.createReactionCollector({
         // filter reactions to ignore bot reactions and other reactions
-        (reaction: MessageReaction, user: User) =>
-          ['◀', '▶'].includes(reaction.emoji.name) &&
+        filter: (reaction: MessageReaction, user: User) =>
+          ['◀', '▶'].includes(reaction.emoji.name!) &&
           user.id !== client.user?.id &&
           !user.bot,
-        {
           // set the time limit
           time: config.queueTimeLimit,
         }
       );
 
       collector
-        .on(
-          'collect',
-          (reaction, user) =>
-            // run changePage function for every valid reaction
-            (pageNumber = this.changePage(
-              sentMsg,
-              reaction,
-              user,
-              queue,
-              pageNumber
-            ))
-        )
+        .on('collect', (reaction, user) => {
+          // run changePage function for every valid reaction
+          pageNumber = this.changePage(sentMsg, user, reaction,  queue!, pageNumber)
+        })
         // remove all reactions when timer runs out
         .on('end', () => sentMsg.reactions.removeAll());
     } catch (error) {
@@ -79,7 +75,7 @@ export default class queueCommand extends Command {
     // set the display for the currently playing song
     let description = [
       `__Now Playing:__`,
-      `[${nowPlaying.name}](${nowPlaying.url}) - ${nowPlaying.formattedDuration} - \`${nowPlaying.user.tag}\`\n`,
+      `[${nowPlaying.name}](${nowPlaying.url}) - ${nowPlaying.formattedDuration} - \`${nowPlaying.member?.displayName}\`\n`,
     ];
 
     if (songs.length > 1) {
@@ -121,18 +117,18 @@ export default class queueCommand extends Command {
           '\u2800'.repeat(20) +
           `${songs.length} songs in Queue | Total Length: ${queue.formattedDuration}`
       )
-      .setDescription(description);
+      .setDescription(description.join("\n"));
 
     return response;
   }
 
   generateSongDescription = (song: Song, index: number) =>
-    `${index}. [${song.name}](${song.url}) - ${song.formattedDuration} - \`${song.user.tag}\``;
+    `${index}. [${song.name}](${song.url}) - ${song.formattedDuration} - \`${song.member?.displayName}\``;
 
   changePage(
     message: Message,
-    reaction: MessageReaction,
     user: User,
+    reaction: MessageReaction,
     queue: Queue,
     pageNumber: number
   ) {
@@ -140,10 +136,14 @@ export default class queueCommand extends Command {
 
     if (reaction.emoji.name === '◀' && pageNumber > 1) {
       // if back arrow generate previous page if there is one
-      message.edit(this.generateResponse(queue, --pageNumber));
+      message.edit({
+        embeds: [this.generateResponse(queue, --pageNumber)]
+      });
     } else if (reaction.emoji.name === '▶' && pageNumber < numPages) {
       // if forward arrow generate next page if there is one
-      message.edit(this.generateResponse(queue, ++pageNumber));
+      message.edit({
+        embeds: [this.generateResponse(queue, ++pageNumber)]
+      });
     }
 
     // remove user reactions

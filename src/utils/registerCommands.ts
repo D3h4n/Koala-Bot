@@ -8,12 +8,6 @@ import {resolve} from 'path';
 
 const rest = new REST({version: "9"}).setToken(config.token!);
 
-(
-   async () => {
-   let commands = await readCommands("dist/commands");
-   registerApplicationCommands(config.clientId!, commands);
-})();
-
 export async function readCommands (dir: string) {
   const commands: Collection<string, Command> = new Collection<string, Command>();
 
@@ -30,7 +24,10 @@ export async function readCommands (dir: string) {
 
 export async function registerApplicationCommands (clientid: string, commands: Collection<String, Command>) {
   await rest.put(Routes.applicationCommands(clientid), {
-    body: commands.filter(command => !command.guildid).map(command => command.toJSON())
+    body: commands.filter(command => !command.guildid).map(command => {
+      console.log(`Adding commmand ${command.name}`)
+      return command.toJSON()
+    })
   });
 }
 

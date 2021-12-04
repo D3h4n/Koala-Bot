@@ -1,25 +1,20 @@
-import Command from '../common.commands.config';
-import { Message } from 'discord.js';
+import Command from '../../utils/common.commands.config';
+import { CommandInteraction } from 'discord.js';
 import { distube } from '../../index';
 
 export default class shuffleCommand extends Command {
   constructor() {
-    super(
-      'Shuffle',
-      'shuffle',
-      ['shuffle the queue', 'Usage: $shuffle'],
-      ['shf']
-    );
+    super('shuffle', 'Shuffle the queue');
   }
 
-  action(message: Message) {
+  action(interaction: CommandInteraction) {
     try {
-      distube.shuffle(message);
+      distube.shuffle(interaction);
     } catch (error) {
       console.error(error);
-      return message.channel.send('`Error shuffling queue`');
+      return interaction.reply('`Error shuffling queue`');
     }
 
-    return message.channel.send('`Shuffled Queue`');
+    return interaction.reply('`Shuffled Queue`');
   }
 }

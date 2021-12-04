@@ -1,6 +1,16 @@
+import { Client } from 'discord.js';
 import Distube from 'distube'
-import { client } from '../index'
 
-export function distube() {
-   return new Distube(client);
+export function initDistube(client: Client) {
+   let distube = new Distube(client);
+
+   distube.on("addSong", (queue, song) => {
+      queue.textChannel?.send(`Now playing: ${song.name}`);
+   })
+
+   distube.on("error", (channel, error) => {
+      channel.send(error.message);
+   })
+
+   return distube;
 }

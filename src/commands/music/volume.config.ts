@@ -1,36 +1,29 @@
-import Command from '../common.commands.config';
-import { Message } from 'discord.js';
+import Command from '../../utils/common.commands.config';
+import { CommandInteraction } from 'discord.js';
 import { distube } from '../../index';
 
 export default class volumeCommand extends Command {
   constructor() {
-    super(
-      'Volume',
-      'volume',
-      ['Set the volume of the bot', 'Usage: $volume <percent>'],
-      ['vol']
-    );
+    super('volume', 'Set the volume of the bot');
+
+    this.addNumberOption(option => (
+      option.setName("volume").setDescription("The volume").setRequired(true)
+    ))
   }
 
-  action(message: Message, args: string[]) {
+  action(interaction: CommandInteraction) {
     // get volume value
-    let volume = Number(args[1]);
-
-    // assert valid volume value
-    if (Number.isNaN(volume) || volume < 0 || volume > 100) {
-      return message.channel.send(
-        '`Volume must be a number between 0 and 100`'
-      );
-    }
+    let volume = interaction.options.getNumber("volume", true); 
 
     // set volume
     try {
-      distube.setVolume(message, volume);
+      distube.setVolume(interaction, volume);
     } catch (error) {
-      return message.channel.send('`Error setting volume`');
+      interaction.reply('`Error setting volume`');
+      return; 
     }
 
     // send response
-    return message.channel.send(`\`Volume set to ${volume}\``);
+    interaction.reply(`\`Volume set to ${volume}\``);
   }
 }

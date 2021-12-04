@@ -1,30 +1,44 @@
-import Command from '../common.commands.config';
-import { Message } from 'discord.js';
+import Command from '../../utils/common.commands.config';
+import { CommandInteraction, GuildMember } from 'discord.js';
 import { distube } from '../../index';
+import { Song } from 'distube';
 
 export default class playSkipCommand extends Command {
   constructor() {
     super(
-      'Play Skip',
       'playskip',
-      ['Immediately play a song', '$playskip <song>'],
-      ['ps']
+      'Immediately play a song'
     );
+
+    this.addStringOption(option => (
+      option.setName("query").setDescription("That song you want to play").setRequired(true)
+    ))
   }
 
-  async action(message: Message, args: string[]) {
+  async action(interaction: CommandInteraction) {
+    interaction.deferReply();
     // get query
-    let query = args.slice(1).join(' ');
+    let query = interaction.options.getString("query", true);
 
-    // assert query exists
-    if (!query) {
-      message.channel.send('`Add a song to find!!!!`');
+    // playskip query
+    let queue = distube.getQueue(interaction);
+    
+    // check if there is a queue
+    if (!queue) {
+      let voiceChannel = (interaction.member as GuildMember)?.voice.channel;
+
+      if (!voiceChannel) {
+        interaction.editReply("Join a voice channel.");
+      }
+
+      distube.playVoiceChannel(voiceChannel!, query);
+      interaction.deleteReply();
       return;
     }
 
-    // playskip query
-    distube
-      .playSkip(message, query)
-      .catch(() => message.channel.send('`Could not find that song`'));
+    let song = new Song((await distube.search(query, { type: "video", limit: 1, safeSearch: true}))[0]);
+
+    queue.addToQueue(song, 1).skip();
+    interaction.deleteReply();
   }
 }

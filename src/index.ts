@@ -6,15 +6,20 @@ import initEventLoop from './utils/timer.config';
 import guildServices from './services/guild.services';
 import Command from './utils/common.commands.config';
 import { readCommands, registerGuildCommands } from './utils/registerCommands';
+import { initDistube } from './utils/distube.config';
+// import { registerApplicationCommands } from './utils/registerCommands';
 
-export const client = new Client({ intents: [Intents.FLAGS.GUILDS] }); // initialize client
+export const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_VOICE_STATES] }); // initialize client
 
 export let commands: Collection<string, Command>;
 
+export const distube = initDistube(client);
+
 (async () => {
   commands = await readCommands("dist/commands")
-  
-  // await registerApplicationCommands(client.user!.id, commands);
+
+  // await deregisterApplicationCommands(config.clientId!);
+  // await registerApplicationCommands(config.clientId!, commands);
 
   // await guildServices
   //   .GetGuilds()
@@ -53,6 +58,10 @@ client.once('ready', async () => {
 
 // runs for each interaction
 client.on('interactionCreate', handleInteraction);
+
+client.on('error', (error) => {
+  console.error(error.message);
+})
 
 client.on('guildCreate', (guild) => {
   guildServices.CreateGuild(guild)
