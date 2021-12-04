@@ -11,14 +11,14 @@ export default class playSkipCommand extends Command {
     );
 
     this.addStringOption(option => (
-      option.setName("query").setDescription("That song you want to play").setRequired(true)
+      option.setName("song").setDescription("That song you want to play").setRequired(true)
     ))
   }
 
   async action(interaction: CommandInteraction) {
     interaction.deferReply();
     // get query
-    let query = interaction.options.getString("query", true);
+    let query = interaction.options.getString("song", true);
 
     // playskip query
     let queue = distube.getQueue(interaction);
@@ -29,9 +29,10 @@ export default class playSkipCommand extends Command {
 
       if (!voiceChannel) {
         interaction.editReply("Join a voice channel.");
+        return;
       }
 
-      distube.playVoiceChannel(voiceChannel!, query);
+      distube.playVoiceChannel(voiceChannel, query);
       interaction.deleteReply();
       return;
     }

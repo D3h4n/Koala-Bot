@@ -9,7 +9,7 @@ export default {
   dbPass: process.env.MONGO_DB_PASS, // password for database access
   botStatus:
     process.env.NODE_ENV === 'production'
-      ? 'happy noises | $help'
+      ? 'SLASH COMMANDS YO'
       : 'in maintenance', // bot status
   prefix: '$', // command prefix
   onlineMessage: process.env.NODE_ENV === 'production', // boolean to display online message

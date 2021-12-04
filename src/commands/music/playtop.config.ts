@@ -11,14 +11,14 @@ export default class PlayTopCommand extends Command {
     );
 
     this.addStringOption(option => (
-      option.setName("query").setDescription("Song to add").setRequired(true)
+      option.setName("song").setDescription("Song to add").setRequired(true)
     ))
   }
 
   async action(interaction: CommandInteraction) {
     interaction.deferReply();
     // get query
-    let query = interaction.options.getString("query", true);
+    let query = interaction.options.getString("song", true);
 
     // assert query is not a playlist
     if (query.includes('https://youtube.com/playlist')) {
@@ -35,9 +35,10 @@ export default class PlayTopCommand extends Command {
 
       if (!voiceChannel) {
         interaction.editReply("Join a voice channel.");
+        return;
       }
 
-      distube.playVoiceChannel(voiceChannel!, query);
+      distube.playVoiceChannel(voiceChannel, query);
       interaction.deleteReply();
       return; 
     }

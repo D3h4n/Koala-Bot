@@ -1,4 +1,4 @@
-import { CommandInteraction, MessageEmbed, VoiceChannel } from 'discord.js';
+import { CommandInteraction, GuildMember, MessageEmbed, VoiceChannel } from 'discord.js';
 import {ChannelType} from 'discord-api-types/v9'
 import Command from '../../utils/common.commands.config';
 import config from '../../utils/config';
@@ -20,12 +20,12 @@ export default class yeetCommand extends Command {
   }
 
   async action(interaction: CommandInteraction) {
-    const member = await interaction.guild?.members.fetch(interaction.user);
+    const member = interaction.member as GuildMember;
 
-    const voiceChannel = member?.voice?.channel;
+    const voiceChannel = member.voice?.channel;
     
     // check if user is in a voice channel
-    if (!voiceChannel) {
+    if (!voiceChannel || !voiceChannel.isVoice()) {
       interaction.reply('`Gotta be in a channel buddy`');
       return;
     }

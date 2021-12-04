@@ -14,7 +14,7 @@ export default class toggleLottosCommand extends Command {
     );
 
     this.addNumberOption(option=>(
-      option.setName('frequency').setDescription('How often to run lottos (hours)').setRequired(false)
+      option.setName('frequency').setDescription('How often to run lottos (hours)')
     ))
   }
 

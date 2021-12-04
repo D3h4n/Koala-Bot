@@ -16,7 +16,6 @@ export default class teamsCommand extends Command {
   action(interaction: CommandInteraction) {
     // get number of teams
     let numTeams = interaction.options.getNumber('numteams');
-
     if (!numTeams) {
       return;
     }
@@ -69,7 +68,7 @@ export default class teamsCommand extends Command {
 
   generateDescription(teams: string[][]) {
     // generate text for each team
-    return [...teams].map(
+    return teams.map(
       (team, idx) =>
         `**Team ${idx + 1}:**\n` +
         team.reduce((prev, curr) => prev + ', ' + curr) +

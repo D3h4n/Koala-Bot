@@ -20,9 +20,10 @@ export default class playCommand extends Command {
 
     if (!voiceChannel) {
       interaction.editReply("Join a voice channel.");
+      return;
     }
 
-    distube.playVoiceChannel(voiceChannel!, query);
+    distube.playVoiceChannel(voiceChannel, query);
     interaction.deleteReply();
   }
 }

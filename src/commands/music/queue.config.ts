@@ -30,14 +30,12 @@ export default class queueCommand extends Command {
       pageNumber =
         pageNumber < 1 ? 1 : pageNumber > numPages ? numPages : pageNumber;
 
-      // send page one and get message object
-      await interaction.deleteReply();
-
       // add interative reactions
-      let sentMsg = await interaction.followUp({
+      let sentMsg = await interaction.editReply({
         embeds: [this.generateResponse(queue, pageNumber)]
       }) as Message;
 
+      return; // FIXME: figure out reactions
       sentMsg.react('◀')
         .then(() => sentMsg.react('▶'))
         .catch(console.error);
@@ -123,7 +121,7 @@ export default class queueCommand extends Command {
   }
 
   generateSongDescription = (song: Song, index: number) =>
-    `${index}. [${song.name}](${song.url}) - ${song.formattedDuration} - \`${song.member?.displayName}\``;
+    `${index}. [${song.name}](${song.url}) - ${song.formattedDuration}`;
 
   changePage(
     message: Message,

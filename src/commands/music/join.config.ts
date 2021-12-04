@@ -19,9 +19,7 @@ export default class joinCommand extends Command {
           adapterCreator: channel.guild.voiceAdapterCreator
         })
 
-        interaction.reply(
-          `Joined channel ${channel.name}`
-        )
+        interaction.reply(`Joined channel ${channel.name}`);
       } catch (error) {
         interaction.reply('`Error joining voice channel`');
         console.error(error);
