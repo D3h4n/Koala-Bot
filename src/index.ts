@@ -1,12 +1,12 @@
 import { Client, Intents, Collection } from 'discord.js';
-import { handleInteraction, updateGuildCommandPermissions } from './utils/helper.functions';
+import { handleInteraction } from './utils/helper_functions.config';
+import { readCommands, registerGuildCommands, updateGuildCommandPermissions } from './utils/register_commands.config';
+import { initDistube } from './utils/distube.config';
 import config from './utils/config';
 import initMongoose from './utils/mongoose.config';
 import initEventLoop from './utils/timer.config';
 import guildServices from './services/guild.services';
 import Command from './utils/common.commands.config';
-import { readCommands, registerGuildCommands } from './utils/registerCommands';
-import { initDistube } from './utils/distube.config';
 
 export const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_VOICE_STATES] }); // initialize client
 
@@ -14,11 +14,9 @@ export let commands: Collection<string, Command>;
 
 export const distube = initDistube(client);
 
+// load commands
 (async () => {
-  commands = await readCommands("dist/commands")
-
-  // await deregisterApplicationCommands(config.clientId!);
-  // await registerApplicationCommands(config.clientId!, commands);
+  commands = await readCommands("dist/commands");
 })();
 
 // log that bot is running

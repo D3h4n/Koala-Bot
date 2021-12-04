@@ -1,31 +1,10 @@
-import config from './config';
-import { CommandInteraction, TextChannel, Collection, Interaction, CacheType, ApplicationCommand } from 'discord.js';
+import { CommandInteraction, TextChannel, Interaction, CacheType } from 'discord.js';
 import { client, commands } from '../index';
+import config from './config';
 import lottoModel from '../models/lotto.model';
 import economyServices from '../services/economy.services';
 import guildServices from '../services/guild.services';
-import Command from './common.commands.config';
-import { Routes } from 'discord-api-types/v9';
-import { REST } from '@discordjs/rest';
 
-export async function updateGuildCommandPermissions(guildid: string, commands: Collection<string, Command>) {
-    commands = commands.filter(command => command.guildid === guildid);
-
-    const rest = new REST({version: "9"}).setToken(config.token!);
-
-    let test: ApplicationCommand[] = await rest.get(Routes.applicationGuildCommands(config.clientId!, guildid)) as ApplicationCommand[];
-
-    let perms = test.map((command) => {
-      return {
-        id: command.id,
-        permissions: commands.get(command.name)!.permissions!
-      }
-    }).filter(perm => perm)
-
-    await rest.put(Routes.guildApplicationCommandsPermissions(config.clientId!, guildid), {
-      body: perms
-    })
-}
 
 export const log = async function logEveryCommand(interaction: CommandInteraction) {
   console.log(

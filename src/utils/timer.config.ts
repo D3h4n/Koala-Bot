@@ -1,4 +1,4 @@
-import { dataBaseCleanup, postureCheck } from './helper.functions';
+import { dataBaseCleanup, postureCheck } from './helper_functions.config';
 import lottoConfig from '../commands/economy/lotto.config';
 import config from './config';
 
