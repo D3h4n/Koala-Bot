@@ -31,59 +31,57 @@ export default class chooseCommand extends Command {
     }
   }
 
-  action(interaction: CommandInteraction) {
-    interaction.deferReply({
+  async action(interaction: CommandInteraction) {
+    await interaction.deferReply({
       ephemeral: interaction.options.getBoolean('hidden') || false
     });
 
-    setTimeout(async () => {
-      // generate random result
-      let options = interaction.options.data.filter(a => a.type === "STRING").map(a => a.value) as string[];
-      
-      const result = options[Math.floor(Math.random() * options.length)];
-  
-      await interaction.editReply("`" + result + "`");
+    // generate random result
+    let options = interaction.options.data.filter(a => a.type === "STRING").map(a => a.value) as string[];
+    
+    const result = options[Math.floor(Math.random() * options.length)];
 
-      return; //FIXME: wait til reactions work before remove this line
-      let message = await interaction.followUp({
-        content: 'See options?',
-        ephemeral: interaction.options.getBoolean('hidden') || false
-      }) as Message;
+    await interaction.editReply("`" + result + "`");
 
-      this.emotes.forEach(async emote => {
-        await message.react(emote);
-      })
+    return; //FIXME: wait til reactions work before remove this line
+    let message = await interaction.followUp({
+      content: 'See options?',
+      ephemeral: interaction.options.getBoolean('hidden') || false
+    }) as Message;
+
+    this.emotes.forEach(async emote => {
+      await message.react(emote);
+    })
 
 
-      const collector =  message.createReactionCollector({
-        filter: () => true,
-        // filter: (reaction: MessageReaction, user: User) => (
-        //   this.emotes.includes(reaction.emoji.name!) &&
-        //   user.id === interaction.user.id &&
-        //   !reaction.me &&
-        //   !user.bot
-        // ),
-        max: 1,
-        time: 5000,
-        dispose: true
-      })
+    const collector =  message.createReactionCollector({
+      filter: () => true,
+      // filter: (reaction: MessageReaction, user: User) => (
+      //   this.emotes.includes(reaction.emoji.name!) &&
+      //   user.id === interaction.user.id &&
+      //   !reaction.me &&
+      //   !user.bot
+      // ),
+      max: 1,
+      time: 5000,
+      dispose: true
+    })
 
-      collector.on('collect', async (reaction, user) => {
-        if (reaction.emoji.name === this.emotes[0]) {
-          await message.edit("Options: " + options.map(option => `"${option}"`).join(' '))
-        }
-        else {
-          await message.delete();
-        }
+    collector.on('collect', async (reaction, user) => {
+      if (reaction.emoji.name === this.emotes[0]) {
+        await message.edit("Options: " + options.map(option => `"${option}"`).join(' '))
+      }
+      else {
+        await message.delete();
+      }
 
-        collector.dispose(reaction, user);
-      })
+      collector.dispose(reaction, user);
+    })
 
-      collector.on('exit', () => {
-        if (!message.deleted) {
-          message.reactions.removeAll();
-        }
-      })
-    }, Math.floor(Math.random() * 100) + 950);
+    collector.on('exit', () => {
+      if (!message.deleted) {
+        message.reactions.removeAll();
+      }
+    })
   }
 }
