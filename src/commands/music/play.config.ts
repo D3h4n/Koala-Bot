@@ -1,5 +1,5 @@
 import Command from '../../utils/common.commands.config';
-import { CommandInteraction, GuildMember } from 'discord.js';
+import { CommandInteraction, GuildMember, TextChannel } from 'discord.js';
 import { distube } from '../../index';
 
 export default class playCommand extends Command {
@@ -23,7 +23,10 @@ export default class playCommand extends Command {
       return;
     }
 
-    distube.playVoiceChannel(voiceChannel, query);
+    distube.playVoiceChannel(voiceChannel, query, {
+      member: interaction.member as GuildMember,
+      textChannel: interaction.channel as TextChannel
+    });
     interaction.deleteReply();
   }
 }

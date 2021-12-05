@@ -1,7 +1,7 @@
 import Command from '../../utils/common.commands.config';
-import { CommandInteraction, GuildMember } from 'discord.js';
+import { CommandInteraction, GuildMember, TextChannel } from 'discord.js';
 import { distube } from '../../index';
-import { Song } from 'distube';
+import { SearchResult, Song } from 'distube';
 
 export default class playSkipCommand extends Command {
   constructor() {
@@ -32,12 +32,27 @@ export default class playSkipCommand extends Command {
         return;
       }
 
-      distube.playVoiceChannel(voiceChannel, query);
+      distube.playVoiceChannel(voiceChannel, query, {
+      member: interaction.member as GuildMember,
+      textChannel: interaction.channel as TextChannel
+    });
       interaction.deleteReply();
       return;
     }
+    
+    
+    // generate a search result based on query
+    let result: SearchResult;
 
-    let song = new Song((await distube.search(query, { type: "video", limit: 1, safeSearch: true}))[0]);
+    try {
+      [result] = await distube.search(query, { safeSearch: true, limit: 1, type: "video" });
+    } catch (error) {
+      interaction.reply('`Could not find that song`');
+      console.error(error);
+      return;
+    }
+
+    let song = new Song(result, interaction.member as GuildMember);
 
     queue.addToQueue(song, 1).skip();
     interaction.deleteReply();

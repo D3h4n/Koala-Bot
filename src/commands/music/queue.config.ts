@@ -120,8 +120,9 @@ export default class queueCommand extends Command {
     return response;
   }
 
-  generateSongDescription = (song: Song, index: number) =>
-    `${index}. [${song.name}](${song.url}) - ${song.formattedDuration}`;
+  generateSongDescription (song: Song, index: number) {
+    return `${index}. [${song.name}](${song.url}) - ${song.formattedDuration} - \`${song.member?.displayName}\``;
+  }
 
   changePage(
     message: Message,

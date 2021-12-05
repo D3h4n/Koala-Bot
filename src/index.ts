@@ -1,18 +1,19 @@
 import { Client, Intents, Collection } from 'discord.js';
 import { handleInteraction } from './utils/helper_functions.config';
 import { readCommands, registerGuildCommands, updateGuildCommandPermissions } from './utils/register_commands.config';
-import { initDistube } from './utils/distube.config';
+import initDistube from './utils/distube.config';
 import config from './utils/config';
 import initMongoose from './utils/mongoose.config';
 import initEventLoop from './utils/timer.config';
 import guildServices from './services/guild.services';
 import Command from './utils/common.commands.config';
+import DisTube from 'distube';
 
 export const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_VOICE_STATES] }); // initialize client
 
 export let commands: Collection<string, Command>;
 
-export const distube = initDistube(client);
+export const distube = initDistube(new DisTube(client));
 
 // load commands
 (async () => {

@@ -1,6 +1,6 @@
 import Command from '../../utils/common.commands.config';
 import { Song, SearchResult } from 'distube';
-import { CommandInteraction, GuildMember } from 'discord.js';
+import { CommandInteraction, GuildMember, TextChannel } from 'discord.js';
 import { distube } from '../../index';
 
 export default class PlayTopCommand extends Command {
@@ -38,7 +38,10 @@ export default class PlayTopCommand extends Command {
         return;
       }
 
-      distube.playVoiceChannel(voiceChannel, query);
+      distube.playVoiceChannel(voiceChannel, query, {
+      member: interaction.member as GuildMember,
+      textChannel: interaction.channel as TextChannel
+    });
       interaction.deleteReply();
       return; 
     }
@@ -46,10 +49,10 @@ export default class PlayTopCommand extends Command {
     // if there is a queue
 
     // generate a search result based on query
-    let result: SearchResult | Song;
+    let result: SearchResult;
 
     try {
-      [result] = await distube.search(query);
+      [result] = await distube.search(query, { safeSearch: true, limit: 1, type: "video" });
     } catch (error) {
       interaction.reply('`Could not find that song`');
       console.error(error);

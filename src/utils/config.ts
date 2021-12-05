@@ -14,7 +14,7 @@ export default {
   prefix: '$', // command prefix
   onlineMessage: process.env.NODE_ENV === 'production', // boolean to display online message
   mainColor: 0x181818, // accent colour of embedded messages
-  msgTimeout: 1e4, // time limit for message deletion (ms)
+  msgTimeout: 3e4, // time limit for message deletion (ms)
   helpPageLength: 5, // length of help pages
   helpTimeLimit: 2e4, // time limit of interactive help page (ms)
   queuePageLength: 10, // number of songs per queue page
