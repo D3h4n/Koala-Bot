@@ -12,8 +12,7 @@ export default function (distube: DisTube) {
   });
 
   distube.on('playSong', (queue, song) => {
-    if (queue.repeatMode === 1)
-      return;
+    if (queue.repeatMode === 1) return;
 
     let res = new MessageEmbed();
 
@@ -33,8 +32,7 @@ export default function (distube: DisTube) {
   });
 
   distube.on('addSong', (queue, song) => {
-    if (queue.songs.length === 1)
-      return;
+    if (queue.songs.length === 1) return;
 
     let res = new MessageEmbed();
 
@@ -55,22 +53,24 @@ export default function (distube: DisTube) {
       .then((msg) => setTimeout(() => msg.delete(), msgTimeout));
   });
 
-  distube.on("addList", (queue, playlist) => {
+  distube.on('addList', (queue, playlist) => {
     try {
       let res = new MessageEmbed();
 
       let desc =
         `[${playlist.name}](${playlist.url})\n and \`${
           playlist.songs.length - 1
-        } others\`\n` +
-        `Length: ${playlist.formattedDuration}\n`;
+        } others\`\n` + `Length: ${playlist.formattedDuration}\n`;
 
       res
         .setColor(mainColor)
         .setTitle('Added Playlist to Queue')
         .setDescription(desc)
         .setThumbnail(playlist.thumbnail!)
-        .setAuthor(playlist.member?.displayName!, playlist.user?.displayAvatarURL());
+        .setAuthor(
+          playlist.member?.displayName!,
+          playlist.user?.displayAvatarURL()
+        );
 
       queue.textChannel
         ?.send({ embeds: [res] })

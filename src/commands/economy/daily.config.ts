@@ -17,7 +17,10 @@ export default class dailyCommand extends Command {
     // get user record or create new record
     const user =
       (await economyServices.getUserByDiscord(interaction.user.id)) ??
-      (await economyServices.createUser(interaction.user.id, interaction.user.username));
+      (await economyServices.createUser(
+        interaction.user.id,
+        interaction.user.username
+      ));
 
     // get today's date
     const today = new Date();
@@ -29,7 +32,9 @@ export default class dailyCommand extends Command {
       );
 
       interaction.reply('Stop being greedy.');
-      interaction.followUp(`You have to wait \`${this.generateTimeString(remainingTime)}\`.`);
+      interaction.followUp(
+        `You have to wait \`${this.generateTimeString(remainingTime)}\`.`
+      );
       return;
     }
 
@@ -45,12 +50,15 @@ export default class dailyCommand extends Command {
     const response = new MessageEmbed();
 
     response
-      .setAuthor((interaction.member as GuildMember)?.displayName, interaction.user.displayAvatarURL())
+      .setAuthor(
+        (interaction.member as GuildMember)?.displayName,
+        interaction.user.displayAvatarURL()
+      )
       .setDescription(`**Earned:** $${gain}\n**Balance:** $${user.balance}`);
 
     interaction.reply({
-      embeds: [response]
-    }); 
+      embeds: [response],
+    });
   }
 
   /**

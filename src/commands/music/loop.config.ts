@@ -4,10 +4,7 @@ import Command from '../../utils/common.commands.config';
 
 export default class loopCommand extends Command {
   constructor() {
-    super(
-      'loop',
-      'Loop the entire queue or stop looping',
-    );
+    super('loop', 'Loop the entire queue or stop looping');
   }
 
   action(interaction: CommandInteraction) {

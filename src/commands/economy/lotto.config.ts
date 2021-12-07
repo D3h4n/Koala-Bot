@@ -1,6 +1,11 @@
 import Command from '../../utils/common.commands.config';
 import economyServices from '../../services/economy.services';
-import { CommandInteraction, GuildMember, MessageEmbed, TextChannel } from 'discord.js';
+import {
+  CommandInteraction,
+  GuildMember,
+  MessageEmbed,
+  TextChannel,
+} from 'discord.js';
 import { Document } from 'mongoose';
 import { ILotto } from '../../models/lotto.model';
 import { client } from '../../index';
@@ -10,27 +15,27 @@ import { IGuild } from '../../models/guild.model';
 
 export default class lottoCommand extends Command {
   constructor() {
-    super(
-      'lotto',
-      'Play the lotto to win BIG',
-    );
+    super('lotto', 'Play the lotto to win BIG');
 
-    this.addStringOption(option => 
+    this.addStringOption((option) =>
       option.setName('lottoid').setDescription('ID of lotto').setRequired(false)
-    )
+    );
   }
 
   async action(interaction: CommandInteraction) {
     // if user provides a lotto id display lotto
     if (interaction.options.data.length <= 2) {
       // get lotto and user records
-      let lotto = await economyServices.getLotto(interaction.options.getString('lottoid') ?? undefined, interaction.guild?.id);
+      let lotto = await economyServices.getLotto(
+        interaction.options.getString('lottoid') ?? undefined,
+        interaction.guild?.id
+      );
       const user = await economyServices.getUserByDiscord(interaction.user.id);
 
       // assert lotto exists
       if (!lotto) {
         interaction.reply('`No lottos found with that ID`');
-        return; 
+        return;
       }
 
       // assert user exists
@@ -44,28 +49,33 @@ export default class lottoCommand extends Command {
 
       response
         .setTitle('Lotto')
-        .setDescription([
-          `**Lotto Id:** ${lotto.id}`,
-          `**End Date:** ${lotto.endDate.toDateString()}`,
-          `**End Time:** ${lotto.endDate.getHours()}:${lotto.endDate.getMinutes()}`,
-          `**Entries:** ${lotto.guesses.length}`,
-          `**Entered:** ${lotto.users.includes(user?.id)}`,
-          `**Ended:** ${lotto.done}`,
-        ].join('\n'))
+        .setDescription(
+          [
+            `**Lotto Id:** ${lotto.id}`,
+            `**End Date:** ${lotto.endDate.toDateString()}`,
+            `**End Time:** ${lotto.endDate.getHours()}:${lotto.endDate.getMinutes()}`,
+            `**Entries:** ${lotto.guesses.length}`,
+            `**Entered:** ${lotto.users.includes(user?.id)}`,
+            `**Ended:** ${lotto.done}`,
+          ].join('\n')
+        )
         .setAuthor(
           (interaction.member as GuildMember)?.displayName,
           interaction.user.displayAvatarURL()
         );
 
       interaction.reply({
-        embeds: [response]
+        embeds: [response],
       });
       return;
     }
 
     // if user does not provide an id
     // get latest lotto for guild
-    let lotto = await economyServices.getLotto(undefined, interaction.guild?.id);
+    let lotto = await economyServices.getLotto(
+      undefined,
+      interaction.guild?.id
+    );
 
     // assert that lotto was found
     if (!lotto) {
@@ -79,21 +89,23 @@ export default class lottoCommand extends Command {
 
       response
         .setTitle('Lotto')
-        .setDescription([
-          `**Lotto Id:** ${lotto.id}`,
-          `**End Date:** ${lotto.endDate.toDateString()}`,
-          `**End Time:** ${lotto.endDate.getHours()}:${lotto.endDate.getMinutes()}`,
-          `**Entries:** ${lotto.guesses.length}`,
-          `**Entered:** ${lotto.users.includes(user?.id)}`,
-          `**Ended:** ${lotto.done}`,
-        ].join('\n'))
+        .setDescription(
+          [
+            `**Lotto Id:** ${lotto.id}`,
+            `**End Date:** ${lotto.endDate.toDateString()}`,
+            `**End Time:** ${lotto.endDate.getHours()}:${lotto.endDate.getMinutes()}`,
+            `**Entries:** ${lotto.guesses.length}`,
+            `**Entered:** ${lotto.users.includes(user?.id)}`,
+            `**Ended:** ${lotto.done}`,
+          ].join('\n')
+        )
         .setAuthor(
           (interaction.member as GuildMember)?.displayName,
           interaction.user.displayAvatarURL()
         );
 
       interaction.reply({
-        embeds: [response]
+        embeds: [response],
       });
       return;
     }
@@ -110,11 +122,13 @@ export default class lottoCommand extends Command {
     if (!user || user.balance < 20) {
       interaction.reply("You don't have enough money");
       interaction.followUp('`$20 Entry Fee required`');
-      return; 
+      return;
     }
 
     // add guess if lotto found
-    const guessNums = interaction.options.data.slice(0, 5).map(({value}) => Number(value));
+    const guessNums = interaction.options.data
+      .slice(0, 5)
+      .map(({ value }) => Number(value));
 
     // add guess to lotto
     return economyServices
@@ -135,9 +149,8 @@ export default class lottoCommand extends Command {
           )
           .setDescription(`**Numbers:** ${guessNums.join(' ')}`);
 
-
         interaction.reply({
-          embeds: [response]
+          embeds: [response],
         });
         return;
       })
@@ -205,16 +218,18 @@ export default class lottoCommand extends Command {
         const response = new MessageEmbed();
         response
           .setTitle(`\`Lotto ends in ${timeString}\``)
-          .setDescription([
-            `**Lotto Id:** ${lotto.id}`,
-            `**End Date:** ${lotto.endDate.toDateString()}`,
-            `**End Time:** ${lotto.endDate.getHours()}:${lotto.endDate.getMinutes()}`,
-            `**Entries:** ${lotto.guesses.length}`,
-          ].join('\n'))
+          .setDescription(
+            [
+              `**Lotto Id:** ${lotto.id}`,
+              `**End Date:** ${lotto.endDate.toDateString()}`,
+              `**End Time:** ${lotto.endDate.getHours()}:${lotto.endDate.getMinutes()}`,
+              `**Entries:** ${lotto.guesses.length}`,
+            ].join('\n')
+          )
           .setAuthor(client.user?.username!, client.user?.displayAvatarURL());
 
         lottoChannel.send({
-          embeds: [response]
+          embeds: [response],
         });
       }
     });
@@ -334,28 +349,30 @@ export default class lottoCommand extends Command {
     // generate and send response
     const response = new MessageEmbed();
 
-    response.setTitle('Lotto').setDescription([
-      '**Winning Numbers:** ' + nums.map((num) => String(num)).join(' '),
-      '**__Results__**',
-      ...winners
-        .sort((a, b) => b.earnings - a.earnings)
-        .map(({ user, earnings }, idx) => {
-          const guild = client.guilds.cache.find(
-            ({ id }) => id === lotto.guildId
-          );
+    response.setTitle('Lotto').setDescription(
+      [
+        '**Winning Numbers:** ' + nums.map((num) => String(num)).join(' '),
+        '**__Results__**',
+        ...winners
+          .sort((a, b) => b.earnings - a.earnings)
+          .map(({ user, earnings }, idx) => {
+            const guild = client.guilds.cache.find(
+              ({ id }) => id === lotto.guildId
+            );
 
-          const member = guild?.members.cache.find(
-            ({ id }) => id === user.discordId
-          );
+            const member = guild?.members.cache.find(
+              ({ id }) => id === user.discordId
+            );
 
-          return `${idx + 1}. *${
-            member?.displayName || user.username
-          }:* $${earnings}`;
-        }),
-    ].join('\n'));
+            return `${idx + 1}. *${
+              member?.displayName || user.username
+            }:* $${earnings}`;
+          }),
+      ].join('\n')
+    );
 
     lottoChannel.send({
-      embeds: [response]
+      embeds: [response],
     });
 
     // create new lotto after old one has ended
@@ -383,14 +400,16 @@ export default class lottoCommand extends Command {
     response
       .setTitle('New Lotto')
       .setAuthor(client.user?.username!, client.user?.displayAvatarURL())
-      .setDescription([
-        `**Lotto Id:** ${lotto.id}`,
-        `**End Date:** ${endDate.toDateString()}`,
-        `**End Time:** ${endDate.getHours()}:${endDate.getMinutes()}`,
-      ].join('\n'));
-    
+      .setDescription(
+        [
+          `**Lotto Id:** ${lotto.id}`,
+          `**End Date:** ${endDate.toDateString()}`,
+          `**End Time:** ${endDate.getHours()}:${endDate.getMinutes()}`,
+        ].join('\n')
+      );
+
     lottoChannel.send({
-      embeds: [response]
+      embeds: [response],
     });
   }
 

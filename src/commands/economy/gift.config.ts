@@ -4,18 +4,21 @@ import Command from '../../utils/common.commands.config';
 
 export default class giftCommand extends Command {
   constructor() {
-    super(
-      'gift', 
-      'Gift someone currency',
+    super('gift', 'Gift someone currency');
+
+    this.addUserOption((option) =>
+      option
+        .setName('user')
+        .setDescription('User to send currency to')
+        .setRequired(true)
     );
 
-    this.addUserOption(option=>(
-      option.setName('user').setDescription('User to send currency to').setRequired(true)
-    ))
-
-    this.addNumberOption(option => 
-      option.setName('amount').setDescription('Amount of currency to send').setRequired(true)
-    )
+    this.addNumberOption((option) =>
+      option
+        .setName('amount')
+        .setDescription('Amount of currency to send')
+        .setRequired(true)
+    );
   }
 
   async action(interaction: CommandInteraction) {
@@ -63,7 +66,9 @@ export default class giftCommand extends Command {
     const giftAmount = interaction.options.getNumber('amount');
 
     if (!giftAmount || Number.isNaN(giftAmount) || giftAmount < 1) {
-      interaction.reply(`\`${interaction.options.data[1].value} is not a valid amount\``);
+      interaction.reply(
+        `\`${interaction.options.data[1].value} is not a valid amount\``
+      );
       return;
     }
 

@@ -1,6 +1,10 @@
 import { Client, Intents, Collection } from 'discord.js';
 import { handleInteraction } from './utils/helper_functions.config';
-import { readCommands, registerGuildCommands, updateGuildCommandPermissions } from './utils/register_commands.config';
+import {
+  readCommands,
+  registerGuildCommands,
+  updateGuildCommandPermissions,
+} from './utils/register_commands.config';
 import initDistube from './utils/distube.config';
 import config from './utils/config';
 import initMongoose from './utils/mongoose.config';
@@ -9,7 +13,13 @@ import guildServices from './services/guild.services';
 import Command from './utils/common.commands.config';
 import DisTube from 'distube';
 
-export const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS] }); // initialize client
+export const client = new Client({
+  intents: [
+    Intents.FLAGS.GUILDS,
+    Intents.FLAGS.GUILD_VOICE_STATES,
+    Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+  ],
+}); // initialize client
 
 export let commands: Collection<string, Command>;
 
@@ -17,19 +27,21 @@ export const distube = initDistube(new DisTube(client));
 
 // load commands
 (async () => {
-  commands = await readCommands("dist/commands");
+  commands = await readCommands('dist/commands');
 })();
 
 // log that bot is running
 client.once('ready', async () => {
   client.user!.setPresence({
     status: 'online',
-    activities: [{
-      name: config.botStatus,
-      type: 'PLAYING' 
-    }]
+    activities: [
+      {
+        name: config.botStatus,
+        type: 'PLAYING',
+      },
+    ],
   });
-  
+
   initEventLoop();
 
   console.log(`[server] loaded ${commands.size} commands`);
@@ -40,10 +52,11 @@ client.on('interactionCreate', handleInteraction);
 
 client.on('error', (error) => {
   console.error(error.message);
-})
+});
 
 client.on('guildCreate', (guild) => {
-  guildServices.CreateGuild(guild)
+  guildServices
+    .CreateGuild(guild)
     .then(() => registerGuildCommands(config.clientId!, guild.id, commands))
     .then(() => updateGuildCommandPermissions(guild.id, commands))
     .then(() => {
@@ -54,7 +67,8 @@ client.on('guildCreate', (guild) => {
 });
 
 client.on('guildDelete', (guild) => {
-  guildServices.DeleteGuild(guild.id)
+  guildServices
+    .DeleteGuild(guild.id)
     .then(() => {
       console.log(`Left Guild ${guild.name}`);
     })
@@ -62,6 +76,5 @@ client.on('guildDelete', (guild) => {
 });
 
 initMongoose();
-  
-client.login(config.token);
 
+client.login(config.token);

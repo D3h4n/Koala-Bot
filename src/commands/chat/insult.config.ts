@@ -11,10 +11,7 @@ export default class insultCommand extends Command {
   expl: Array<string>;
 
   constructor() {
-    super(
-      'insult', 
-      'Insult someone or yourself'
-    );
+    super('insult', 'Insult someone or yourself');
 
     this.wordTypes = ['adjective', 'adverb', 'noun', 'verb', 'expl'];
 
@@ -43,9 +40,9 @@ export default class insultCommand extends Command {
       'Go and {expl} {verb} {adverb}, {adjective} {noun}, {user}',
     ];
 
-    this.addUserOption(option => (
+    this.addUserOption((option) =>
       option.setName('user').setDescription('user to insult').setRequired(false)
-    ));
+    );
   }
 
   action(interaction: CommandInteraction) {

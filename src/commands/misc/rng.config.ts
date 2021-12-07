@@ -4,22 +4,19 @@ import Command from '../../utils/common.commands.config';
 
 export default class rngCommand extends Command {
   constructor() {
-    super(
-      'rng', 
-      'Generate a random number',
+    super('rng', 'Generate a random number');
+
+    this.addNumberOption((option) =>
+      option.setName('max').setDescription('Highest number')
     );
 
-    this.addNumberOption(option=> (
-      option.setName('max').setDescription('Highest number')
-    ));
-
-    this.addNumberOption(option=> (
+    this.addNumberOption((option) =>
       option.setName('min').setDescription('Lowest number')
-    ));
-    
-    this.addNumberOption(option=> (
+    );
+
+    this.addNumberOption((option) =>
       option.setName('count').setDescription('Amount of numbers to generate')
-    ));
+    );
   }
 
   action(interaction: CommandInteraction) {
@@ -63,11 +60,11 @@ export default class rngCommand extends Command {
         )
         .setDescription(['**Results:**', ...numbers].join(' '))
         .setColor(config.mainColor);
-      
+
       interaction.reply({
-        embeds: [response]
+        embeds: [response],
       });
-      return; 
+      return;
     }
 
     return interaction.reply(`\`${numbers[0]}\``);

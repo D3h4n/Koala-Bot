@@ -19,6 +19,6 @@ export default class leaveCommand extends Command {
 
     // disconnect bot
     voice.disconnect();
-    interaction.reply("`Left voice channel`");
+    interaction.reply('`Left voice channel`');
   }
 }

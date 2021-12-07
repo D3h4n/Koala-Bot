@@ -6,16 +6,15 @@ import config from '../../utils/config';
 
 export default class toggleLottosCommand extends Command {
   constructor() {
-    super(
-      'togglelottos',
-      'Turn lottos on and off',
-      '310489953157120023',
-      [ '829531557785894923' ]
-    );
+    super('togglelottos', 'Turn lottos on and off', '310489953157120023', [
+      '829531557785894923',
+    ]);
 
-    this.addNumberOption(option=>(
-      option.setName('frequency').setDescription('How often to run lottos (hours)')
-    ))
+    this.addNumberOption((option) =>
+      option
+        .setName('frequency')
+        .setDescription('How often to run lottos (hours)')
+    );
   }
 
   async action(interaction: CommandInteraction) {
@@ -39,11 +38,15 @@ export default class toggleLottosCommand extends Command {
         return;
       }
 
-      let lottoFrequency = Math.round(interaction.options.getNumber('frequency')! * 3.6e6); // convert time to ms
+      let lottoFrequency = Math.round(
+        interaction.options.getNumber('frequency')! * 3.6e6
+      ); // convert time to ms
 
       // assert valid lotto frequency
       if (Number.isNaN(lottoFrequency) || lottoFrequency === 0) {
-        interaction.reply(`\`${interaction.options.data[0].value} is not a valid number\``);
+        interaction.reply(
+          `\`${interaction.options.data[0].value} is not a valid number\``
+        );
         return;
       }
 

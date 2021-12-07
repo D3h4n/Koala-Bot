@@ -4,22 +4,23 @@ import Command from '../../utils/common.commands.config';
 
 export default class togglePostureCheckCommand extends Command {
   constructor() {
-    super(
-      'toggleposturecheck',
-      'Toggle Posture checks',
-      '310489953157120000',
-      [ '829531557785894923' ]
-    );
+    super('toggleposturecheck', 'Toggle Posture checks', '310489953157120000', [
+      '829531557785894923',
+    ]);
 
     this.setDefaultPermission(false);
 
-    this.addNumberOption(option=>(
-      option.setName('frequency').setDescription('How often to run posture checks')
-    ));
+    this.addNumberOption((option) =>
+      option
+        .setName('frequency')
+        .setDescription('How often to run posture checks')
+    );
 
-    this.addStringOption(option=>(
-      option.setName('message').setDescription('The message to send for each posture check')
-    ))
+    this.addStringOption((option) =>
+      option
+        .setName('message')
+        .setDescription('The message to send for each posture check')
+    );
   }
 
   async action(interaction: CommandInteraction) {
@@ -39,12 +40,12 @@ export default class togglePostureCheckCommand extends Command {
     if (guild.runPostureCheck) {
       await guildServices.UpdateGuild({ guildId, runPostureCheck: false });
       interaction.reply('`Stopping posture checks`');
-      return; 
+      return;
     }
 
     // calculate posture frequency
     let frequency = interaction.options.getNumber('frequency');
-    
+
     // assert valid posture frequency
     if (!frequency) {
       interaction.reply(`\`Please specify a valid frequency\``);
@@ -52,7 +53,6 @@ export default class togglePostureCheckCommand extends Command {
     }
 
     let postureCheckFrequency = Math.round(frequency * 3.6e6);
-
 
     // update guild with new info
     guildServices.UpdateGuild({

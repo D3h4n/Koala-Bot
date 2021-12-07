@@ -5,10 +5,7 @@ export default class helloCommand extends Command {
   greetings: string[];
 
   constructor() {
-    super(
-      'hello',
-      'Greet someone',
-    );
+    super('hello', 'Greet someone');
 
     this.greetings = [
       'Hi',

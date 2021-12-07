@@ -1,30 +1,39 @@
-import { CommandInteraction, GuildMember, Message, MessageEmbed, MessageReaction, User } from 'discord.js';
+import {
+  CommandInteraction,
+  GuildMember,
+  Message,
+  MessageEmbed,
+  MessageReaction,
+  User,
+} from 'discord.js';
 import config from '../../utils/config';
 import Command from '../../utils/common.commands.config';
 
 export default class voteCommand extends Command {
   static yesEmote = '✅';
   static noEmote = '❌';
-  
+
   constructor() {
-    super(
-      'vote',
-      'Put something up for vote',
+    super('vote', 'Put something up for vote');
+
+    this.addNumberOption((option) =>
+      option
+        .setName('timelimit')
+        .setDescription('Time limit of voting in minutes')
+        .setRequired(true)
     );
 
-    this.addNumberOption(option=>(
-      option.setName('timelimit').setDescription('Time limit of voting in minutes').setRequired(true)
-    ));
-      
-      this.addStringOption(option=>
-        option.setName('query').setDescription('The thing to vote on').setRequired(true)
+    this.addStringOption((option) =>
+      option
+        .setName('query')
+        .setDescription('The thing to vote on')
+        .setRequired(true)
     );
   }
-      
+
   async action(interaction: CommandInteraction) {
     await interaction.deferReply();
     const timeLimit = interaction.options.getNumber('timelimit', true) * 60000; // time limit in milliseconds
-
 
     // check if timeLimit is too small
     if (timeLimit < 30000) {
@@ -45,65 +54,68 @@ export default class voteCommand extends Command {
     const displayName = (interaction.member as GuildMember)?.displayName!;
     const displayAvatarURL = interaction.user.displayAvatarURL();
 
-
     // send initial message
-    let sentMessage = await interaction.editReply({
+    let sentMessage = (await interaction.editReply({
       embeds: [
         new MessageEmbed({
           title: query,
           footer: {
-            text: "✅ - yes   ❌- no"
-          }
-        })
-      ]
-    }) as Message;
+            text: '✅ - yes   ❌- no',
+          },
+        }),
+      ],
+    })) as Message;
 
     // add reactions
     await sentMessage.react(voteCommand.yesEmote);
     await sentMessage.react(voteCommand.noEmote);
 
     // create reaction collector
-    sentMessage.awaitReactions({
-      filter: (reaction: MessageReaction, user: User) => (
-        [voteCommand.yesEmote, voteCommand.noEmote].includes(reaction.emoji.name!) &&
-        !user.bot
-      ),
-      time: timeLimit,
-      dispose: true
-    })
-    .then(reactions => {
-      // initialize counts and userMap
-      let yesCount = 0;
-      let noCount = 0;
-      
-      reactions.forEach(reaction => {
-        switch(reaction.emoji.name) {
-          case voteCommand.yesEmote:
-            yesCount++;
-            break;
-          
-          case voteCommand.noEmote:
-            noCount++;
-            break;
-        }
+    sentMessage
+      .awaitReactions({
+        filter: (reaction: MessageReaction, user: User) =>
+          [voteCommand.yesEmote, voteCommand.noEmote].includes(
+            reaction.emoji.name!
+          ) && !user.bot,
+        time: timeLimit,
+        dispose: true,
       })
-      
-      // generate final message
-      const response = this.generateMessage( 
-        query, displayName,
-        displayAvatarURL,
-        yesCount, noCount
-      );
+      .then((reactions) => {
+        // initialize counts and userMap
+        let yesCount = 0;
+        let noCount = 0;
 
-      // update message
-      interaction.editReply({
-        content: " ", 
-        embeds: [response]
-      });
-    })
-    .catch(() => interaction.editReply("`Whoops! Some kinda error happened.`"))
-    .finally(() => sentMessage.reactions.removeAll())
+        reactions.forEach((reaction) => {
+          switch (reaction.emoji.name) {
+            case voteCommand.yesEmote:
+              yesCount++;
+              break;
 
+            case voteCommand.noEmote:
+              noCount++;
+              break;
+          }
+        });
+
+        // generate final message
+        const response = this.generateMessage(
+          query,
+          displayName,
+          displayAvatarURL,
+          yesCount,
+          noCount
+        );
+
+        // update message
+        interaction.editReply({
+          content: ' ',
+          embeds: [response],
+        });
+      })
+      .catch(() =>
+        interaction.editReply('`Whoops! Some kinda error happened.`')
+      )
+      .finally(() => sentMessage.reactions.removeAll());
   }
 
   generateMessage(
@@ -118,12 +130,10 @@ export default class voteCommand extends Command {
     let result: string;
 
     if (yesCount === noCount) {
-      result = ":shrug_tone3:";
-    }
-    else if (yesCount > noCount) {
+      result = ':shrug_tone3:';
+    } else if (yesCount > noCount) {
       result = voteCommand.yesEmote;
-    }
-    else {
+    } else {
       result = voteCommand.noEmote;
     }
 

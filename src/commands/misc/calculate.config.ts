@@ -3,14 +3,14 @@ import Command from '../../utils/common.commands.config';
 
 export default class calculateCommand extends Command {
   constructor() {
-    super(
-      'calculate',
-      'Calculate a mathematical expression'
-    );
+    super('calculate', 'Calculate a mathematical expression');
 
-    this.addStringOption(option => (
-      option.setName('expression').setDescription('Expression to calculate').setRequired(true)
-    ))
+    this.addStringOption((option) =>
+      option
+        .setName('expression')
+        .setDescription('Expression to calculate')
+        .setRequired(true)
+    );
   }
 
   action(interaction: CommandInteraction) {

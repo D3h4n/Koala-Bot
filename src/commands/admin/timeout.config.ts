@@ -1,30 +1,32 @@
-import {CommandInteraction, GuildMember} from 'discord.js';
+import { CommandInteraction, GuildMember } from 'discord.js';
 import Command from '../../utils/common.commands.config';
 import config from '../../utils/config';
 // import config from '../../utils/config';
 
 export default class timeoutCommand extends Command {
   constructor() {
-    super(
-      'timeout',
-      'Put a user in timeout',
-      '310489953157120023',
-      [ '829531557785894923' ]
-    );
+    super('timeout', 'Put a user in timeout', '310489953157120023', [
+      '829531557785894923',
+    ]);
 
     this.setDefaultPermission(false);
 
-    this.addUserOption(option=>(
+    this.addUserOption((option) =>
       option.setName('user').setDescription('User to timeout').setRequired(true)
-    ))
+    );
 
-    this.addNumberOption(option=>(
-      option.setName('time').setDescription('How long to keep em quiet for').setRequired(true)
-    ))
+    this.addNumberOption((option) =>
+      option
+        .setName('time')
+        .setDescription('How long to keep em quiet for')
+        .setRequired(true)
+    );
 
-    this.addBooleanOption(option=>(
-      option.setName('hidden').setDescription('If you too shame to do it infront of everybody')
-    ))
+    this.addBooleanOption((option) =>
+      option
+        .setName('hidden')
+        .setDescription('If you too shame to do it infront of everybody')
+    );
   }
 
   action(interaction: CommandInteraction) {
@@ -41,7 +43,7 @@ export default class timeoutCommand extends Command {
     // check that the member can be timedout
     if (!memberToTimeout.manageable) {
       interaction.reply('`That user is too stronk`');
-      return; 
+      return;
     }
 
     // calculate timeout
@@ -50,26 +52,27 @@ export default class timeoutCommand extends Command {
     // // check if time is within range
     if (timeout < 1000) {
       interaction.reply('`That time is too short`');
-      return; 
+      return;
     }
 
     if (timeout > config.timeoutMaxLimit) {
       interaction.reply('`That time is too large`');
-      return; 
+      return;
     }
 
     // add timeout and handle errors
     if (!this.addTimeout(memberToTimeout, timeout)) {
       interaction.reply('`Some kinda error or something`');
-      return; 
+      return;
     }
 
     // send prompt after timeout
     interaction.reply({
-      content: `Timed out ${memberToTimeout.toString()} for ${timeout / 1000} seconds`,
-      ephemeral: interaction.options.getBoolean('hidden') ?? false
-    }
-    );
+      content: `Timed out ${memberToTimeout.toString()} for ${
+        timeout / 1000
+      } seconds`,
+      ephemeral: interaction.options.getBoolean('hidden') ?? false,
+    });
   }
 
   private async addTimeout(member: GuildMember, timeout: number) {

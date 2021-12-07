@@ -4,14 +4,11 @@ import config from '../../utils/config';
 
 export default class coinFlipCommand extends Command {
   constructor() {
-    super(
-      'coinflip', 
-      'Flip one or more coins'
-    );
-      
-    this.addNumberOption(option=> 
+    super('coinflip', 'Flip one or more coins');
+
+    this.addNumberOption((option) =>
       option.setName('amount').setDescription('Amount of coins to flip')
-    )
+    );
   }
 
   action(interaction: CommandInteraction) {
@@ -37,9 +34,9 @@ export default class coinFlipCommand extends Command {
           (interaction.member as GuildMember)?.displayName,
           interaction.user.displayAvatarURL()
         );
-        
+
       interaction.reply({
-        embeds: [response]
+        embeds: [response],
       });
       return;
     }

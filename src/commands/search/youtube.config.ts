@@ -5,19 +5,22 @@ import { google } from 'googleapis';
 
 export default class youtubeCommand extends Command {
   constructor() {
-    super(
-      'youtube',
-      'Search youtube'
-    );
+    super('youtube', 'Search youtube');
 
-    this.addStringOption(option=>
-      option.setName('query').setDescription('Thing to search').setRequired(true)
-    )
+    this.addStringOption((option) =>
+      option
+        .setName('query')
+        .setDescription('Thing to search')
+        .setRequired(true)
+    );
   }
 
   action(interaction: CommandInteraction) {
     // get search query
-    let search = interaction.options.data.map(a => a.value).join(' ').trim();
+    let search = interaction.options.data
+      .map((a) => a.value)
+      .join(' ')
+      .trim();
 
     // assert search is valid
     if (!search.length) {
@@ -45,9 +48,7 @@ export default class youtubeCommand extends Command {
           interaction.reply(`https://www.youtube.com/watch?v=${id.videoId}`);
         } else if (id?.channelId) {
           // send channel link if channel
-          interaction.reply(
-            `https://www.youtube.com/channel/${id.channelId}`
-          );
+          interaction.reply(`https://www.youtube.com/channel/${id.channelId}`);
         } else {
           // send repsonse if no results are found
           interaction.reply(`No results found`);

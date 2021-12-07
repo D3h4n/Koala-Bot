@@ -1,5 +1,10 @@
-import { CommandInteraction, GuildMember, MessageEmbed, VoiceChannel } from 'discord.js';
-import {ChannelType} from 'discord-api-types/v9'
+import {
+  CommandInteraction,
+  GuildMember,
+  MessageEmbed,
+  VoiceChannel,
+} from 'discord.js';
+import { ChannelType } from 'discord-api-types/v9';
 import Command from '../../utils/common.commands.config';
 import config from '../../utils/config';
 
@@ -9,21 +14,25 @@ export default class yeetCommand extends Command {
       'yeet',
       'Move a bunch of people between voice channels',
       '310489953157120023',
-      [ '829531557785894923', "795005140977451018", "613883141857214500" ]
+      ['829531557785894923', '795005140977451018', '613883141857214500']
     );
 
     this.setDefaultPermission(false);
 
-    this.addChannelOption(option => (
-      option.setName('channel').setDescription('Channel to yeet to').setRequired(true).addChannelType(ChannelType.GuildVoice)
-    ))
+    this.addChannelOption((option) =>
+      option
+        .setName('channel')
+        .setDescription('Channel to yeet to')
+        .setRequired(true)
+        .addChannelType(ChannelType.GuildVoice)
+    );
   }
 
   async action(interaction: CommandInteraction) {
     const member = interaction.member as GuildMember;
 
     const voiceChannel = member.voice?.channel;
-    
+
     // check if user is in a voice channel
     if (!voiceChannel || !voiceChannel.isVoice()) {
       interaction.reply('`Gotta be in a channel buddy`');
@@ -31,11 +40,15 @@ export default class yeetCommand extends Command {
     }
 
     // get channel name
-    const newChannel = interaction.options.getChannel('channel', true) as VoiceChannel;
+    const newChannel = interaction.options.getChannel(
+      'channel',
+      true
+    ) as VoiceChannel;
 
     // move each connected member to new channel
-    voiceChannel?.members.forEach(async (member) =>
-      await member.voice.setChannel(newChannel).catch(console.error)
+    voiceChannel?.members.forEach(
+      async (member) =>
+        await member.voice.setChannel(newChannel).catch(console.error)
     );
 
     let count = 0;
@@ -46,15 +59,17 @@ export default class yeetCommand extends Command {
     response
       .setTitle(`Yote from "${voiceChannel.name}" to "${newChannel.name}"`)
       .setDescription(
-        voiceChannel.members.map((member) => `${++count}. ${member.displayName}`).join('\n')
+        voiceChannel.members
+          .map((member) => `${++count}. ${member.displayName}`)
+          .join('\n')
       );
 
     interaction.reply({
-      embeds: [response]
+      embeds: [response],
     });
 
     setTimeout(() => {
       interaction.deleteReply();
-    }, config.msgTimeout)
+    }, config.msgTimeout);
   }
 }

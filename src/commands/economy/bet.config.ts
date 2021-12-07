@@ -4,18 +4,15 @@ import economyServices from '../../services/economy.services';
 
 export default class betCommand extends Command {
   constructor() {
-    super(
-      'bet',
-      'Guess a number between 1 and 5 to win money',
+    super('bet', 'Guess a number between 1 and 5 to win money');
+
+    this.addNumberOption((option) =>
+      option.setName('amount').setDescription('Amount to Bet').setRequired(true)
     );
 
-    this.addNumberOption(option=>(
-      option.setName('amount').setDescription('Amount to Bet').setRequired(true)
-    ))
-
-    this.addNumberOption(option=>(
+    this.addNumberOption((option) =>
       option.setName('guess').setDescription('guess').setRequired(true)
-    ))
+    );
   }
 
   async action(interaction: CommandInteraction) {
@@ -24,7 +21,9 @@ export default class betCommand extends Command {
 
     // assert that bet amount is a valid number
     if (!betAmount || Number.isNaN(betAmount) || betAmount < 1) {
-      return interaction.reply(`\`${interaction.options.data[0].value}\` is not a valid amount`);
+      return interaction.reply(
+        `\`${interaction.options.data[0].value}\` is not a valid amount`
+      );
     }
 
     // get user record
@@ -49,7 +48,9 @@ export default class betCommand extends Command {
 
     // assert a valid guess
     if (!guess || Number.isNaN(guess) || guess < 1 || guess > 5) {
-      return interaction.reply(`\`${interaction.options.data[1].value}\` is not a valid amount`);
+      return interaction.reply(
+        `\`${interaction.options.data[1].value}\` is not a valid amount`
+      );
     }
 
     // generate random number

@@ -11,16 +11,15 @@ export default class skipCommand extends Command {
   action(interaction: CommandInteraction) {
     try {
       let queue = distube.getQueue(interaction);
-      
-      if (queue) 
+
+      if (queue)
         if (queue.songs.length > 1) {
           queue.skip();
-        }
-        else {
+        } else {
           queue?.stop();
         }
       else {
-        getVoiceConnection(interaction.guildId)?.disconnect()
+        getVoiceConnection(interaction.guildId)?.disconnect();
       }
 
       interaction.reply('`Skipped song`');

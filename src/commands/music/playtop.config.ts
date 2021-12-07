@@ -5,20 +5,17 @@ import { distube } from '../../index';
 
 export default class PlayTopCommand extends Command {
   constructor() {
-    super(
-      'playtop',
-      'Add song to the top of the queue'
-    );
+    super('playtop', 'Add song to the top of the queue');
 
-    this.addStringOption(option => (
-      option.setName("song").setDescription("Song to add").setRequired(true)
-    ))
+    this.addStringOption((option) =>
+      option.setName('song').setDescription('Song to add').setRequired(true)
+    );
   }
 
   async action(interaction: CommandInteraction) {
     interaction.deferReply();
     // get query
-    let query = interaction.options.getString("song", true);
+    let query = interaction.options.getString('song', true);
 
     // assert query is not a playlist
     if (query.includes('https://youtube.com/playlist')) {
@@ -34,16 +31,16 @@ export default class PlayTopCommand extends Command {
       let voiceChannel = (interaction.member as GuildMember)?.voice.channel;
 
       if (!voiceChannel) {
-        interaction.editReply("Join a voice channel.");
+        interaction.editReply('Join a voice channel.');
         return;
       }
 
       distube.playVoiceChannel(voiceChannel, query, {
-      member: interaction.member as GuildMember,
-      textChannel: interaction.channel as TextChannel
-    });
+        member: interaction.member as GuildMember,
+        textChannel: interaction.channel as TextChannel,
+      });
       interaction.deleteReply();
-      return; 
+      return;
     }
 
     // if there is a queue
@@ -52,7 +49,11 @@ export default class PlayTopCommand extends Command {
     let result: SearchResult;
 
     try {
-      [result] = await distube.search(query, { safeSearch: true, limit: 1, type: "video" });
+      [result] = await distube.search(query, {
+        safeSearch: true,
+        limit: 1,
+        type: 'video',
+      });
     } catch (error) {
       interaction.reply('`Could not find that song`');
       console.error(error);
