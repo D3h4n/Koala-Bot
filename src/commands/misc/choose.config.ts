@@ -1,10 +1,7 @@
-import { CommandInteraction, Message } from 'discord.js';
-// import { CommandInteraction, Message, MessageReaction, User } from 'discord.js';
+import { CommandInteraction, GuildMember, Message, MessageEmbed, MessageReaction, User } from 'discord.js';
 import Command from '../../utils/common.commands.config';
 
 export default class chooseCommand extends Command {
-  emotes = ['✔', '❌'];
-
   constructor() {
     super(
       'choose',
@@ -32,8 +29,10 @@ export default class chooseCommand extends Command {
   }
 
   async action(interaction: CommandInteraction) {
+    let hidden = interaction.options.getBoolean('hidden') || false;
+    
     await interaction.deferReply({
-      ephemeral: interaction.options.getBoolean('hidden') || false
+      ephemeral: hidden 
     });
 
     // generate random result
@@ -43,45 +42,47 @@ export default class chooseCommand extends Command {
 
     await interaction.editReply("`" + result + "`");
 
-    return; //FIXME: wait til reactions work before remove this line
-    let message = await interaction.followUp({
-      content: 'See options?',
-      ephemeral: interaction.options.getBoolean('hidden') || false
-    }) as Message;
+    if (hidden)
+      return;
 
-    this.emotes.forEach(async emote => {
-      await message.react(emote);
-    })
+    let message = await interaction.channel?.send('See options?') as Message;
 
+    try {
+      await message.react("✅");
+      await message.react("❌");
+    } catch (error) {
+      console.error(error);
+    }
 
-    const collector =  message.createReactionCollector({
-      filter: () => true,
-      // filter: (reaction: MessageReaction, user: User) => (
-      //   this.emotes.includes(reaction.emoji.name!) &&
-      //   user.id === interaction.user.id &&
-      //   !reaction.me &&
-      //   !user.bot
-      // ),
+    message.awaitReactions({
+      filter: (reaction: MessageReaction, user: User) => (
+          ["✅", "❌"].includes(reaction.emoji.name!) &&
+          user === interaction.user &&
+          !user.bot
+      ),
       max: 1,
       time: 5000,
-      dispose: true
+      dispose: true,
+      errors: ['time']
     })
+      .then(reactions => {
+        let reaction = reactions.first()!;
 
-    collector.on('collect', async (reaction, user) => {
-      if (reaction.emoji.name === this.emotes[0]) {
-        await message.edit("Options: " + options.map(option => `"${option}"`).join(' '))
-      }
-      else {
-        await message.delete();
-      }
-
-      collector.dispose(reaction, user);
-    })
-
-    collector.on('exit', () => {
-      if (!message.deleted) {
-        message.reactions.removeAll();
-      }
-    })
+        if (reaction.emoji.name !== "✅")
+          throw 0; // throw anything to cause messsage deletion
+        
+        return message.edit({ content: null, embeds: [
+          new MessageEmbed({ 
+            title: "Options",
+            author: {
+              name: (interaction.member as GuildMember)?.displayName,
+              iconURL: interaction.user.displayAvatarURL()
+            },
+            description: options.join('\n') 
+          })
+        ]})
+      })
+      .then((message) => message.reactions.removeAll())
+      .catch(() => message.delete())
   }
 }

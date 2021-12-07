@@ -3,7 +3,7 @@ import config from '../../utils/config';
 import Command from '../../utils/common.commands.config';
 
 export default class voteCommand extends Command {
-  static yesEmote = '✔';
+  static yesEmote = '✅';
   static noEmote = '❌';
   
   constructor() {
@@ -13,7 +13,7 @@ export default class voteCommand extends Command {
     );
 
     this.addNumberOption(option=>(
-      option.setName('timelimit').setDescription('Time limit of voting').setRequired(true)
+      option.setName('timelimit').setDescription('Time limit of voting in minutes').setRequired(true)
     ));
       
       this.addStringOption(option=>
@@ -22,17 +22,9 @@ export default class voteCommand extends Command {
   }
       
   async action(interaction: CommandInteraction) {
-    interaction.reply("This command don't work " + '😔');
-    return; //FIXME: Figure out what's wrong with reactions before letting this command run
-
     await interaction.deferReply();
     const timeLimit = interaction.options.getNumber('timelimit', true) * 60000; // time limit in milliseconds
 
-    // check if timeLimit is a number
-    if (Number.isNaN(timeLimit)) {
-      interaction.editReply('`Invalid time limit`');
-      return;
-    }
 
     // check if timeLimit is too small
     if (timeLimit < 30000) {
@@ -49,97 +41,97 @@ export default class voteCommand extends Command {
     // generate query
     let query = interaction.options.getString('query', true);
 
-    // add question mark if there is none
-    if (!query.endsWith('?')) {
-      query += '?';
-    }
-
     // get the displayName and AvatarURL of author
     const displayName = (interaction.member as GuildMember)?.displayName!;
     const displayAvatarURL = interaction.user.displayAvatarURL();
 
 
     // send initial message
-    let sentMessage = await interaction.editReply(query) as Message;
+    let sentMessage = await interaction.editReply({
+      embeds: [
+        new MessageEmbed({
+          title: query,
+          footer: {
+            text: "✅ - yes   ❌- no"
+          }
+        })
+      ]
+    }) as Message;
 
     // add reactions
     await sentMessage.react(voteCommand.yesEmote);
     await sentMessage.react(voteCommand.noEmote);
 
-    // initialize counts and userMap
-    let yesCount = 0;
-    let noCount = 0;
-
-    // filter for reaction collections
-    const filter = (reaction: MessageReaction, user: User) => (
-      [voteCommand.yesEmote, voteCommand.noEmote].includes(reaction.emoji.name!) &&
-      !reaction.me &&
-      !user.bot
-    )
-
     // create reaction collector
-    const reactions = await sentMessage.awaitReactions({
-      filter,
+    sentMessage.awaitReactions({
+      filter: (reaction: MessageReaction, user: User) => (
+        [voteCommand.yesEmote, voteCommand.noEmote].includes(reaction.emoji.name!) &&
+        !user.bot
+      ),
       time: timeLimit,
       dispose: true
-    });
-
-    reactions.each(reaction => {
-      console.log(reaction);
-
-      if (reaction.emoji.name === voteCommand.yesEmote) {
-        yesCount = reaction.count;
-      }
-      else {
-        noCount = reaction.count;
-      }
     })
+    .then(reactions => {
+      // initialize counts and userMap
+      let yesCount = 0;
+      let noCount = 0;
+      
+      reactions.forEach(reaction => {
+        switch(reaction.emoji.name) {
+          case voteCommand.yesEmote:
+            yesCount++;
+            break;
+          
+          case voteCommand.noEmote:
+            noCount++;
+            break;
+        }
+      })
+      
+      // generate final message
+      const response = this.generateMessage( 
+        query, displayName,
+        displayAvatarURL,
+        yesCount, noCount
+      );
 
-    // find final result
-    let result = 'Tie';
+      // update message
+      interaction.editReply({
+        content: " ", 
+        embeds: [response]
+      });
+    })
+    .catch(() => interaction.editReply("`Whoops! Some kinda error happened.`"))
+    .finally(() => sentMessage.reactions.removeAll())
 
-    if (noCount < yesCount) {
-      result = 'Yes';
-    } else if (noCount > yesCount) {
-      result = 'No';
-    }
-
-    // generate final message
-    const response = this.generateMessage(
-      query,
-      displayName,
-      displayAvatarURL
-    );
-
-    response.setDescription([
-      `**${query}**`,
-      `Yes: ${yesCount}`,
-      `No: ${noCount}`,
-      `\nResult: ${result}`,
-    ].join('\n'));
-
-    // update message
-    interaction.editReply({
-      content: " ", 
-      embeds: [response]
-    });
-
-    // remove all reactions
-    await sentMessage.reactions.removeAll();
   }
 
   generateMessage(
     query: string,
     displayName: string,
-    displayAvatarURL: string
+    displayAvatarURL: string,
+    yesCount: number,
+    noCount: number
   ) {
     const response = new MessageEmbed();
 
+    let result: string;
+
+    if (yesCount === noCount) {
+      result = ":shrug_tone3:";
+    }
+    else if (yesCount > noCount) {
+      result = voteCommand.yesEmote;
+    }
+    else {
+      result = voteCommand.noEmote;
+    }
+
     response
-      .setTitle('Vote')
+      .setTitle(query)
       .setAuthor(displayName, displayAvatarURL)
       .setColor(config.mainColor)
-      .setDescription(`**${query}**`);
+      .setDescription(`Yes: ${yesCount}\nNo: ${noCount}\n\nResult: ${result}`);
 
     return response;
   }

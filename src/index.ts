@@ -9,7 +9,7 @@ import guildServices from './services/guild.services';
 import Command from './utils/common.commands.config';
 import DisTube from 'distube';
 
-export const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_VOICE_STATES] }); // initialize client
+export const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS] }); // initialize client
 
 export let commands: Collection<string, Command>;
 

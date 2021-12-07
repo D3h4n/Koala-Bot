@@ -2,7 +2,7 @@ import { Queue, Song } from 'distube';
 import config from '../../utils/config';
 import Command from '../../utils/common.commands.config';
 import { CommandInteraction, Message, MessageEmbed, MessageReaction, User } from 'discord.js';
-import { client, distube } from '../../index';
+import { distube } from '../../index';
 
 export default class queueCommand extends Command {
   constructor() {
@@ -35,18 +35,19 @@ export default class queueCommand extends Command {
         embeds: [this.generateResponse(queue, pageNumber)]
       }) as Message;
 
-      return; // FIXME: figure out reactions
-      sentMsg.react('◀')
-        .then(() => sentMsg.react('▶'))
-        .catch(console.error);
+      try {
+        await sentMsg.react('◀');
+        await sentMsg.react('▶');
+      }
+      catch(err) {
+        console.error(err);
+      }
 
       // add reaction collector for message
       let collector = sentMsg.createReactionCollector({
         // filter reactions to ignore bot reactions and other reactions
         filter: (reaction: MessageReaction, user: User) =>
-          ['◀', '▶'].includes(reaction.emoji.name!) &&
-          user.id !== client.user?.id &&
-          !user.bot,
+          ['◀', '▶'].includes(reaction.emoji.name!) && !user.bot,
           // set the time limit
           time: config.queueTimeLimit,
         }

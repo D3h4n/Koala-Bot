@@ -1,6 +1,6 @@
 {
   "name": "discord-koala-bot",
-  "version": "1.1.0",
+  "version": "2.0.1",
   "repository": "https://github.com/D3h4n/Koala-Bot",
   "description": "A bot specifically for AKK",
   "main": "dist/index",

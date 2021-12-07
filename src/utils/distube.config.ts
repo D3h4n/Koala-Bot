@@ -12,6 +12,9 @@ export default function (distube: DisTube) {
   });
 
   distube.on('playSong', (queue, song) => {
+    if (queue.repeatMode === 1)
+      return;
+
     let res = new MessageEmbed();
 
     let desc =
