@@ -3,18 +3,18 @@ import { CommandInteraction } from 'discord.js';
 import { distube } from '../../index';
 
 export default class stopCommand extends Command {
-  constructor() {
-    super('stop', 'Stop the queue');
-  }
+   constructor() {
+      super('stop', 'Stop the queue');
+   }
 
-  action(interaction: CommandInteraction) {
-    try {
-      distube.stop(interaction);
-    } catch (error) {
-      interaction.reply('`Error stopping queue`');
-      return;
-    }
+   action(interaction: CommandInteraction) {
+      try {
+         distube.stop(interaction);
+      } catch (error) {
+         interaction.reply('`Error stopping queue`');
+         return;
+      }
 
-    interaction.reply('`Queue stopped`');
-  }
+      interaction.reply('`Queue stopped`');
+   }
 }

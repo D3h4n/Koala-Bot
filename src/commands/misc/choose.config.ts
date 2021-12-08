@@ -1,104 +1,131 @@
 import {
-  CommandInteraction,
-  GuildMember,
-  Message,
-  MessageEmbed,
-  MessageReaction,
-  User,
+   CommandInteraction,
+   GuildMember,
+   Message,
+   MessageActionRow,
+   MessageButton,
+   MessageEmbed,
 } from 'discord.js';
+import config from '../../utils/config';
 import Command from '../../utils/common.commands.config';
 
 export default class chooseCommand extends Command {
-  constructor() {
-    super('choose', 'Let the bot decide your fate');
+   constructor() {
+      super('choose', 'Let the bot decide your fate');
 
-    this.addStringOption((option) =>
-      option
-        .setName('option1')
-        .setDescription('The first option to choose from')
-        .setRequired(true)
-    );
-
-    this.addStringOption((option) =>
-      option
-        .setName('option2')
-        .setDescription('The second option to choose from')
-        .setRequired(true)
-    );
-
-    this.addBooleanOption((option) =>
-      option.setName('hidden').setDescription('Keep your secrets')
-    );
-
-    for (let i = 3; i <= 9; i++) {
       this.addStringOption((option) =>
-        option
-          .setName(`option${i}`)
-          .setDescription('An option to choose from')
-          .setRequired(false)
+         option
+            .setName('option1')
+            .setDescription('The first option to choose from')
+            .setRequired(true)
       );
-    }
-  }
 
-  async action(interaction: CommandInteraction) {
-    let hidden = interaction.options.getBoolean('hidden') || false;
+      this.addStringOption((option) =>
+         option
+            .setName('option2')
+            .setDescription('The second option to choose from')
+            .setRequired(true)
+      );
 
-    await interaction.deferReply({
-      ephemeral: hidden,
-    });
+      this.addBooleanOption((option) =>
+         option.setName('hidden').setDescription('Keep your secrets')
+      );
 
-    // generate random result
-    let options = interaction.options.data
-      .filter((a) => a.type === 'STRING')
-      .map((a) => a.value) as string[];
+      for (let i = 3; i <= 9; i++) {
+         this.addStringOption((option) =>
+            option
+               .setName(`option${i}`)
+               .setDescription('An option to choose from')
+               .setRequired(false)
+         );
+      }
+   }
 
-    const result = options[Math.floor(Math.random() * options.length)];
+   async action(interaction: CommandInteraction) {
+      let hidden = interaction.options.getBoolean('hidden') || false;
 
-    await interaction.editReply('`' + result + '`');
+      await interaction.deferReply({
+         ephemeral: hidden,
+      });
 
-    if (hidden) return;
+      // generate random result
+      let options = interaction.options.data
+         .filter((a) => a.type === 'STRING')
+         .map((a) => a.value) as string[];
 
-    // TODO: Convert reactions to buttons
-    let message = (await interaction.channel?.send('See options?')) as Message;
+      const result = options[Math.floor(Math.random() * options.length)];
 
-    try {
-      await message.react('✅');
-      await message.react('❌');
-    } catch (error) {
-      console.error(error);
-    }
+      await interaction.editReply('`' + result + '`');
 
-    message
-      .awaitReactions({
-        filter: (reaction: MessageReaction, user: User) =>
-          ['✅', '❌'].includes(reaction.emoji.name!) &&
-          user === interaction.user &&
-          !user.bot,
-        max: 1,
-        time: 5000,
-        dispose: true,
-        errors: ['time'],
-      })
-      .then((reactions) => {
-        let reaction = reactions.first()!;
+      if (hidden) return;
 
-        if (reaction.emoji.name !== '✅') throw 0; // throw anything to cause messsage deletion
+      // followup message with buttons
+      let message = (await interaction.followUp({
+         content: 'See options?',
+         components: [
+            new MessageActionRow().addComponents(
+               new MessageButton()
+                  .setCustomId('yes')
+                  .setEmoji('✅')
+                  .setStyle('SUCCESS'),
+               new MessageButton()
+                  .setCustomId('no')
+                  .setEmoji('❌')
+                  .setStyle('DANGER')
+            ),
+         ],
+      })) as Message;
 
-        return message.edit({
-          content: null,
-          embeds: [
-            new MessageEmbed({
-              title: 'Options',
-              author: {
-                name: (interaction.member as GuildMember)?.displayName,
-                iconURL: interaction.user.displayAvatarURL(),
-              },
-              description: options.join('\n'),
-            }),
-          ],
-        });
-      })
-      .then((message) => message.reactions.removeAll())
-      .catch(() => message.delete());
-  }
+      let response: boolean = false;
+
+      // create collector
+      message
+         .createMessageComponentCollector({
+            filter: ({ user, customId }) =>
+               ['yes', 'no'].includes(customId) &&
+               user === interaction.user &&
+               !user.bot,
+            time: 5000,
+            dispose: true,
+         })
+         .on('collect', ({ customId }) => {
+            switch (customId) {
+               case 'yes':
+                  response = true;
+                  message
+                     .edit({
+                        content: null,
+                        embeds: [
+                           new MessageEmbed({
+                              title: 'Options',
+                              color: config.mainColor,
+                              author: {
+                                 name: (interaction.member as GuildMember)
+                                    ?.displayName,
+                                 iconURL: interaction.user.displayAvatarURL(),
+                              },
+                              description: options.join('\n'),
+                           }),
+                        ],
+                     })
+                     .then((message) => message.edit({ components: [] }))
+                     .catch(() => message.delete().catch(console.error));
+                  break;
+
+               case 'no':
+                  response = true;
+                  message.delete().catch(console.error);
+                  break;
+
+               default:
+                  process.stderr.write(`Unhandled Case`);
+                  process.exit(1);
+            }
+         })
+         .on('end', () => {
+            if (!response) {
+               message.delete().catch(console.error);
+            }
+         });
+   }
 }
