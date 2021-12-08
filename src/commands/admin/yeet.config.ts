@@ -1,60 +1,76 @@
-import { Message, MessageEmbed } from 'discord.js';
-import Command from '../common.commands.config';
+import {
+   CommandInteraction,
+   GuildMember,
+   MessageEmbed,
+   VoiceChannel,
+} from 'discord.js';
+import { ChannelType } from 'discord-api-types/v9';
+import Command from '../../utils/common.commands.config';
+import config from '../../utils/config';
 
 export default class yeetCommand extends Command {
-  constructor() {
-    super(
-      'Yeet',
-      'yeet',
-      [
-        'Move a bunch of people between voice channels',
-        'NB:// You have to be in the voice channel',
-        'Usage: $yeet <new voice channel>',
-      ],
-      [],
-      ['MOVE_MEMBERS']
-    );
-  }
-
-  action({ member, guild, channel }: Message, args: string[]) {
-    const voiceChannel = member?.voice.channel; // connected voice channel
-
-    // get channel name
-    const channelName = args.slice(1).join(' ');
-
-    // check if user is in a voice channel
-    if (!voiceChannel) {
-      channel.send('`Gotta be in a channel buddy`');
-      return;
-    }
-
-    // find the new channel
-    const newChannel = guild?.channels.cache.find(
-      ({ type, name }) => type === 'voice' && name === channelName
-    );
-
-    // check if channel was found
-    if (!newChannel) {
-      channel.send('`Could not find that channel`');
-      return;
-    }
-
-    // move each connected member to new channel
-    voiceChannel?.members.forEach((member) =>
-      member.voice.setChannel(newChannel)
-    );
-
-    // create and send response
-    const response = new MessageEmbed();
-
-    response
-      .setTitle(`Yote from "${voiceChannel.name}" to "${newChannel.name}"`)
-      .setDescription(
-        voiceChannel.members
-          .array()
-          .map((member, idx) => `${idx + 1}. ${member.displayName}`)
+   constructor() {
+      super(
+         'yeet',
+         'Move a bunch of people between voice channels',
+         '310489953157120023',
+         ['829531557785894923', '795005140977451018', '613883141857214500']
       );
 
-    channel.send(response);
-  }
+      this.setDefaultPermission(false);
+
+      this.addChannelOption((option) =>
+         option
+            .setName('channel')
+            .setDescription('Channel to yeet to')
+            .setRequired(true)
+            .addChannelType(ChannelType.GuildVoice)
+      );
+   }
+
+   async action(interaction: CommandInteraction) {
+      const member = interaction.member as GuildMember;
+
+      const voiceChannel = member.voice?.channel;
+
+      // check if user is in a voice channel
+      if (!voiceChannel || !voiceChannel.isVoice()) {
+         interaction.reply('`Gotta be in a channel buddy`');
+         return;
+      }
+
+      // get channel name
+      const newChannel = interaction.options.getChannel(
+         'channel',
+         true
+      ) as VoiceChannel;
+
+      // move each connected member to new channel
+      voiceChannel?.members.forEach(
+         async (member) =>
+            await member.voice.setChannel(newChannel).catch(console.error)
+      );
+
+      let count = 0;
+
+      // create and send response
+      const response = new MessageEmbed();
+
+      response
+         .setTitle(`Yote from "${voiceChannel.name}" to "${newChannel.name}"`)
+         .setColor(config.mainColor)
+         .setDescription(
+            voiceChannel.members
+               .map((member) => `${++count}. ${member.displayName}`)
+               .join('\n')
+         );
+
+      interaction.reply({
+         embeds: [response],
+      });
+
+      setTimeout(() => {
+         interaction.deleteReply();
+      }, config.msgTimeout);
+   }
 }

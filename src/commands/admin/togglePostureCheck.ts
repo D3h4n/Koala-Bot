@@ -1,71 +1,74 @@
-import { Message } from 'discord.js';
+import { CommandInteraction } from 'discord.js';
 import guildServices from '../../services/guild.services';
-import Command from '../common.commands.config';
+import Command from '../../utils/common.commands.config';
 
 export default class togglePostureCheckCommand extends Command {
-  constructor() {
-    super(
-      'Toggle Posture Check',
-      'toggleposturecheck',
-      [
-        'Toggle Posture checks',
-        'Usage:',
-        '$toggleposturecheck <frequency in hours>',
-        '$toggleposturecheck <frequency in hours> <posture check message>',
-      ],
-      ['tpc'],
-      ['MANAGE_CHANNELS']
-    );
-  }
+   constructor() {
+      super(
+         'toggleposturecheck',
+         'Toggle Posture checks',
+         '310489953157120000',
+         ['829531557785894923']
+      );
 
-  async action(message: Message, args: string[]) {
-    // get the guild id
-    const guildId = message.guild?.id;
+      this.setDefaultPermission(false);
 
-    // assert guildId
-    if (!guildId) {
-      return message.channel.send('`Error finding guild`');
-    }
+      this.addNumberOption((option) =>
+         option
+            .setName('frequency')
+            .setDescription('How often to run posture checks')
+      );
 
-    // get guild record
-    const guild = await guildServices.GetGuild(guildId);
+      this.addStringOption((option) =>
+         option
+            .setName('message')
+            .setDescription('The message to send for each posture check')
+      );
+   }
 
-    // if posture checks are running turn them off
-    // and send message
-    if (guild.runPostureCheck) {
-      await guildServices.UpdateGuild({ guildId, runPostureCheck: false });
-      return message.channel.send('`Stopping posture checks`');
-    }
+   async action(interaction: CommandInteraction) {
+      // get the guild id
+      const guildId = interaction.guild?.id;
 
-    // if posture checks are not running
+      // assert guildId
+      if (!guildId) {
+         return interaction.reply('`Error finding guild`');
+      }
 
-    // check for arguments
-    if (args.length < 2) {
-      message.channel.send('`Must include frequency`');
-      return;
-    }
+      // get guild record
+      const guild = await guildServices.GetGuild(guildId);
 
-    // calculate posture frequency
-    let postureCheckFrequency = Math.round(Number(args[1]) * 3.6e6);
+      // if posture checks are running turn them off
+      // and send message
+      if (guild.runPostureCheck) {
+         await guildServices.UpdateGuild({ guildId, runPostureCheck: false });
+         interaction.reply('`Stopping posture checks`');
+         return;
+      }
 
-    // assert valid posture frequency
-    if (Number.isNaN(postureCheckFrequency)) {
-      message.channel.send(`\`${args[1]} is not a valid number\``);
-      return;
-    }
+      // calculate posture frequency
+      let frequency = interaction.options.getNumber('frequency');
 
-    // update guild with new info
-    guildServices.UpdateGuild({
-      guildId,
-      postureCheckChannelId: message.channel.id,
-      runPostureCheck: true,
-      postureCheckFrequency,
-      postureCheckMessage: args[2],
-    });
+      // assert valid posture frequency
+      if (!frequency) {
+         interaction.reply(`\`Please specify a valid frequency\``);
+         return;
+      }
 
-    // send message
-    return message.channel.send(
-      `\`Running posture checks in this channel every ${args[1]} hours\``
-    );
-  }
+      let postureCheckFrequency = Math.round(frequency * 3.6e6);
+
+      // update guild with new info
+      guildServices.UpdateGuild({
+         guildId,
+         postureCheckChannelId: interaction?.channel?.id,
+         runPostureCheck: true,
+         postureCheckFrequency,
+         postureCheckMessage: interaction.options.getString('message'),
+      });
+
+      // send message
+      interaction.reply(
+         `\`Running posture checks in this channel every ${frequency} hours\``
+      );
+   }
 }

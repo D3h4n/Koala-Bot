@@ -1,86 +1,71 @@
-import Command from '../common.commands.config';
-import Song from 'distube/typings/Song';
-import { Message } from 'discord.js';
+import Command from '../../utils/common.commands.config';
+import { Song, SearchResult } from 'distube';
+import { CommandInteraction, GuildMember, TextChannel } from 'discord.js';
 import { distube } from '../../index';
-import SearchResult from 'distube/typings/SearchResult';
 
 export default class PlayTopCommand extends Command {
-  constructor() {
-    super(
-      'Play Top',
-      'playtop',
-      ['Add song to the top of the queue', 'Usage: $playtop <song>'],
-      ['pt']
-    );
-  }
+   constructor() {
+      super('playtop', 'Add song to the top of the queue');
 
-  async action(message: Message, args: string[]) {
-    // get query
-    let query = args.slice(1).join(' ');
+      this.addStringOption((option) =>
+         option.setName('song').setDescription('Song to add').setRequired(true)
+      );
+   }
 
-    // assert query exists
-    if (!query) {
-      return message.channel.send('`Add a song to play!!!!`');
-    }
+   async action(interaction: CommandInteraction) {
+      interaction.deferReply();
+      // get query
+      let query = interaction.options.getString('song', true);
 
-    // assert query is not a playlist
-    if (query.includes('https://youtube.com/playlist')) {
-      return message.channel.send('`Use the play command for playlists`');
-    }
+      // assert query is not a playlist
+      if (query.includes('https://youtube.com/playlist')) {
+         interaction.editReply('`Use the play command for playlists`');
+         return;
+      }
 
-    // get queue
-    let queue = distube.getQueue(message);
+      // get queue
+      let queue = distube.getQueue(interaction);
 
-    // if there is no queue play song regularly
-    if (!queue?.songs?.length) {
-      return distube.play(message, query);
-    }
+      // if there is no queue play song regularly
+      if (!queue?.songs?.length) {
+         let voiceChannel = (interaction.member as GuildMember)?.voice.channel;
 
-    // if there is a queue
+         if (!voiceChannel) {
+            interaction.editReply('Join a voice channel.');
+            return;
+         }
 
-    // generate a search result based on query
-    let result: SearchResult;
+         distube.playVoiceChannel(voiceChannel, query, {
+            member: interaction.member as GuildMember,
+            textChannel: interaction.channel as TextChannel,
+         });
+         interaction.deleteReply();
+         return;
+      }
 
-    try {
-      [result] = await distube.search(query);
-    } catch (error) {
-      message.channel.send('`Could not find that song`');
-      console.error(error);
-      return;
-    }
+      // if there is a queue
 
-    // change result to song
-    let song = this.createSong(message, result); // FIXME: This is botched way to do this until the contructor works
-    // Better Way:
-    // let song = new Song(result, message.author);
+      // generate a search result based on query
+      let result: SearchResult;
 
-    // add song to the beginning of the queue
-    queue.songs.splice(1, 0, song);
+      try {
+         [result] = await distube.search(query, {
+            safeSearch: true,
+            limit: 1,
+            type: 'video',
+         });
+      } catch (error) {
+         interaction.reply('`Could not find that song`');
+         console.error(error);
+         return;
+      }
 
-    // emit add song event
-    distube.emit('addSong', message, queue, song);
-  }
+      let song = new Song(result, interaction.member as GuildMember);
 
-  /**
-   * Takes a search result and makes it into a song
-   *
-   *
-   * @param message message object
-   * @param result search result object
-   * @returns {Song} Song object
-   */
-  createSong(message: Message, result: SearchResult): Song {
-    return {
-      ...result,
-      user: message.author,
-      youtube: true,
-      info: null,
-      streamURL: null,
-      related: null,
-      plays: NaN,
-      likes: NaN,
-      dislikes: NaN,
-      reposts: NaN,
-    };
-  }
+      // add song to the beginning of the queue
+      queue.addToQueue(song, 1);
+
+      // emit add song event
+      distube.emit('addSong', queue, song);
+   }
 }

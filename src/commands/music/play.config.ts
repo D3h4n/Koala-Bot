@@ -1,46 +1,35 @@
-import Command from '../common.commands.config';
-import { Message } from 'discord.js';
+import Command from '../../utils/common.commands.config';
+import { CommandInteraction, GuildMember, TextChannel } from 'discord.js';
 import { distube } from '../../index';
 
 export default class playCommand extends Command {
-  constructor() {
-    super(
-      'Play',
-      'play',
-      [
-        'Add a song to the queue',
-        'Usage: $play <song>',
-        'OR',
-        'Resume a song',
-        'Usage: $play',
-      ],
-      ['p']
-    );
-  }
+   constructor() {
+      super('play', 'Add a song to the queue');
 
-  async action(message: Message, args: string[]) {
-    // generate query from args
-    let query = args.slice(1).join(' ');
+      this.addStringOption((option) =>
+         option
+            .setName('song')
+            .setDescription('The song you want to play')
+            .setRequired(true)
+      );
+   }
 
-    // if no query resume queue
-    if (!query) {
-      try {
-        // check if queue is paused
-        if (distube.getQueue(message).pause) {
-          // resume queue and send response
-          distube.resume(message);
-          message.channel.send('`Resuming song`');
-        }
-      } catch (err) {
-        message.channel.send('`Error resuming song`');
+   async action(interaction: CommandInteraction) {
+      await interaction.deferReply();
+      // generate query from args
+      let query = interaction.options.getString('song', true);
+
+      let voiceChannel = (interaction.member as GuildMember)?.voice.channel;
+
+      if (!voiceChannel) {
+         interaction.editReply('Join a voice channel.');
+         return;
       }
 
-      return;
-    }
-
-    // if query then search for and play query
-    distube
-      .play(message, query)
-      .catch(() => message.channel.send('`Could not find that song`'));
-  }
+      distube.playVoiceChannel(voiceChannel, query, {
+         member: interaction.member as GuildMember,
+         textChannel: interaction.channel as TextChannel,
+      });
+      interaction.deleteReply();
+   }
 }

@@ -1,153 +1,151 @@
-import { Message, MessageEmbed, MessageReaction, User } from 'discord.js';
+import {
+   CommandInteraction,
+   GuildMember,
+   Message,
+   MessageEmbed,
+   MessageReaction,
+   User,
+} from 'discord.js';
 import config from '../../utils/config';
-import Command from '../common.commands.config';
+import Command from '../../utils/common.commands.config';
 
 export default class voteCommand extends Command {
-  constructor() {
-    super('Vote', 'vote', [
-      'Put something up for vote',
-      'Usage: $vote <timelimit [minutes]> <query>',
-    ]);
-  }
+   static yesEmote = '✅';
+   static noEmote = '❌';
 
-  async action(message: Message, args: string[]) {
-    const yesEmote = '✔';
-    const noEmote = '❌';
+   constructor() {
+      super('vote', 'Put something up for vote');
 
-    args.shift(); // remove first element
+      this.addNumberOption((option) =>
+         option
+            .setName('timelimit')
+            .setDescription('Time limit of voting in minutes')
+            .setRequired(true)
+      );
 
-    const timeLimit = Number(args.shift()) * 60000; // time limit in milliseconds
+      this.addStringOption((option) =>
+         option
+            .setName('query')
+            .setDescription('The thing to vote on')
+            .setRequired(true)
+      );
+   }
 
-    // check if timeLimit is a number
-    if (Number.isNaN(timeLimit)) {
-      message.channel.send('`Invalid time limit`');
-      return;
-    }
+   async action(interaction: CommandInteraction) {
+      await interaction.deferReply();
+      const timeLimit =
+         interaction.options.getNumber('timelimit', true) * 60000; // time limit in milliseconds
 
-    // check if timeLimit is too small
-    if (timeLimit < 30000) {
-      message.channel.send('`Time limit cannot be less than 30 seconds`');
-      return;
-    }
+      // check if timeLimit is too small
+      if (timeLimit < 30000) {
+         interaction.editReply('`Time limit cannot be less than 30 seconds`');
+         return;
+      }
 
-    // check if timeLimit is too large
-    if (timeLimit > 600000) {
-      message.channel.send('`Timelimit cannot be more than 10 minutes`');
-      return;
-    }
+      // check if timeLimit is too large
+      if (timeLimit > 600000) {
+         interaction.editReply('`Timelimit cannot be more than 10 minutes`');
+         return;
+      }
 
-    // check for remaining args
-    if (!args.length) {
-      message.channel.send('`No query`');
-      return;
-    }
+      // generate query
+      let query = interaction.options.getString('query', true);
 
-    // generate query
-    let query = args.join(' ');
+      // get the displayName and AvatarURL of author
+      const displayName = (interaction.member as GuildMember)?.displayName!;
+      const displayAvatarURL = interaction.user.displayAvatarURL();
 
-    // add question mark if there is none
-    if (!query.endsWith('?')) {
-      query += '?';
-    }
+      // send initial message
+      let sentMessage = (await interaction.editReply({
+         embeds: [
+            new MessageEmbed({
+               title: query,
+               footer: {
+                  text: '✅ - yes   ❌- no',
+               },
+            }),
+         ],
+      })) as Message;
 
-    // get the displayName and AvatarURL of author
-    const displayName = message.member?.displayName!;
-    const displayAvatarURL = message.author.displayAvatarURL();
+      // add reactions
+      await sentMessage.react(voteCommand.yesEmote);
+      await sentMessage.react(voteCommand.noEmote);
 
-    // send initial message
-    let sentMessage = await message.channel.send(
-      this.generateMessage(query, displayName, displayAvatarURL)
-    );
+      // create reaction collector
+      sentMessage
+         .awaitReactions({
+            filter: (reaction: MessageReaction, user: User) =>
+               [voteCommand.yesEmote, voteCommand.noEmote].includes(
+                  reaction.emoji.name!
+               ) && !user.bot,
+            time: timeLimit,
+            dispose: true,
+         })
+         .then((reactions) => {
+            // initialize counts and userMap
+            let yesCount = 0;
+            let noCount = 0;
 
-    // add reactions
-    const yesReaction = await sentMessage.react(yesEmote);
-    const noReaction = await sentMessage.react(noEmote);
+            reactions.forEach((reaction) => {
+               switch (reaction.emoji.name) {
+                  case voteCommand.yesEmote:
+                     yesCount++;
+                     break;
 
-    // initialize counts and userMap
-    let yesCount = 0;
-    let noCount = 0;
+                  case voteCommand.noEmote:
+                     noCount++;
+                     break;
+               }
+            });
 
-    // filter for reaction collections
-    const filter = (reaction: MessageReaction, user: User) =>
-      [yesEmote, noEmote].includes(reaction.emoji.name) &&
-      !reaction.me &&
-      !user.bot;
+            // generate final message
+            const response = this.generateMessage(
+               query,
+               displayName,
+               displayAvatarURL,
+               yesCount,
+               noCount
+            );
 
-    // create reaction collector
-    const collector = sentMessage.createReactionCollector(filter, {
-      time: timeLimit,
-      dispose: true,
-    });
+            // update message
+            interaction.editReply({
+               content: ' ',
+               embeds: [response],
+            });
+         })
+         .catch(() =>
+            interaction.editReply('`Whoops! Some kinda error happened.`')
+         )
+         .finally(() => sentMessage.reactions.removeAll());
+   }
 
-    collector
-      .on('collect', (reaction: MessageReaction, { id }: User) => {
-        const result = reaction.emoji.name === yesEmote;
+   generateMessage(
+      query: string,
+      displayName: string,
+      displayAvatarURL: string,
+      yesCount: number,
+      noCount: number
+   ) {
+      const response = new MessageEmbed();
 
-        // remove user from opposite reaction if they reacted before
-        const reactionUsers = (result ? noReaction : yesReaction).users;
+      let result: string;
 
-        if (reactionUsers.cache.has(id)) {
-          reactionUsers.remove(id);
-        }
+      if (yesCount === noCount) {
+         result = ':shrug_tone3:';
+      } else if (yesCount > noCount) {
+         result = voteCommand.yesEmote;
+      } else {
+         result = voteCommand.noEmote;
+      }
 
-        // update counts;
-        yesCount += Number(result);
-        noCount += Number(!result);
-      })
-      .on('remove', (reaction: MessageReaction) => {
-        const result = reaction.emoji.name === yesEmote;
+      response
+         .setTitle(query)
+         .setAuthor(displayName, displayAvatarURL)
+         .setColor(config.mainColor)
+         .setDescription(
+            `Yes: ${yesCount}\nNo: ${noCount}\n\nResult: ${result}`
+         );
 
-        // update counts
-        yesCount = Math.max(0, yesCount - Number(result));
-        noCount = Math.max(0, noCount - Number(!result));
-      })
-      .on('end', () => {
-        // find final result
-        let result = 'Tie';
-
-        if (noCount < yesCount) {
-          result = 'Yes';
-        } else if (noCount > yesCount) {
-          result = 'No';
-        }
-
-        // generate final message
-        const response = this.generateMessage(
-          query,
-          displayName,
-          displayAvatarURL
-        );
-
-        response.setDescription([
-          `**${query}**`,
-          `Yes: ${yesCount}`,
-          `No: ${noCount}`,
-          `\nResult: ${result}`,
-        ]);
-
-        // update message
-        sentMessage.edit(response);
-
-        // remove all reactions
-        yesReaction.remove();
-        noReaction.remove();
-        sentMessage.reactions.removeAll();
-      });
-  }
-
-  generateMessage(
-    query: string,
-    displayName: string,
-    displayAvatarURL: string
-  ) {
-    const response = new MessageEmbed();
-
-    response
-      .setTitle('Vote')
-      .setAuthor(displayName, displayAvatarURL)
-      .setColor(config.mainColor)
-      .setDescription(`**${query}**`);
-
-    return response;
-  }
+      return response;
+   }
 }

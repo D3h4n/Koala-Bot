@@ -1,56 +1,63 @@
-import Command from '../common.commands.config';
+import Command from '../../utils/common.commands.config';
 import config from '../../utils/config';
-import { Message } from 'discord.js';
+import { CommandInteraction } from 'discord.js';
 import { google } from 'googleapis';
 
 export default class youtubeCommand extends Command {
-  constructor() {
-    super(
-      'Youtube',
-      'youtube',
-      ['Search youtube', 'Usage: $youtube <query>'],
-      ['yt']
-    );
-  }
+   constructor() {
+      super('youtube', 'Search youtube');
 
-  action(message: Message, args: string[]) {
-    // get search query
-    let search = args.slice(1).join(' ');
+      this.addStringOption((option) =>
+         option
+            .setName('query')
+            .setDescription('Thing to search')
+            .setRequired(true)
+      );
+   }
 
-    // assert search is valid
-    if (!search.length) {
-      message.channel.send("I can't search nothing");
-      return;
-    }
+   action(interaction: CommandInteraction) {
+      // get search query
+      let search = interaction.options.data
+         .map((a) => a.value)
+         .join(' ')
+         .trim();
 
-    // perform search
-    google
-      .youtube('v3')
-      .search.list({
-        key: config.youtubeApiKey,
-        type: ['video', 'channel'],
-        part: ['snippet'],
-        q: search,
-        maxResults: 1,
-      })
-      .then((res) => res.data.items?.[0]) // get first result
-      .then((result) => {
-        // get id
-        let id = result?.id;
+      // assert search is valid
+      if (!search.length) {
+         interaction.reply("I can't search nothing");
+         return;
+      }
 
-        if (id?.videoId) {
-          // send video link if video
-          message.channel.send(`https://www.youtube.com/watch?v=${id.videoId}`);
-        } else if (id?.channelId) {
-          // send channel link if channel
-          message.channel.send(
-            `https://www.youtube.com/channel/${id.channelId}`
-          );
-        } else {
-          // send repsonse if no results are found
-          message.channel.send(`No results found`);
-        }
-      })
-      .catch(console.error);
-  }
+      // perform search
+      google
+         .youtube('v3')
+         .search.list({
+            key: config.youtubeApiKey,
+            type: ['video', 'channel'],
+            part: ['snippet'],
+            q: search,
+            maxResults: 1,
+         })
+         .then((res) => res.data.items?.[0]) // get first result
+         .then((result) => {
+            // get id
+            let id = result?.id;
+
+            if (id?.videoId) {
+               // send video link if video
+               interaction.reply(
+                  `https://www.youtube.com/watch?v=${id.videoId}`
+               );
+            } else if (id?.channelId) {
+               // send channel link if channel
+               interaction.reply(
+                  `https://www.youtube.com/channel/${id.channelId}`
+               );
+            } else {
+               // send repsonse if no results are found
+               interaction.reply(`No results found`);
+            }
+         })
+         .catch(console.error);
+   }
 }

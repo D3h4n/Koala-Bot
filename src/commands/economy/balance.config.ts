@@ -1,31 +1,36 @@
-import { Message, MessageEmbed } from 'discord.js';
+import { CommandInteraction, GuildMember, MessageEmbed } from 'discord.js';
+import config from '../../utils/config';
 import economyServices from '../../services/economy.services';
-import Command from '../common.commands.config';
+import Command from '../../utils/common.commands.config';
 
 export default class balanceCommand extends Command {
-  constructor() {
-    super(
-      'Balance',
-      'balance',
-      ['check your balance', 'usage: $balance'],
-      ['bal']
-    );
-  }
+   constructor() {
+      super('balance', 'check your balance');
+   }
 
-  async action({ author, member, channel }: Message) {
-    // get user or create new user if doesn't exist
-    const user =
-      (await economyServices.getUserByDiscord(author.id)) ??
-      (await economyServices.createUser(author.id, author.username));
+   async action(interaction: CommandInteraction) {
+      // get user or create new user if doesn't exist
+      const user =
+         (await economyServices.getUserByDiscord(interaction.user.id)) ??
+         (await economyServices.createUser(
+            interaction.user.id,
+            interaction.user.username
+         ));
 
-    // create response with balance
-    const response = new MessageEmbed();
+      // create response with balance
+      const response = new MessageEmbed();
 
-    response
-      .setAuthor(member?.displayName, author.displayAvatarURL())
-      .setDescription(`**Balance:** $${user.balance}`);
+      response
+         .setAuthor(
+            (interaction.member as GuildMember)?.displayName!,
+            interaction.user.displayAvatarURL()
+         )
+         .setColor(config.mainColor)
+         .setDescription(`**Balance:** $${user.balance}`);
 
-    // send response
-    channel.send(response);
-  }
+      // send response
+      interaction.reply({
+         embeds: [response],
+      });
+   }
 }

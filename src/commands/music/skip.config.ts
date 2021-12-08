@@ -1,20 +1,31 @@
-import Command from '../common.commands.config';
-import { Message } from 'discord.js';
+import Command from '../../utils/common.commands.config';
+import { CommandInteraction } from 'discord.js';
 import { distube } from '../../index';
+import { getVoiceConnection } from '@discordjs/voice';
 
 export default class skipCommand extends Command {
-  constructor() {
-    super('Skip', 'skip', ['Skip the current song', 'Usage: $skip'], ['fs']);
-  }
+   constructor() {
+      super('skip', 'Skip the current song');
+   }
 
-  action(message: Message) {
-    try {
-      distube.skip(message);
-    } catch (error) {
-      message.channel.send('`Unable to skip song`');
-      return;
-    }
+   action(interaction: CommandInteraction) {
+      try {
+         let queue = distube.getQueue(interaction);
 
-    message.channel.send('`Skipped song`');
-  }
+         if (queue)
+            if (queue.songs.length > 1) {
+               queue.skip();
+            } else {
+               queue?.stop();
+            }
+         else {
+            getVoiceConnection(interaction.guildId)?.disconnect();
+         }
+
+         interaction.reply('`Skipped song`');
+      } catch (error) {
+         interaction.reply('`Unable to skip song`');
+         return;
+      }
+   }
 }

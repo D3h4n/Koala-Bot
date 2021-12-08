@@ -1,25 +1,24 @@
-import Command from '../common.commands.config';
-import { Message } from 'discord.js';
-import { client } from '../../index';
+import Command from '../../utils/common.commands.config';
+import { CommandInteraction } from 'discord.js';
+import { getVoiceConnection } from '@discordjs/voice';
 
 export default class leaveCommand extends Command {
-  constructor() {
-    super('Leave', 'leave', ['Leave voice channel', 'Usage: $leave']);
-  }
+   constructor() {
+      super('leave', 'Leave voice channel');
+   }
 
-  action(message: Message) {
-    // get voice connection in guild
-    let voice = client.voice?.connections.find(
-      (connection) => connection.channel.guild.id === message.guild?.id
-    );
+   action(interaction: CommandInteraction) {
+      // get voice connection in guild
+      let voice = getVoiceConnection(interaction.guild!.id);
 
-    // check if bot is connected to a channel
-    if (!voice?.channel.id) {
-      message.channel.send("`I'm not in a voice channel`");
-      return;
-    }
+      // check if bot is connected to a channel
+      if (!voice) {
+         interaction.reply("`I'm not in a voice channel`");
+         return;
+      }
 
-    // disconnect bot
-    voice?.disconnect();
-  }
+      // disconnect bot
+      voice.disconnect();
+      interaction.reply('`Left voice channel`');
+   }
 }

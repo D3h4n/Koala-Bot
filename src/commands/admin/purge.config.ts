@@ -1,40 +1,39 @@
-import { Message, NewsChannel, TextChannel } from 'discord.js';
+import { CommandInteraction, TextChannel } from 'discord.js';
 import config from '../../utils/config';
-import Command from '../common.commands.config';
+import Command from '../../utils/common.commands.config';
+import { ChannelType } from 'discord-api-types/v9';
 
 export default class purgeCommand extends Command {
-  constructor() {
-    super(
-      'Purge',
-      'purge',
-      ['Remove all messages from a chat', '$Usage: $purge <chat name>'],
-      [],
-      ['MANAGE_MESSAGES']
-    );
-  }
+   constructor() {
+      super('purge', 'Remove all messages from a chat', '310489953157120023', [
+         '829531557785894923',
+      ]);
 
-  async action(message: Message, args: string[]) {
-    // get channel name
-    const channelName = args.slice(1).join(' ');
+      this.setDefaultPermission(false);
 
-    // get channel
-    const channel = message.guild?.channels.cache.get(message.channel.id);
+      this.addChannelOption((option) =>
+         option
+            .setName('channel')
+            .setDescription('Name of this channel')
+            .addChannelType(ChannelType.GuildText)
+            .setRequired(true)
+      );
+   }
 
-    // check if channel names match
-    if (channel?.name !== channelName) {
-      message.channel.send(`\`To confirm type "$purge ${channel?.name}"\``);
-      return;
-    }
+   async action(interaction: CommandInteraction) {
+      const channel = interaction.options.getChannel(
+         'channel',
+         true
+      ) as TextChannel;
 
-    // clone old channel
-    let newChannel = (await channel.clone().catch(console.error)) as
-      | TextChannel
-      | NewsChannel;
+      if (channel === interaction.channel) {
+         let newChannel = await channel.clone();
 
-    // delete old channel
-    await channel.delete().catch(console.error);
-    let msg = await newChannel.send('`Channel Succesfully Purged`');
+         channel.delete('Purging');
 
-    await msg.delete({ timeout: config.msgTimeout * 2 });
-  }
+         let msg = await newChannel.send('`Channel Successfully purged`');
+
+         setTimeout(() => msg.delete().catch(console.error), config.msgTimeout);
+      }
+   }
 }

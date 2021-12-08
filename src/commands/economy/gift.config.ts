@@ -1,81 +1,94 @@
-import { Message } from 'discord.js';
+import { CommandInteraction } from 'discord.js';
 import economyServices from '../../services/economy.services';
-import Command from '../common.commands.config';
+import Command from '../../utils/common.commands.config';
 
 export default class giftCommand extends Command {
-  constructor() {
-    super('Gift', 'gift', [
-      'Gift someone currency',
-      'Usage: $gift <@user> <amount>',
-    ]);
-  }
+   constructor() {
+      super('gift', 'Gift someone currency');
 
-  async action(message: Message, args: string[]) {
-    // get author record
-    const authorId = message.author.id;
-
-    const authorRecord = await economyServices.getUserByDiscord(authorId);
-
-    if (!authorRecord) {
-      message.channel.send(
-        '`You have no money. Try collecting your daily first.`'
+      this.addUserOption((option) =>
+         option
+            .setName('user')
+            .setDescription('User to send currency to')
+            .setRequired(true)
       );
-      return;
-    }
 
-    // get receiverRecord
-    const receiverUser = message.mentions.users.first();
-
-    // ensure valid receiver
-    if (!receiverUser) {
-      message.channel.send('`That user was not found`');
-      return;
-    }
-
-    if (receiverUser?.bot) {
-      message.channel.send("`Bots don't need money`");
-      return;
-    }
-
-    if (receiverUser.id === authorId) {
-      message.channel.send("`You can't send money to yourself.`");
-      return;
-    }
-
-    const receiverRecord = await economyServices.getUserByDiscord(
-      receiverUser.id
-    );
-
-    if (!receiverRecord) {
-      message.channel.send('`That user was not found`');
-      return;
-    }
-
-    // check for valid amount
-    const giftAmount = Number(args[2]);
-
-    if (Number.isNaN(giftAmount) || giftAmount < 1) {
-      message.channel.send(`\`${args[2]} is not a valid amount\``);
-      return;
-    }
-
-    if (giftAmount > authorRecord.balance) {
-      message.channel.send(
-        `You only have \`$${authorRecord.balance}\`. Yuh broke.`
+      this.addNumberOption((option) =>
+         option
+            .setName('amount')
+            .setDescription('Amount of currency to send')
+            .setRequired(true)
       );
-      return;
-    }
+   }
 
-    // transfer funds and save
-    authorRecord.balance -= giftAmount;
-    receiverRecord.balance += giftAmount;
+   async action(interaction: CommandInteraction) {
+      // get author record
+      const authorId = interaction.user.id;
 
-    authorRecord.save();
-    receiverRecord.save();
+      const authorRecord = await economyServices.getUserByDiscord(authorId);
 
-    // response
-    message.channel.send(
-      `Gifted \`$${giftAmount}\` to ${receiverUser.toString()}`
-    );
-  }
+      if (!authorRecord) {
+         interaction.reply(
+            '`You have no money. Try collecting your daily first.`'
+         );
+         return;
+      }
+
+      // get receiverRecord
+      const receiverUser = interaction.options.getUser('user');
+
+      // ensure valid receiver
+      if (!receiverUser) {
+         interaction.reply('`That user was not found`');
+         return;
+      }
+
+      if (receiverUser?.bot) {
+         interaction.reply("`Bots don't need money`");
+         return;
+      }
+
+      if (receiverUser.id === authorId) {
+         interaction.reply("`You can't send money to yourself.`");
+         return;
+      }
+
+      const receiverRecord = await economyServices.getUserByDiscord(
+         receiverUser.id
+      );
+
+      if (!receiverRecord) {
+         interaction.reply('`That user was not found`');
+         return;
+      }
+
+      // check for valid amount
+      const giftAmount = interaction.options.getNumber('amount');
+
+      if (!giftAmount || Number.isNaN(giftAmount) || giftAmount < 1) {
+         interaction.reply(
+            `\`${interaction.options.data[1].value} is not a valid amount\``
+         );
+         return;
+      }
+
+      if (giftAmount > authorRecord.balance) {
+         interaction.reply(
+            `You only have \`$${authorRecord.balance}\`. Yuh broke.`
+         );
+         return;
+      }
+
+      // transfer funds and save
+      authorRecord.balance -= giftAmount;
+      receiverRecord.balance += giftAmount;
+
+      authorRecord.save();
+      receiverRecord.save();
+
+      // response
+      interaction.reply(
+         `Gifted \`$${giftAmount}\` to ${receiverUser.toString()}`
+      );
+   }
 }

@@ -1,25 +1,29 @@
-import Command from '../common.commands.config';
-import { Message } from 'discord.js';
+import Command from '../../utils/common.commands.config';
+import { CommandInteraction, GuildMember } from 'discord.js';
+import { joinVoiceChannel } from '@discordjs/voice';
 
 export default class joinCommand extends Command {
-  constructor() {
-    super('Join', 'join', ['Add bot to voice channel', 'Usage: $join'], ['j']);
-  }
+   constructor() {
+      super('join', 'Add bot to voice channel');
+   }
 
-  action(message: Message) {
-    // get voice channel of member
-    const channel = message.member!.voice.channel;
+   async action(interaction: CommandInteraction) {
+      // get voice channel of member
+      const channel = (interaction.member! as GuildMember).voice.channel;
 
-    channel
-      ?.join()
-      .then((voiceConnection) =>
-        message.channel.send(
-          `Joined channel ${voiceConnection.channel.toString()}`
-        )
-      )
-      .catch((err) => {
-        message.channel.send('`Error joining voice channel`');
-        console.error(err);
-      });
-  }
+      if (channel?.joinable) {
+         try {
+            joinVoiceChannel({
+               channelId: channel.id,
+               guildId: channel.guildId,
+               adapterCreator: channel.guild.voiceAdapterCreator,
+            });
+
+            interaction.reply(`Joined channel ${channel.name}`);
+         } catch (error) {
+            interaction.reply('`Error joining voice channel`');
+            console.error(error);
+         }
+      }
+   }
 }

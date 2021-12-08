@@ -1,58 +1,47 @@
-import { Message, MessageEmbed } from 'discord.js';
-import Command from '../common.commands.config';
+import { CommandInteraction, GuildMember, MessageEmbed } from 'discord.js';
+import Command from '../../utils/common.commands.config';
 import config from '../../utils/config';
 
 export default class coinFlipCommand extends Command {
-  constructor() {
-    super('Coin Flip', 'coinflip', [
-      'Flip one or more coins',
-      'Usage:',
-      '$coinflip',
-      '$coinflip <number>',
-    ]);
-  }
+   constructor() {
+      super('coinflip', 'Flip one or more coins');
 
-  action(message: Message, args: string[]) {
-    // set default values
-    let flips: string[] = [];
-    let times = 1;
+      this.addNumberOption((option) =>
+         option.setName('amount').setDescription('Amount of coins to flip')
+      );
+   }
 
-    // check for 1 arg
-    if (args.length > 1) {
-      times = parseInt(args[1]);
+   action(interaction: CommandInteraction) {
+      // set default values
+      let flips: string[] = [];
+      let times = interaction.options.getNumber('amount') ?? 1;
 
-      if (Number.isNaN(times))
-        return message.channel.send('`Argument must be a number`');
+      // generate results of flips
+      for (let i = 0; i < times; i++) {
+         flips.push(Math.round(Math.random()) ? 'Heads' : 'Tails');
+      }
 
-      if (times < 1)
-        return message.channel.send('`The number of flips is too small`');
+      // if more than one flip
+      if (times > 1) {
+         // generate and send message embed of flips
+         let response = new MessageEmbed();
 
-      times = Math.min(times, config.maxRandomNumbers);
-    }
+         response
+            .setTitle('Coin Flips')
+            .setDescription(['**Results:**', ...flips].join('\n'))
+            .setColor(config.mainColor)
+            .setAuthor(
+               (interaction.member as GuildMember)?.displayName,
+               interaction.user.displayAvatarURL()
+            );
 
-    // generate results of flips
-    for (let i = 0; i < times; i++) {
-      flips.push(Math.round(Math.random()) ? 'Heads' : 'Tails');
-    }
+         interaction.reply({
+            embeds: [response],
+         });
+         return;
+      }
 
-    // if more than one flip
-    if (times > 1) {
-      // generate and send message embed of flips
-      let response = new MessageEmbed();
-
-      response
-        .setTitle('Coin Flips')
-        .setAuthor(
-          message.member?.displayName,
-          message.author.displayAvatarURL()
-        )
-        .setDescription(['**Results:**', ...flips])
-        .setColor(config.mainColor);
-
-      return message.channel.send(response);
-    }
-
-    // return one flip
-    return message.channel.send(`\`${flips[0]}\``);
-  }
+      // return one flip
+      return interaction.reply(`\`${flips[0]}\``);
+   }
 }

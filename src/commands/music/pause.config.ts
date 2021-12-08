@@ -1,25 +1,25 @@
-import Command from '../common.commands.config';
+import Command from '../../utils/common.commands.config';
 import { distube } from '../../index';
-import { Message } from 'discord.js';
+import { CommandInteraction } from 'discord.js';
 
 export default class pauseCommand extends Command {
-  constructor() {
-    super('Pause', 'pause', ['Pause song', 'Usage: $pause'], ['pa']);
-  }
+   constructor() {
+      super('pause', 'Pause song');
+   }
 
-  action(message: Message) {
-    try {
-      // check if queue is playing
-      if (distube.getQueue(message).playing) {
-        // pause queue
-        distube.pause(message);
-        // send response
-        message.channel.send('`Paused song`');
+   action(interaction: CommandInteraction) {
+      try {
+         // check if queue is playing
+         if (distube.getQueue(interaction)?.playing) {
+            // pause queue
+            distube.pause(interaction);
+            // send response
+            interaction.reply('`Paused song`');
+         }
+      } catch (err) {
+         // send and log error
+         interaction.reply('`Error pausing song`');
+         console.error(err);
       }
-    } catch (err) {
-      // send and log error
-      message.channel.send('`Error pausing song`');
-      console.error(err);
-    }
-  }
+   }
 }

@@ -1,20 +1,20 @@
-import Command from '../common.commands.config';
-import { Message } from 'discord.js';
+import Command from '../../utils/common.commands.config';
+import { CommandInteraction } from 'discord.js';
 import { distube } from '../../index';
 
 export default class stopCommand extends Command {
-  constructor() {
-    super('Stop', 'stop', ['Stop the queue', 'Usage: $stop']);
-  }
+   constructor() {
+      super('stop', 'Stop the queue');
+   }
 
-  action(message: Message) {
-    try {
-      distube.stop(message);
-    } catch (error) {
-      message.channel.send('`Error stopping queue`');
-      return;
-    }
+   action(interaction: CommandInteraction) {
+      try {
+         distube.stop(interaction);
+      } catch (error) {
+         interaction.reply('`Error stopping queue`');
+         return;
+      }
 
-    message.channel.send('`Queue stopped`');
-  }
+      interaction.reply('`Queue stopped`');
+   }
 }
