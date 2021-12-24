@@ -1,12 +1,11 @@
 {
    "name": "discord-koala-bot",
-   "version": "2.0.1",
+   "version": "2.0.2",
    "repository": "https://github.com/D3h4n/Koala-Bot",
    "description": "A bot specifically for AKK",
    "main": "dist/index",
    "engines": {
-      "node": "17.2.0",
-      "npm": "7.6.3"
+      "node": ">=15.14.0"
    },
    "scripts": {
       "test": "echo no tests && exit 0",
