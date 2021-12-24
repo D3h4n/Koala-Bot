@@ -26,10 +26,13 @@ export default class playCommand extends Command {
          return;
       }
 
-      distube.playVoiceChannel(voiceChannel, query, {
-         member: interaction.member as GuildMember,
-         textChannel: interaction.channel as TextChannel,
-      });
+      distube
+         .playVoiceChannel(voiceChannel, query, {
+            member: interaction.member as GuildMember,
+            textChannel: interaction.channel as TextChannel,
+         })
+         .catch(console.error);
+
       interaction.deleteReply();
    }
 }

@@ -1,6 +1,6 @@
 import Command from '../../utils/common.commands.config';
 import { CommandInteraction, GuildMember } from 'discord.js';
-import { joinVoiceChannel } from '@discordjs/voice';
+import { distube } from '../../index';
 
 export default class joinCommand extends Command {
    constructor() {
@@ -13,11 +13,7 @@ export default class joinCommand extends Command {
 
       if (channel?.joinable) {
          try {
-            joinVoiceChannel({
-               channelId: channel.id,
-               guildId: channel.guildId,
-               adapterCreator: channel.guild.voiceAdapterCreator,
-            });
+            distube.voices.join(channel);
 
             interaction.reply(`Joined channel ${channel.name}`);
          } catch (error) {

@@ -1,6 +1,6 @@
 import Command from '../../utils/common.commands.config';
 import { CommandInteraction } from 'discord.js';
-import { getVoiceConnection } from '@discordjs/voice';
+import { distube } from '../../index';
 
 export default class leaveCommand extends Command {
    constructor() {
@@ -8,17 +8,8 @@ export default class leaveCommand extends Command {
    }
 
    action(interaction: CommandInteraction) {
-      // get voice connection in guild
-      let voice = getVoiceConnection(interaction.guild!.id);
-
-      // check if bot is connected to a channel
-      if (!voice) {
-         interaction.reply("`I'm not in a voice channel`");
-         return;
-      }
-
       // disconnect bot
-      voice.disconnect();
+      distube.voices.leave(interaction.guildId);
       interaction.reply('`Left voice channel`');
    }
 }

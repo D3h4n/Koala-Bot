@@ -13,7 +13,7 @@ export default class PlayTopCommand extends Command {
    }
 
    async action(interaction: CommandInteraction) {
-      interaction.deferReply();
+      await interaction.deferReply();
       // get query
       let query = interaction.options.getString('song', true);
 

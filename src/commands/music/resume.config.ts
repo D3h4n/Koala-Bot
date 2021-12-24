@@ -7,7 +7,8 @@ export default class resumeCommand extends Command {
       super('resume', 'Resume the queue');
    }
 
-   action(interaction: CommandInteraction) {
+   async action(interaction: CommandInteraction) {
+      await interaction.deferReply();
       let queue = distube.getQueue(interaction);
 
       if (!queue || queue?.playing) {
@@ -16,6 +17,6 @@ export default class resumeCommand extends Command {
       }
 
       queue.resume();
-      interaction.reply('`Resuming song`');
+      interaction.editReply('`Resuming song`');
    }
 }

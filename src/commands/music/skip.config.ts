@@ -1,7 +1,6 @@
 import Command from '../../utils/common.commands.config';
 import { CommandInteraction } from 'discord.js';
 import { distube } from '../../index';
-import { getVoiceConnection } from '@discordjs/voice';
 
 export default class skipCommand extends Command {
    constructor() {
@@ -12,20 +11,19 @@ export default class skipCommand extends Command {
       try {
          let queue = distube.getQueue(interaction);
 
-         if (queue)
+         if (queue) {
             if (queue.songs.length > 1) {
                queue.skip();
             } else {
                queue?.stop();
             }
-         else {
-            getVoiceConnection(interaction.guildId)?.disconnect();
-         }
 
-         interaction.reply('`Skipped song`');
+            interaction.reply('`Skipped song`');
+         } else {
+            distube.voices.leave(interaction.guildId);
+         }
       } catch (error) {
          interaction.reply('`Unable to skip song`');
-         return;
       }
    }
 }
