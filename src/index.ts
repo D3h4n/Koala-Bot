@@ -23,7 +23,12 @@ export const client = new Client({
 
 export let commands: Collection<string, Command>;
 
-export const distube = initDistube(new DisTube(client));
+export const distube = initDistube(
+   new DisTube(client, {
+      emitNewSongOnly: true,
+      leaveOnFinish: true,
+   })
+);
 
 // load commands
 (async () => {
