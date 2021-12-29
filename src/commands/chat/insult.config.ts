@@ -1,44 +1,39 @@
 import { CommandInteraction } from 'discord.js';
 import Command from '../../utils/common.commands.config';
 
+type wordType = 'adjective' | 'adverb' | 'noun' | 'verb' | 'expl';
 export default class insultCommand extends Command {
-   insultFormats: Array<string>;
-   wordTypes: Array<'adjective' | 'adverb' | 'noun' | 'verb' | 'expl'>;
-   adjective: Array<string>;
-   adverb: Array<string>;
-   noun: Array<string>;
-   verb: Array<string>;
-   expl: Array<string>;
+   // insultFormats = [
+   //    'Yuh mudda {user}',
+   //    '{user} you {expl} {adjective} {noun}',
+   //    "{user}, you're such a {adjective} {expl} {noun}",
+   //    'Yuh {expl} {adjective} {noun}, {user}',
+   //    'Go and {expl} {verb} {adverb}, {adjective} {noun}, {user}',
+   // ];
+
+   insultFormats = [
+      "Maybe if you got rid of that old yee-yee ass haircut you got you'd get some bitches on your dick. Oh, better yet, maybe Tanisha'll call your dog-ass if she ever stop fuckin' with that brain surgeon or lawyer she fucking with. {user}",
+   ];
+
+   wordTypes: wordType[] = ['adjective', 'adverb', 'noun', 'verb', 'expl'];
+
+   adjective = [
+      'ugly',
+      'messy',
+      'lazy',
+      'musty',
+      'poopy',
+      'over grown',
+      'stupid',
+   ];
+
+   adverb = ['stupidly', 'quickly'];
+   noun = ['dummy', 'bastard', 'poopyhead', 'baby man', 'bot'];
+   verb = ['fuck yourself', 'dance in the road'];
+   expl = ['fucking', 'rasshole'];
 
    constructor() {
       super('insult', 'Insult someone or yourself');
-
-      this.wordTypes = ['adjective', 'adverb', 'noun', 'verb', 'expl'];
-
-      this.adjective = [
-         'ugly',
-         'messy',
-         'lazy',
-         'musty',
-         'poopy',
-         'over grown',
-         'stupid',
-      ];
-
-      this.adverb = ['stupidly', 'quickly'];
-
-      this.noun = ['dummy', 'bastard', 'poopyhead', 'baby man', 'bot'];
-
-      this.verb = ['fuck yourself', 'dance in the road'];
-
-      this.expl = ['fucking', 'rasshole'];
-
-      this.insultFormats = [
-         '{user} you {expl} {adjective} {noun}',
-         "{user}, you're such a {adjective} {expl} {noun}",
-         'Yuh {expl} {adjective} {noun}, {user}',
-         'Go and {expl} {verb} {adverb}, {adjective} {noun}, {user}',
-      ];
 
       this.addUserOption((option) =>
          option

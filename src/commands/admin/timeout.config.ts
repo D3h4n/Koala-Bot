@@ -52,7 +52,7 @@ export default class timeoutCommand extends Command {
       // calculate timeout
       let timeout = interaction.options.getNumber('time', true) * 60000;
 
-      // // check if time is within range
+      // check if time is within range
       if (timeout < 1000) {
          interaction.reply('`That time is too short`');
          return;
