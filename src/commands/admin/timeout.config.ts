@@ -79,18 +79,18 @@ export default class timeoutCommand extends Command {
    }
 
    private async addTimeout(member: GuildMember, timeout: number) {
-      // const timeoutID = '416009802112696320'; // ID for timeout role
+      const timeoutID = '416009802112696320'; // ID for timeout role
       let roles = member.roles.cache; // get array of roles
 
       // remove roles and add timeout role
       try {
          await member.roles.set([], "You've been a bad boy");
-         // await member.roles.add(timeoutID);
+         await member.roles.add(timeoutID);
 
          // set timer to add roles and remove timeout role
          setTimeout(async () => {
             try {
-               // await member.roles.remove(timeoutID);
+               await member.roles.remove(timeoutID);
                await member.roles.add(roles);
             } catch (error) {
                console.error(error);
