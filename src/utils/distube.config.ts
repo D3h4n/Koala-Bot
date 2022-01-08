@@ -83,5 +83,9 @@ export default function (distube: DisTube) {
       }
    });
 
+   distube.on('error', (channel, error) => {
+      channel.send(error.message);
+   });
+
    return distube;
 }
