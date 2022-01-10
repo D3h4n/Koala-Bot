@@ -29,6 +29,7 @@
    },
    "dependencies": {
       "@discordjs/builders": "^0.8.2",
+      "@discordjs/opus": "^0.7.0",
       "@discordjs/rest": "^0.1.0-canary.0",
       "@discordjs/voice": "^0.7.5",
       "@distube/ytdl-core": "^4.9.4",
@@ -38,7 +39,7 @@
       "distube": "^3.0.3",
       "dotenv": "^8.2.0",
       "ffmpeg-static": "^4.4.0",
-      "googleapis": "^67.1.0",
+      "googleapis": "^92.0.0",
       "libsodium-wrappers": "^0.7.9",
       "mongoose": "^5.12.8",
       "strip-ansi": "^7.0.1"

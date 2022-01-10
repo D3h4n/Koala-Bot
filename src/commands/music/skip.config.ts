@@ -15,13 +15,13 @@ export default class skipCommand extends Command {
             if (queue.songs.length > 1) {
                queue.skip();
             } else {
-               queue?.stop();
+               queue.stop();
             }
-
-            interaction.reply('`Skipped song`');
          } else {
-            distube.voices.leave(interaction.guildId);
+            distube.voices.leave(interaction);
          }
+
+         interaction.reply('`Skipped song`');
       } catch (error) {
          interaction.reply('`Unable to skip song`');
       }

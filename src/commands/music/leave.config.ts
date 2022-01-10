@@ -9,7 +9,7 @@ export default class leaveCommand extends Command {
 
    action(interaction: CommandInteraction) {
       // disconnect bot
-      distube.voices.leave(interaction.guildId);
+      distube.voices.leave(interaction);
       interaction.reply('`Left voice channel`');
    }
 }

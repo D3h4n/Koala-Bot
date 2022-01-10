@@ -55,7 +55,7 @@ export default class PlayTopCommand extends Command {
             type: 'video',
          });
       } catch (error) {
-         interaction.reply('`Could not find that song`');
+         interaction.editReply('`Could not find that song`');
          console.error(error);
          return;
       }
@@ -67,5 +67,6 @@ export default class PlayTopCommand extends Command {
 
       // emit add song event
       distube.emit('addSong', queue, song);
+      interaction.deleteReply();
    }
 }

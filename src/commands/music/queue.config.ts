@@ -172,11 +172,12 @@ export default class queueCommand extends Command {
          .setTitle('Queue')
          .setColor(config.mainColor)
          .setThumbnail(nowPlaying.thumbnail!)
-         .setFooter(
-            `Page: ${pageNumber}/${numPages}` +
-               '\u2800'.repeat(20) +
-               `${songs.length} songs in Queue | Total Length: ${queue.formattedDuration}`
-         )
+         .setFooter({
+            text:
+               `Page: ${pageNumber}/${numPages}` +
+               '\u2800'.repeat(30) +
+               `${songs.length} songs in Queue | Total Length: ${queue.formattedDuration}`,
+         })
          .setDescription(description);
 
       return response;
