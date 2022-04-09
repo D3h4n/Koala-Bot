@@ -35,7 +35,7 @@ export default class PlayTopCommand extends Command {
             return;
          }
 
-         distube.playVoiceChannel(voiceChannel, query, {
+         distube.play(voiceChannel, query, {
             member: interaction.member as GuildMember,
             textChannel: interaction.channel as TextChannel,
          });
@@ -60,7 +60,9 @@ export default class PlayTopCommand extends Command {
          return;
       }
 
-      let song = new Song(result, interaction.member as GuildMember);
+      let song = new Song(result, {
+         member: interaction.member as GuildMember,
+      });
 
       // add song to the beginning of the queue
       queue.addToQueue(song, 1);

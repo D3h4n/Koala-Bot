@@ -4,14 +4,11 @@ import economyServices from '../../services/economy.services';
 import config from '../../utils/config';
 
 export default class dailyCommand extends Command {
-   avgGain: number;
-   randomRange: number;
+   static avgGain = 100;
+   static randomRange = 20;
 
    constructor() {
       super('daily', 'earn daily currency');
-
-      this.avgGain = 100;
-      this.randomRange = 20;
    }
 
    async action(interaction: CommandInteraction) {
@@ -51,10 +48,10 @@ export default class dailyCommand extends Command {
       const response = new MessageEmbed();
 
       response
-         .setAuthor(
-            (interaction.member as GuildMember)?.displayName,
-            interaction.user.displayAvatarURL()
-         )
+         .setAuthor({
+            name: (interaction.member as GuildMember)?.displayName,
+            iconURL: interaction.user.displayAvatarURL(),
+         })
          .setColor(config.mainColor)
          .setDescription(`**Earned:** $${gain}\n**Balance:** $${user.balance}`);
 
@@ -71,9 +68,9 @@ export default class dailyCommand extends Command {
     */
    generateGain() {
       return (
-         this.avgGain +
-         (Math.floor(Math.random() * (this.randomRange + 1)) -
-            this.randomRange / 2)
+         dailyCommand.avgGain +
+         (Math.floor(Math.random() * (dailyCommand.randomRange + 1)) -
+            dailyCommand.randomRange / 2)
       );
    }
 

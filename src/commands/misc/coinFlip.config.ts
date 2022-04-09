@@ -30,10 +30,10 @@ export default class coinFlipCommand extends Command {
             .setTitle('Coin Flips')
             .setDescription(['**Results:**', ...flips].join('\n'))
             .setColor(config.mainColor)
-            .setAuthor(
-               (interaction.member as GuildMember)?.displayName,
-               interaction.user.displayAvatarURL()
-            );
+            .setAuthor({
+               name: (interaction.member as GuildMember)?.displayName,
+               iconURL: interaction.user.displayAvatarURL()
+            });
 
          interaction.reply({
             embeds: [response],

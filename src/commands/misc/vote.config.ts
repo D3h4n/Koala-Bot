@@ -140,7 +140,7 @@ export default class voteCommand extends Command {
 
       response
          .setTitle(query)
-         .setAuthor(displayName, displayAvatarURL)
+         .setAuthor({ name: displayName, iconURL: displayAvatarURL })
          .setColor(config.mainColor)
          .setDescription(
             `Yes: ${yesCount}\nNo: ${noCount}\n\nResult: ${result}`

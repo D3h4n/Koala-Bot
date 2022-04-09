@@ -66,10 +66,10 @@ export default class lottoCommand extends Command {
                   `**Ended:** ${lotto.done}`,
                ].join('\n')
             )
-            .setAuthor(
-               (interaction.member as GuildMember)?.displayName,
-               interaction.user.displayAvatarURL()
-            );
+            .setAuthor({
+               name: (interaction.member as GuildMember)?.displayName,
+               iconURL: interaction.user.displayAvatarURL(),
+            });
 
          interaction.reply({
             embeds: [response],
@@ -109,10 +109,10 @@ export default class lottoCommand extends Command {
                   `**Ended:** ${lotto.done}`,
                ].join('\n')
             )
-            .setAuthor(
-               (interaction.member as GuildMember)?.displayName,
-               interaction.user.displayAvatarURL()
-            );
+            .setAuthor({
+               name: (interaction.member as GuildMember)?.displayName,
+               iconURL: interaction.user.displayAvatarURL(),
+            });
 
          interaction.reply({
             embeds: [response],
@@ -154,10 +154,10 @@ export default class lottoCommand extends Command {
             response
                .setTitle('New Guess Added')
                .setColor(config.mainColor)
-               .setAuthor(
-                  (interaction.member as GuildMember)?.displayName,
-                  interaction.user.displayAvatarURL()
-               )
+               .setAuthor({
+                  name: (interaction.member as GuildMember)?.displayName,
+                  iconURL: interaction.user.displayAvatarURL(),
+               })
                .setDescription(`**Numbers:** ${guessNums.join(' ')}`);
 
             interaction.reply({
@@ -240,10 +240,10 @@ export default class lottoCommand extends Command {
                      `**Entries:** ${lotto.guesses.length}`,
                   ].join('\n')
                )
-               .setAuthor(
-                  client.user?.username!,
-                  client.user?.displayAvatarURL()
-               );
+               .setAuthor({
+                  name: client.user?.username!,
+                  iconURL: client.user?.displayAvatarURL(),
+               });
 
             lottoChannel.send({
                embeds: [response],
@@ -421,7 +421,10 @@ export default class lottoCommand extends Command {
       response
          .setTitle('New Lotto')
          .setColor(config.mainColor)
-         .setAuthor(client.user?.username!, client.user?.displayAvatarURL())
+         .setAuthor({
+            name: client.user?.username!,
+            iconURL: client.user?.displayAvatarURL(),
+         })
          .setDescription(
             [
                `**Lotto Id:** ${lotto.id}`,

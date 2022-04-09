@@ -3,16 +3,13 @@ import Command from '../../utils/common.commands.config';
 
 type wordType = 'adjective' | 'adverb' | 'noun' | 'verb' | 'expl';
 export default class insultCommand extends Command {
-   // insultFormats = [
-   //    'Yuh mudda {user}',
-   //    '{user} you {expl} {adjective} {noun}',
-   //    "{user}, you're such a {adjective} {expl} {noun}",
-   //    'Yuh {expl} {adjective} {noun}, {user}',
-   //    'Go and {expl} {verb} {adverb}, {adjective} {noun}, {user}',
-   // ];
-
    insultFormats = [
-      "Maybe if you got rid of that old yee-yee ass haircut you got you'd get some bitches on your dick. Oh, better yet, maybe Tanisha'll call your dog-ass if she ever stop fuckin' with that brain surgeon or lawyer she fucking with. {user}",
+      'Yuh mudda {user}',
+      '{user} you {expl} {adjective} {noun}',
+      "{user}, you're such a {adjective} {expl} {noun}",
+      'Yuh {expl} {adjective} {noun}, {user}',
+      'Go and {expl} {verb} {adverb}, {adjective} {noun}, {user}',
+      "{user}! Maybe if you got rid of that old yee-yee ass haircut you got you'd get some bitches on your dick. Oh, better yet, maybe Tanisha'll call your dog-ass if she ever stop fuckin' with that brain surgeon or lawyer she fucking with. Niggaaaa",
    ];
 
    wordTypes: wordType[] = ['adjective', 'adverb', 'noun', 'verb', 'expl'];

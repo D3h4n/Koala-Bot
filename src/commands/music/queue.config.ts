@@ -176,7 +176,9 @@ export default class queueCommand extends Command {
             text:
                `Page: ${pageNumber}/${numPages}` +
                '\u2800'.repeat(30) +
-               `${songs.length} songs in Queue | Total Length: ${queue.formattedDuration}`,
+               `${songs.length} ${
+                  songs.length === 1 ? 'song' : 'songs'
+               } in Queue | Total Length: ${queue.formattedDuration}`,
          })
          .setDescription(description);
 

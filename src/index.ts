@@ -26,6 +26,7 @@ export let commands: Collection<string, Command>;
 export const distube = initDistube(
    new DisTube(client, {
       emitNewSongOnly: true,
+      youtubeDL: false,
    })
 );
 

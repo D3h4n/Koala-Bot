@@ -27,7 +27,7 @@ export default class playCommand extends Command {
       }
 
       distube
-         .playVoiceChannel(voiceChannel, query, {
+         .play(voiceChannel, query, {
             member: interaction.member as GuildMember,
             textChannel: interaction.channel as TextChannel,
          })

@@ -21,10 +21,10 @@ export default class balanceCommand extends Command {
       const response = new MessageEmbed();
 
       response
-         .setAuthor(
-            (interaction.member as GuildMember)?.displayName!,
-            interaction.user.displayAvatarURL()
-         )
+         .setAuthor({
+            name: (interaction.member as GuildMember)?.displayName!,
+            iconURL: interaction.user.displayAvatarURL(),
+         })
          .setColor(config.mainColor)
          .setDescription(`**Balance:** $${user.balance}`);
 

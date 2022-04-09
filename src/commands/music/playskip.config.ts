@@ -32,7 +32,7 @@ export default class playSkipCommand extends Command {
             return;
          }
 
-         distube.playVoiceChannel(voiceChannel, query, {
+         distube.play(voiceChannel, query, {
             member: interaction.member as GuildMember,
             textChannel: interaction.channel as TextChannel,
          });
@@ -55,7 +55,9 @@ export default class playSkipCommand extends Command {
          return;
       }
 
-      let song = new Song(result, interaction.member as GuildMember);
+      let song = new Song(result, {
+         member: interaction.member as GuildMember,
+      });
 
       queue.addToQueue(song, 1).skip();
       interaction.deleteReply();

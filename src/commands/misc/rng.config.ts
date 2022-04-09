@@ -54,10 +54,10 @@ export default class rngCommand extends Command {
 
          response
             .setTitle('Random Numbers')
-            .setAuthor(
-               (interaction.member as GuildMember)?.displayName,
-               interaction.user.displayAvatarURL()
-            )
+            .setAuthor({
+               name: (interaction.member as GuildMember)?.displayName,
+               iconURL: interaction.user.displayAvatarURL()
+            })
             .setDescription(['**Results:**', ...numbers].join(' '))
             .setColor(config.mainColor);
 
