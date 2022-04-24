@@ -10,6 +10,8 @@ export default class toggleLottosCommand extends Command {
          '829531557785894923',
       ]);
 
+      this.setDefaultPermission(false);
+
       this.addNumberOption((option) =>
          option
             .setName('frequency')

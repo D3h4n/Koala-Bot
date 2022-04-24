@@ -7,7 +7,7 @@ export default class togglePostureCheckCommand extends Command {
       super(
          'toggleposturecheck',
          'Toggle Posture checks',
-         '310489953157120000',
+         '310489953157120023',
          ['829531557785894923']
       );
 

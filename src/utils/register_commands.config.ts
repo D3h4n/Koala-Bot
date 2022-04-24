@@ -48,26 +48,37 @@ export async function registerGuildCommands(
    guildid: string,
    commands: Collection<String, Command>
 ) {
-   const guildCommands = commands.filter(
-      (command) => command.guildid === guildid
-   );
+   console.log(`Registering commands for guild id ${guildid}`);
 
-   await rest.put(Routes.applicationGuildCommands(clientid, guildid), {
-      body: guildCommands.map((command) => command.toJSON()),
-   });
+   const guildCommands = [...commands.values()]
+      .filter((command) => command.guildid && command.guildid === guildid)
+      .map((command) => command.toJSON());
+
+   if (guildCommands.length > 0) {
+      console.log(`Loading ${guildCommands.length} commands`);
+
+      try {
+         rest.put(Routes.applicationGuildCommands(clientid, guildid), {
+            body: guildCommands,
+         });
+      } catch (error) {
+         console.error(error);
+      }
+   }
 }
 
 export async function updateGuildCommandPermissions(
    guildid: string,
    commands: Collection<string, Command>
 ) {
-   commands = commands.filter((command) => command.guildid === guildid);
+   console.log(guildid, commands.size);
 
-   let test: ApplicationCommand[] = (await rest.get(
+   // commands = commands.filter((command) => command.guildid === guildid);
+   let guildCommands: ApplicationCommand[] = (await rest.get(
       Routes.applicationGuildCommands(config.clientId!, guildid)
    )) as ApplicationCommand[];
 
-   let perms = test
+   let perms = guildCommands
       .map((command) => {
          return {
             id: command.id,
