@@ -55,6 +55,25 @@ client.once('ready', async () => {
 // runs for each interaction
 client.on('interactionCreate', handleInteraction);
 
+client.on('messageCreate', async (message) => {
+   if (
+      message.channelId === '310489953157120023' &&
+      message.content.startsWith('!ban')
+   ) {
+      const user = message.mentions.members?.first();
+
+      if (user) {
+         await message.channel.send(
+            `Successfully banned user ${user.toString()}`
+         );
+
+         setTimeout(() => {
+            message.channel.send('Just Kidding :smile:');
+         }, 3000);
+      }
+   }
+});
+
 client.on('error', (error) => {
    console.error(error.message);
 });
