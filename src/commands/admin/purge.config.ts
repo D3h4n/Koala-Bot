@@ -16,7 +16,7 @@ export default class purgeCommand extends Command {
             .setName('channel')
             .setDescription('Name of this channel')
             .setRequired(true)
-            .addChannelTypes(ChannelType.GuildVoice)
+            .addChannelTypes(ChannelType.GuildText)
       );
    }
 
