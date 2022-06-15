@@ -3,7 +3,6 @@ import { handleInteraction } from './utils/helper_functions.config';
 import {
    readCommands,
    registerGuildCommands,
-   updateGuildCommandPermissions,
 } from './utils/register_commands.config';
 import initDistube from './utils/distube.config';
 import config from './utils/config';
@@ -18,6 +17,7 @@ export const client = new Client({
       Intents.FLAGS.GUILDS,
       Intents.FLAGS.GUILD_VOICE_STATES,
       Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+      Intents.FLAGS.GUILD_MESSAGES,
    ],
 }); // initialize client
 
@@ -63,7 +63,6 @@ client.on('guildCreate', (guild) => {
    guildServices
       .CreateGuild(guild)
       .then(() => registerGuildCommands(config.clientId!, guild.id, commands))
-      .then(() => updateGuildCommandPermissions(guild.id, commands))
       .then(() => {
          console.log(`Joined new guild ${guild.name}`);
          console.log('Sucessfully Registered commands');

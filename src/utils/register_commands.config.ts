@@ -1,5 +1,5 @@
-import { ApplicationCommand, Collection } from 'discord.js';
-import { Routes } from 'discord-api-types/v9';
+import { Collection } from 'discord.js';
+import { Routes } from 'discord-api-types/v10';
 import { REST } from '@discordjs/rest';
 import { promises } from 'fs';
 import { resolve } from 'path';
@@ -65,34 +65,6 @@ export async function registerGuildCommands(
          console.error(error);
       }
    }
-}
-
-export async function updateGuildCommandPermissions(
-   guildid: string,
-   commands: Collection<string, Command>
-) {
-   console.log(guildid, commands.size);
-
-   // commands = commands.filter((command) => command.guildid === guildid);
-   let guildCommands: ApplicationCommand[] = (await rest.get(
-      Routes.applicationGuildCommands(config.clientId!, guildid)
-   )) as ApplicationCommand[];
-
-   let perms = guildCommands
-      .map((command) => {
-         return {
-            id: command.id,
-            permissions: commands.get(command.name)!.permissions!,
-         };
-      })
-      .filter((perm) => perm);
-
-   await rest.put(
-      Routes.guildApplicationCommandsPermissions(config.clientId!, guildid),
-      {
-         body: perms,
-      }
-   );
 }
 
 export function deregisterGuildCommands(

@@ -4,7 +4,7 @@ import {
    MessageEmbed,
    VoiceChannel,
 } from 'discord.js';
-import { ChannelType } from 'discord-api-types/v9';
+import { ChannelType, PermissionFlagsBits } from 'discord-api-types/v10';
 import Command from '../../utils/common.commands.config';
 import config from '../../utils/config';
 
@@ -13,18 +13,15 @@ export default class yeetCommand extends Command {
       super(
          'yeet',
          'Move a bunch of people between voice channels',
-         '310489953157120023',
-         ['829531557785894923', '795005140977451018', '613883141857214500']
+         PermissionFlagsBits.MoveMembers
       );
-
-      this.setDefaultPermission(false);
 
       this.addChannelOption((option) =>
          option
             .setName('channel')
             .setDescription('Channel to yeet to')
             .setRequired(true)
-            .addChannelType(ChannelType.GuildVoice)
+            .addChannelTypes(ChannelType.GuildVoice)
       );
    }
 

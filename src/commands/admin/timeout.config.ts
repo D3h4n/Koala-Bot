@@ -1,15 +1,17 @@
 import { CommandInteraction, GuildMember } from 'discord.js';
 import Command from '../../utils/common.commands.config';
 import config from '../../utils/config';
+import { PermissionFlagsBits } from 'discord-api-types/v10';
 // import config from '../../utils/config';
 
 export default class timeoutCommand extends Command {
    constructor() {
-      super('timeout', 'Put a user in timeout', '310489953157120023', [
-         '829531557785894923',
-      ]);
-
-      this.setDefaultPermission(false);
+      super(
+         'timeout',
+         'Put a user in timeout',
+         PermissionFlagsBits.ModerateMembers,
+         '310489953157120023'
+      );
 
       this.addUserOption((option) =>
          option

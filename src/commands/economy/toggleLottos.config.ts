@@ -1,16 +1,18 @@
-import Command from '../../utils/common.commands.config';
 import { CommandInteraction } from 'discord.js';
+import { PermissionFlagsBits } from 'discord-api-types/v10';
+import Command from '../../utils/common.commands.config';
 import economyServices from '../../services/economy.services';
 import guildServices from '../../services/guild.services';
 import config from '../../utils/config';
 
 export default class toggleLottosCommand extends Command {
    constructor() {
-      super('togglelottos', 'Turn lottos on and off', '310489953157120023', [
-         '829531557785894923',
-      ]);
-
-      this.setDefaultPermission(false);
+      super(
+         'togglelottos',
+         'Turn lottos on and off',
+         PermissionFlagsBits.Administrator,
+         '310489953157120023'
+      );
 
       this.addNumberOption((option) =>
          option

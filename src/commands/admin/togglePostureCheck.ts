@@ -1,4 +1,5 @@
 import { CommandInteraction } from 'discord.js';
+import { PermissionFlagsBits } from 'discord-api-types/v10';
 import guildServices from '../../services/guild.services';
 import Command from '../../utils/common.commands.config';
 
@@ -7,11 +8,9 @@ export default class togglePostureCheckCommand extends Command {
       super(
          'toggleposturecheck',
          'Toggle Posture checks',
-         '310489953157120023',
-         ['829531557785894923']
+         PermissionFlagsBits.Administrator,
+         '310489953157120023'
       );
-
-      this.setDefaultPermission(false);
 
       this.addNumberOption((option) =>
          option
