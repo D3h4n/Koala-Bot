@@ -19,9 +19,9 @@ export default class helloCommand extends Command {
       ];
    }
 
-   action(interaction: CommandInteraction) {
+   action(interaction: CommandInteraction): void {
       // get a random greeting from greetings array
-      let greeting =
+      const greeting =
          this.greetings[Math.floor(Math.random() * this.greetings.length)];
 
       // greet user that called command

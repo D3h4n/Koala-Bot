@@ -20,18 +20,18 @@ export default class purgeCommand extends Command {
       );
    }
 
-   async action(interaction: CommandInteraction) {
+   async action(interaction: CommandInteraction): Promise<void> {
       const channel = interaction.options.getChannel(
          'channel',
          true
       ) as TextChannel;
 
       if (channel === interaction.channel) {
-         let newChannel = await channel.clone();
+         const newChannel = await channel.clone();
 
          channel.delete('Purging');
 
-         let msg = await newChannel.send('`Channel Successfully purged`');
+         const msg = await newChannel.send('`Channel Successfully purged`');
 
          setTimeout(() => msg.delete().catch(console.error), config.msgTimeout);
       }

@@ -11,10 +11,10 @@ export default class coinFlipCommand extends Command {
       );
    }
 
-   action(interaction: CommandInteraction) {
+   action(interaction: CommandInteraction): void {
       // set default values
-      let flips: string[] = [];
-      let times = interaction.options.getNumber('amount') ?? 1;
+      const flips: string[] = [];
+      const times = interaction.options.getNumber('amount') ?? 1;
 
       // generate results of flips
       for (let i = 0; i < times; i++) {
@@ -24,24 +24,26 @@ export default class coinFlipCommand extends Command {
       // if more than one flip
       if (times > 1) {
          // generate and send message embed of flips
-         let response = new MessageEmbed();
-
-         response
-            .setTitle('Coin Flips')
-            .setDescription(['**Results:**', ...flips].join('\n'))
-            .setColor(config.mainColor)
-            .setAuthor({
-               name: (interaction.member as GuildMember)?.displayName,
-               iconURL: interaction.user.displayAvatarURL()
-            });
+         const response = new MessageEmbed({
+            title: 'Coin Flips',
+            description: ['**Results:**', ...flips].join('\n'),
+            color: config.mainColor,
+            author: {
+               name:
+                  (interaction.member as GuildMember)?.displayName ??
+                  'No Display Name',
+               iconURL: interaction.user.displayAvatarURL(),
+            },
+         });
 
          interaction.reply({
             embeds: [response],
          });
+
          return;
       }
 
       // return one flip
-      return interaction.reply(`\`${flips[0]}\``);
+      interaction.reply(`\`${flips[0]}\``);
    }
 }

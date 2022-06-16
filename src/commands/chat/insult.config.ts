@@ -40,27 +40,27 @@ export default class insultCommand extends Command {
       );
    }
 
-   action(interaction: CommandInteraction) {
+   action(interaction: CommandInteraction): void {
       // get user to insult
-      let user = interaction.options.getUser('user') ?? interaction.user;
+      const user = interaction.options.getUser('user') ?? interaction.user;
 
       // choose an insult format
-      let insultFormat =
+      const insultFormat =
          this.insultFormats[this.rand(this.insultFormats.length)];
 
       // generate insult from format
-      let insult = this.parseFormat(insultFormat, user.toString());
+      const insult = this.parseFormat(insultFormat, user.toString());
 
       // send insult
       interaction.reply(insult);
    }
 
-   parseFormat(insultFormat: string, user: string) {
+   parseFormat(insultFormat: string, user: string): string {
       // replace user specifier with user mention
       let insult = insultFormat.replace('{user}', user);
 
       // replace other format specifiers with random words
-      for (let type of this.wordTypes) {
+      for (const type of this.wordTypes) {
          insult = insult.replace(
             `{${type}}`,
             this[type][this.rand(this[type].length)]
@@ -72,7 +72,7 @@ export default class insultCommand extends Command {
    }
 
    // generate random number
-   rand(max: number) {
+   rand(max: number): number {
       return Math.floor(Math.random() * max);
    }
 }

@@ -76,7 +76,7 @@ class economyServices {
          throw '`You already made a guess`';
       }
 
-      let numMap = new Map<number, null>();
+      const numMap = new Map<number, null>();
 
       nums.forEach((num) => {
          if (numMap.has(num)) {

@@ -12,7 +12,7 @@ import guildServices from '../services/guild.services';
 
 export const log = async function logEveryCommand(
    interaction: CommandInteraction
-) {
+): Promise<void> {
    console.log(
       `[server] User: ${interaction.user.username} Channel: ${
          (interaction.channel as TextChannel).name
@@ -20,32 +20,34 @@ export const log = async function logEveryCommand(
    );
 };
 
-export async function handleInteraction(interaction: Interaction<CacheType>) {
+export async function handleInteraction(
+   interaction: Interaction<CacheType>
+): Promise<void> {
    if (interaction.isButton()) return await interaction.deferUpdate();
    if (!interaction.isCommand()) return;
 
-   let command = commands.get(interaction.commandName);
+   const command = commands.get(interaction.commandName);
 
    command?.action(interaction);
    log(interaction);
 }
 
 const checkTime = function checkTimeFrequency(date: Date, frequency: number) {
-   let diff = date.getTime() % frequency;
+   const diff = date.getTime() % frequency;
 
    return diff < 1e4 || diff > frequency - 1e4;
 };
 
-export async function dataBaseCleanup() {
+export async function dataBaseCleanup(): Promise<void> {
    if (!checkTime(new Date(), config.cleanUpFrequency)) return;
 
    console.log('[server] running database cleanup');
 
    // cleanup old lottos/guesses
-   let lottos = await lottoModel.find({ done: true });
+   const lottos = await lottoModel.find({ done: true });
 
    lottos.forEach(async (lotto) => {
-      let guesses = await economyServices.getGuesses(lotto.id);
+      const guesses = await economyServices.getGuesses(lotto.id);
 
       guesses.forEach((guess) => {
          guess.delete();
@@ -55,18 +57,21 @@ export async function dataBaseCleanup() {
    });
 }
 
-export async function postureCheck() {
+export async function postureCheck(): Promise<void> {
    const guilds = await guildServices.GetGuilds();
 
    guilds.forEach((guild) => {
       if (!guild.runPostureCheck) return;
 
-      let date = new Date();
+      const date = new Date();
 
-      let hours = date.getUTCHours();
+      const hours = date.getUTCHours();
 
       if (
-         !checkTime(date, guild.postureCheckFrequency!) ||
+         !checkTime(
+            date,
+            guild.postureCheckFrequency || config.eventLoopTimeDelay
+         ) ||
          (hours > 2 && hours < 14)
       ) {
          return;
@@ -76,8 +81,13 @@ export async function postureCheck() {
          `[server] sending posture check for guild ${guild.guildName}`
       );
 
+      if (!guild.postureCheckChannelId) {
+         console.error('ERROR: Failed to get channel id for posture check');
+         return;
+      }
+
       const channel = client.channels.resolve(
-         guild.postureCheckChannelId!
+         guild.postureCheckChannelId
       ) as TextChannel;
 
       if (!channel) {
@@ -85,6 +95,6 @@ export async function postureCheck() {
          return;
       }
 
-      channel.send(guild.postureCheckMessage!);
+      channel.send(guild.postureCheckMessage ?? 'No Message');
    });
 }

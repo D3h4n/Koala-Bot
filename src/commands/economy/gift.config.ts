@@ -21,7 +21,7 @@ export default class giftCommand extends Command {
       );
    }
 
-   async action(interaction: CommandInteraction) {
+   async action(interaction: CommandInteraction): Promise<void> {
       // get author record
       const authorId = interaction.user.id;
 

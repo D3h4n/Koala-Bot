@@ -7,7 +7,7 @@ export default class pauseCommand extends Command {
       super('pause', 'Pause song');
    }
 
-   action(interaction: CommandInteraction) {
+   action(interaction: CommandInteraction): void {
       try {
          // check if queue is playing
          if (distube.getQueue(interaction)?.playing) {

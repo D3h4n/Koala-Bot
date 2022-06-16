@@ -31,7 +31,7 @@ export default class voteCommand extends Command {
       );
    }
 
-   async action(interaction: CommandInteraction) {
+   async action(interaction: CommandInteraction): Promise<void> {
       await interaction.deferReply();
       const timeLimit =
          interaction.options.getNumber('timelimit', true) * 60000; // time limit in milliseconds
@@ -49,14 +49,15 @@ export default class voteCommand extends Command {
       }
 
       // generate query
-      let query = interaction.options.getString('query', true);
+      const query = interaction.options.getString('query', true);
 
       // get the displayName and AvatarURL of author
-      const displayName = (interaction.member as GuildMember)?.displayName!;
+      const displayName =
+         (interaction.member as GuildMember)?.displayName ?? 'No Display Name';
       const displayAvatarURL = interaction.user.displayAvatarURL();
 
       // send initial message
-      let sentMessage = (await interaction.editReply({
+      const sentMessage = (await interaction.editReply({
          embeds: [
             new MessageEmbed({
                title: query,
@@ -76,7 +77,7 @@ export default class voteCommand extends Command {
          .awaitReactions({
             filter: (reaction: MessageReaction, user: User) =>
                [voteCommand.yesEmote, voteCommand.noEmote].includes(
-                  reaction.emoji.name!
+                  reaction.emoji.name ?? ''
                ) && !user.bot,
             time: timeLimit,
             dispose: true,
@@ -125,9 +126,7 @@ export default class voteCommand extends Command {
       displayAvatarURL: string,
       yesCount: number,
       noCount: number
-   ) {
-      const response = new MessageEmbed();
-
+   ): MessageEmbed {
       let result: string;
 
       if (yesCount === noCount) {
@@ -138,13 +137,15 @@ export default class voteCommand extends Command {
          result = voteCommand.noEmote;
       }
 
-      response
-         .setTitle(query)
-         .setAuthor({ name: displayName, iconURL: displayAvatarURL })
-         .setColor(config.mainColor)
-         .setDescription(
-            `Yes: ${yesCount}\nNo: ${noCount}\n\nResult: ${result}`
-         );
+      const response = new MessageEmbed({
+         title: query,
+         author: {
+            name: displayName,
+            iconURL: displayAvatarURL,
+         },
+         description: `Yes: ${yesCount}\nNo: ${noCount}\n\nResult: ${result}`,
+         color: config.mainColor,
+      });
 
       return response;
    }

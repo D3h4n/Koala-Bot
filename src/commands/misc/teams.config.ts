@@ -14,15 +14,17 @@ export default class teamsCommand extends Command {
       );
    }
 
-   action(interaction: CommandInteraction) {
+   action(interaction: CommandInteraction): void {
       // get number of teams
-      let numTeams = interaction.options.getNumber('numteams');
+      const numTeams = interaction.options.getNumber('numteams');
+
       if (!numTeams) {
+         interaction.reply('Error getting number of teams');
          return;
       }
 
       // get list of names
-      let names = interaction.options.data
+      const names = interaction.options.data
          .slice(1)
          .map((a) => a.value?.toString());
 
@@ -39,36 +41,39 @@ export default class teamsCommand extends Command {
       }
 
       // create map to store teams
-      let teams: string[][] = [];
+      const teams: string[][] = [];
 
       // split names into teams randomly
       for (let i = 0; names.length > 0; i++) {
          // remove random name from list of names
-         let [name] = names.splice(Math.floor(Math.random() * names.length), 1);
+         const [name] = names.splice(
+            Math.floor(Math.random() * names.length),
+            1
+         );
 
          // get corresponding team
-         let team = teams[i % numTeams] ?? [];
+         const team = teams[i % numTeams] ?? [];
 
          // add name to team
-         team.push(name!);
+         team.push(name ?? ':shrug:');
 
          // update team in map
          teams[i % numTeams] = team;
       }
 
       // create embedded message of teams
-      let res = new MessageEmbed();
-
-      res.setTitle(`${numTeams} Random Teams`)
-         .setColor(config.mainColor)
-         .setDescription(this.generateDescription(teams).join('\n'));
+      const response = new MessageEmbed({
+         title: `${numTeams} Random Teams`,
+         description: this.generateDescription(teams).join('\n'),
+         color: config.mainColor,
+      });
 
       interaction.reply({
-         embeds: [res],
+         embeds: [response],
       });
    }
 
-   generateDescription(teams: string[][]) {
+   generateDescription(teams: string[][]): string[] {
       // generate text for each team
       return teams.map(
          (team, idx) =>

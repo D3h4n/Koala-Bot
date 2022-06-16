@@ -18,7 +18,7 @@ export default class betCommand extends Command {
       );
    }
 
-   async action(interaction: CommandInteraction) {
+   async action(interaction: CommandInteraction): Promise<void> {
       // get the bet amount
       const betAmount = interaction.options.getNumber('amount');
 

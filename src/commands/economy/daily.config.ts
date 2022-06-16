@@ -11,7 +11,7 @@ export default class dailyCommand extends Command {
       super('daily', 'earn daily currency');
    }
 
-   async action(interaction: CommandInteraction) {
+   async action(interaction: CommandInteraction): Promise<void> {
       // get user record or create new record
       const user =
          (await economyServices.getUserByDiscord(interaction.user.id)) ??
@@ -66,7 +66,7 @@ export default class dailyCommand extends Command {
     *
     * @returns daily gain amount
     */
-   generateGain() {
+   generateGain(): number {
       return (
          dailyCommand.avgGain +
          (Math.floor(Math.random() * (dailyCommand.randomRange + 1)) -
@@ -74,7 +74,7 @@ export default class dailyCommand extends Command {
       );
    }
 
-   generateTimeString(remainingTime: number) {
+   generateTimeString(remainingTime: number): string {
       const hours = Math.floor(remainingTime / 60); // calculate hours remaining
       const minutes = remainingTime % 60; // calculate minutes remaining
 

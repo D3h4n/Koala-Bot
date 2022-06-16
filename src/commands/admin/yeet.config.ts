@@ -25,7 +25,7 @@ export default class yeetCommand extends Command {
       );
    }
 
-   async action(interaction: CommandInteraction) {
+   async action(interaction: CommandInteraction): Promise<void> {
       const member = interaction.member as GuildMember;
 
       const voiceChannel = member.voice?.channel;

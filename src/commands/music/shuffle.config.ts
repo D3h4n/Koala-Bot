@@ -7,14 +7,15 @@ export default class shuffleCommand extends Command {
       super('shuffle', 'Shuffle the queue');
    }
 
-   action(interaction: CommandInteraction) {
+   action(interaction: CommandInteraction): void {
       try {
          distube.shuffle(interaction);
       } catch (error) {
+         interaction.reply('`Error shuffling queue`');
          console.error(error);
-         return interaction.reply('`Error shuffling queue`');
+         return;
       }
 
-      return interaction.reply('`Shuffled Queue`');
+      interaction.reply('`Shuffled Queue`');
    }
 }

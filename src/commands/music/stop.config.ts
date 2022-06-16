@@ -7,7 +7,7 @@ export default class stopCommand extends Command {
       super('stop', 'Stop the queue');
    }
 
-   action(interaction: CommandInteraction) {
+   action(interaction: CommandInteraction): void {
       try {
          distube.stop(interaction);
       } catch (error) {

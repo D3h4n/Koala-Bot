@@ -8,7 +8,7 @@ export default class balanceCommand extends Command {
       super('balance', 'check your balance');
    }
 
-   async action(interaction: CommandInteraction) {
+   async action(interaction: CommandInteraction): Promise<void> {
       // get user or create new user if doesn't exist
       const user =
          (await economyServices.getUserByDiscord(interaction.user.id)) ??
@@ -22,7 +22,9 @@ export default class balanceCommand extends Command {
 
       response
          .setAuthor({
-            name: (interaction.member as GuildMember)?.displayName!,
+            name:
+               (interaction.member as GuildMember)?.displayName ??
+               'No Display Name',
             iconURL: interaction.user.displayAvatarURL(),
          })
          .setColor(config.mainColor)

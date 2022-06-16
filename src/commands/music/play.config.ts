@@ -14,12 +14,12 @@ export default class playCommand extends Command {
       );
    }
 
-   async action(interaction: CommandInteraction) {
+   async action(interaction: CommandInteraction): Promise<void> {
       await interaction.deferReply();
       // generate query from args
-      let query = interaction.options.getString('song', true);
+      const query = interaction.options.getString('song', true);
 
-      let voiceChannel = (interaction.member as GuildMember)?.voice.channel;
+      const voiceChannel = (interaction.member as GuildMember)?.voice.channel;
 
       if (!voiceChannel) {
          interaction.editReply('Join a voice channel.');

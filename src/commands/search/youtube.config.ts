@@ -15,9 +15,9 @@ export default class youtubeCommand extends Command {
       );
    }
 
-   action(interaction: CommandInteraction) {
+   action(interaction: CommandInteraction): void {
       // get search query
-      let search = interaction.options.data
+      const search = interaction.options.data
          .map((a) => a.value)
          .join(' ')
          .trim();
@@ -41,7 +41,7 @@ export default class youtubeCommand extends Command {
          .then((res) => res.data.items?.[0]) // get first result
          .then((result) => {
             // get id
-            let id = result?.id;
+            const id = result?.id;
 
             if (id?.videoId) {
                // send video link if video

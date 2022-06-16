@@ -6,9 +6,12 @@ import { resolve } from 'path';
 import config from './config';
 import Command from './common.commands.config';
 
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const rest = new REST({ version: '9' }).setToken(config.token!);
 
-export async function readCommands(dir: string) {
+export async function readCommands(
+   dir: string
+): Promise<Collection<string, Command>> {
    const commands: Collection<string, Command> = new Collection<
       string,
       Command
@@ -16,6 +19,7 @@ export async function readCommands(dir: string) {
 
    for await (const f of getFiles(dir)) {
       if (f.endsWith('.js')) {
+         // eslint-disable-next-line @typescript-eslint/no-var-requires
          const command: Command = new (require(f).default)();
 
          commands.set(command.name, command);
@@ -27,8 +31,8 @@ export async function readCommands(dir: string) {
 
 export async function registerApplicationCommands(
    clientid: string,
-   commands: Collection<String, Command>
-) {
+   commands: Collection<string, Command>
+): Promise<void> {
    await rest.put(Routes.applicationCommands(clientid), {
       body: commands
          .filter((command) => !command.guildid)
@@ -39,15 +43,17 @@ export async function registerApplicationCommands(
    });
 }
 
-export async function deregisterApplicationCommands(clientid: string) {
-   return rest.put(Routes.applicationCommands(clientid), { body: [] });
+export async function deregisterApplicationCommands(
+   clientid: string
+): Promise<void> {
+   rest.put(Routes.applicationCommands(clientid), { body: [] });
 }
 
 export async function registerGuildCommands(
    clientid: string,
    guildid: string,
-   commands: Collection<String, Command>
-) {
+   commands: Collection<string, Command>
+): Promise<void> {
    console.log(`Registering commands for guild id ${guildid}`);
 
    const guildCommands = [...commands.values()]

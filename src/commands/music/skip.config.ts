@@ -7,9 +7,9 @@ export default class skipCommand extends Command {
       super('skip', 'Skip the current song');
    }
 
-   action(interaction: CommandInteraction) {
+   action(interaction: CommandInteraction): void {
       try {
-         let queue = distube.getQueue(interaction);
+         const queue = distube.getQueue(interaction);
 
          if (queue) {
             if (queue.songs.length > 1) {

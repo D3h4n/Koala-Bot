@@ -2,7 +2,7 @@ import { MessageEmbed } from 'discord.js';
 import DisTube from 'distube';
 import config from './config';
 
-export default function (distube: DisTube) {
+export default function (distube: DisTube): DisTube {
    const { mainColor, msgTimeout } = config;
 
    // distube setup
@@ -14,18 +14,18 @@ export default function (distube: DisTube) {
    distube.on('playSong', (queue, song) => {
       if (queue.repeatMode === 1) return;
 
-      let res = new MessageEmbed();
+      const res = new MessageEmbed();
 
-      let desc =
+      const desc =
          `[${song.name}](${song.url})\n` + `Length: ${song.formattedDuration}`;
 
       res.setColor(mainColor)
          .setTitle('Now playing')
          .setAuthor({
-            name: song.member?.displayName!,
+            name: song.member?.displayName ?? 'No Display Name',
             iconURL: song.user?.displayAvatarURL(),
          })
-         .setThumbnail(song.thumbnail!)
+         .setThumbnail(song.thumbnail ?? '')
          .setDescription(desc);
 
       queue.textChannel
@@ -38,9 +38,9 @@ export default function (distube: DisTube) {
    distube.on('addSong', (queue, song) => {
       if (queue.songs.length === 1) return;
 
-      let res = new MessageEmbed();
+      const res = new MessageEmbed();
 
-      let desc =
+      const desc =
          `[${song.name}](${song.url})\n` +
          `Length: ${song.formattedDuration}\n` +
          `Position in Queue: ${queue.songs.findIndex((val) => val === song)}`;
@@ -48,9 +48,9 @@ export default function (distube: DisTube) {
       res.setColor(mainColor)
          .setTitle('Added to Queue')
          .setDescription(desc)
-         .setThumbnail(song.thumbnail!)
+         .setThumbnail(song.thumbnail ?? '')
          .setAuthor({
-            name: song.member?.displayName!,
+            name: song.member?.displayName ?? 'No Display Name',
             iconURL: song.user?.displayAvatarURL(),
          });
 
@@ -63,9 +63,9 @@ export default function (distube: DisTube) {
 
    distube.on('addList', (queue, playlist) => {
       try {
-         let res = new MessageEmbed();
+         const res = new MessageEmbed();
 
-         let desc =
+         const desc =
             `[${playlist.name}](${playlist.url})\n and \`${
                playlist.songs.length - 1
             } others\`\n` + `Length: ${playlist.formattedDuration}\n`;
@@ -73,9 +73,9 @@ export default function (distube: DisTube) {
          res.setColor(mainColor)
             .setTitle('Added Playlist to Queue')
             .setDescription(desc)
-            .setThumbnail(playlist.thumbnail!)
+            .setThumbnail(playlist.thumbnail ?? '')
             .setAuthor({
-               name: playlist.member?.displayName!,
+               name: playlist.member?.displayName ?? 'No Display Name',
                iconURL: playlist.user?.displayAvatarURL(),
             });
 

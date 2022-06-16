@@ -1,4 +1,6 @@
-require('dotenv').config();
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export default {
    token: process.env.DISCORD_BOT_TOKEN, // token for discord bot

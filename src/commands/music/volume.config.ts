@@ -11,9 +11,9 @@ export default class volumeCommand extends Command {
       );
    }
 
-   action(interaction: CommandInteraction) {
+   action(interaction: CommandInteraction): void {
       // get volume value
-      let volume = interaction.options.getNumber('volume', true);
+      const volume = interaction.options.getNumber('volume', true);
 
       // set volume
       try {

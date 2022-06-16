@@ -41,15 +41,15 @@ export default class chooseCommand extends Command {
       }
    }
 
-   async action(interaction: CommandInteraction) {
-      let hidden = interaction.options.getBoolean('hidden') || false;
+   async action(interaction: CommandInteraction): Promise<void> {
+      const hidden = interaction.options.getBoolean('hidden') || false;
 
       await interaction.deferReply({
          ephemeral: hidden,
       });
 
       // generate random result
-      let options = interaction.options.data
+      const options = interaction.options.data
          .filter((a) => a.type === 'STRING')
          .map((a) => a.value) as string[];
 
@@ -60,7 +60,7 @@ export default class chooseCommand extends Command {
       if (hidden) return;
 
       // followup message with buttons
-      let message = (await interaction.followUp({
+      const message = (await interaction.followUp({
          content: 'See options?',
          components: [
             new MessageActionRow().addComponents(
@@ -76,7 +76,7 @@ export default class chooseCommand extends Command {
          ],
       })) as Message;
 
-      let response: boolean = false;
+      let response = false;
 
       // create collector
       message

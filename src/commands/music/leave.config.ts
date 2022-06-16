@@ -7,7 +7,7 @@ export default class leaveCommand extends Command {
       super('leave', 'Leave voice channel');
    }
 
-   action(interaction: CommandInteraction) {
+   action(interaction: CommandInteraction): void {
       // disconnect bot
       distube.voices.leave(interaction);
       interaction.reply('`Left voice channel`');

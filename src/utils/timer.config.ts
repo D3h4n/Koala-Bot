@@ -13,7 +13,7 @@ function eventLoop() {
    events.forEach((event) => event());
 }
 
-export default function initEventLoop() {
+export default function initEventLoop(): void {
    // find time to next hour
    const time = new Date().valueOf();
 

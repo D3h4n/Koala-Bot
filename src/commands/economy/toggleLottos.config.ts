@@ -21,7 +21,7 @@ export default class toggleLottosCommand extends Command {
       );
    }
 
-   async action(interaction: CommandInteraction) {
+   async action(interaction: CommandInteraction): Promise<void> {
       // get guild id
       const guildId = interaction.guild?.id;
 
@@ -43,7 +43,8 @@ export default class toggleLottosCommand extends Command {
          }
 
          let lottoFrequency = Math.round(
-            interaction.options.getNumber('frequency')! * 3.6e6
+            (interaction.options.getNumber('frequency') ??
+               config.eventLoopTimeDelay) * 3.6e6
          ); // convert time to ms
 
          // assert valid lotto frequency

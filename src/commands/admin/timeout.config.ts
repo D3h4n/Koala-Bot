@@ -34,7 +34,7 @@ export default class timeoutCommand extends Command {
       );
    }
 
-   action(interaction: CommandInteraction) {
+   action(interaction: CommandInteraction): void {
       // get first mentioned member
       const userToTimeout = interaction.options.getUser('user', true);
       const memberToTimeout = interaction.guild?.members.resolve(userToTimeout);
@@ -52,7 +52,7 @@ export default class timeoutCommand extends Command {
       }
 
       // calculate timeout
-      let timeout = interaction.options.getNumber('time', true) * 60000;
+      const timeout = interaction.options.getNumber('time', true) * 60000;
 
       // check if time is within range
       if (timeout < 1000) {
@@ -82,7 +82,7 @@ export default class timeoutCommand extends Command {
 
    private async addTimeout(member: GuildMember, timeout: number) {
       const timeoutID = '416009802112696320'; // ID for timeout role
-      let roles = member.roles.cache; // get array of roles
+      const roles = member.roles.cache; // get array of roles
 
       // remove roles and add timeout role
       try {

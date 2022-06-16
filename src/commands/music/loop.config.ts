@@ -7,24 +7,27 @@ export default class loopCommand extends Command {
       super('loop', 'Loop the entire queue or stop looping');
    }
 
-   action(interaction: CommandInteraction) {
+   action(interaction: CommandInteraction): void {
       const queue = distube.getQueue(interaction);
 
       // check if queue is playing
       if (!queue?.playing) {
-         return interaction.reply('`Error looping queue`');
+         interaction.reply('`Error looping queue`');
+         return;
       }
 
       // if queue is looping, stop looping queue
       if (queue.repeatMode === 2) {
          distube.setRepeatMode(interaction, 0);
 
-         return interaction.reply(`\`Stopped looping queue\``);
+         interaction.reply(`\`Stopped looping queue\``);
+         return;
       }
 
       // if queue is not looping, start looping queue
       distube.setRepeatMode(interaction, 2);
 
-      return interaction.reply(`\`Started looping queue\``);
+      interaction.reply(`\`Started looping queue\``);
+      return;
    }
 }

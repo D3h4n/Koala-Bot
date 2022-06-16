@@ -13,8 +13,10 @@ export default class echoCommand extends Command {
       );
    }
 
-   action(interaction: CommandInteraction) {
+   action(interaction: CommandInteraction): void {
       // get message content to send
-      interaction.reply(interaction.options.getString('message')!);
+      interaction.reply(
+         interaction.options.getString('message') ?? 'No message specified'
+      );
    }
 }

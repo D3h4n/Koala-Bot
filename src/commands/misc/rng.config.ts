@@ -19,30 +19,32 @@ export default class rngCommand extends Command {
       );
    }
 
-   action(interaction: CommandInteraction) {
-      let max: number = interaction.options.getNumber('max') ?? 10;
-      let min: number = interaction.options.getNumber('min') ?? 1;
-      let count: number = interaction.options.getNumber('count') ?? 1;
+   action(interaction: CommandInteraction): void {
+      let max = interaction.options.getNumber('max') ?? 10;
+      let min = interaction.options.getNumber('min') ?? 1;
+      const count = interaction.options.getNumber('count') ?? 1;
 
       // swap min and max if min is larger than max
       if (min > max) {
-         let temp = min;
+         const temp = min;
          min = max;
          max = temp;
       }
 
       // assert count is greater than 0
       if (count < 1) {
-         return interaction.reply('`Count is too small`');
+         interaction.reply('`Count is too small`');
+         return;
       }
 
       // assert count is less than maxRandomNumbers
       if (count > config.maxRandomNumbers) {
-         return interaction.reply('`Count is too big`');
+         interaction.reply('`Count is too big`');
+         return;
       }
 
       // generate array of random numbers
-      let numbers: number[] = [];
+      const numbers: number[] = [];
 
       for (let i = 0; i < count; i++) {
          numbers.push(Math.floor(Math.random() * (max - min + 1)) + min);
@@ -50,16 +52,15 @@ export default class rngCommand extends Command {
 
       if (count > 1) {
          // create embedded message response for more than 1 number
-         let response = new MessageEmbed();
-
-         response
-            .setTitle('Random Numbers')
-            .setAuthor({
+         const response = new MessageEmbed({
+            title: 'Random Numbers',
+            author: {
                name: (interaction.member as GuildMember)?.displayName,
-               iconURL: interaction.user.displayAvatarURL()
-            })
-            .setDescription(['**Results:**', ...numbers].join(' '))
-            .setColor(config.mainColor);
+               iconURL: interaction.user.displayAvatarURL(),
+            },
+            description: ['**Results**', ...numbers].join(' '),
+            color: config.mainColor,
+         });
 
          interaction.reply({
             embeds: [response],
@@ -67,6 +68,7 @@ export default class rngCommand extends Command {
          return;
       }
 
-      return interaction.reply(`\`${numbers[0]}\``);
+      interaction.reply(`\`${numbers[0]}\``);
+      return;
    }
 }

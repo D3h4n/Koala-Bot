@@ -13,11 +13,16 @@ export default class calculateCommand extends Command {
       );
    }
 
-   action(interaction: CommandInteraction) {
-      let input = interaction.options.getString('expression');
+   action(interaction: CommandInteraction): void {
+      const input = interaction.options.getString('expression');
+
+      if (!input) {
+         interaction.reply('0');
+         return;
+      }
 
       try {
-         let result: number | string = this.calculateExpression(input!); // calculate value of expression
+         const result: number | string = this.calculateExpression(input); // calculate value of expression
 
          interaction.reply(`\`${input} = ${result}\``); // output result
       } catch (error) {
@@ -32,7 +37,7 @@ export default class calculateCommand extends Command {
     * @return value of the expression
     */
    calculateExpression(expression: string): number {
-      let operations = ['E+', 'E-', '+', '-', '*', '/', '^']; // possible operatations in order of precedence
+      const operations = ['E+', 'E-', '+', '-', '*', '/', '^']; // possible operatations in order of precedence
       let operation = '\0'; // string to store operation
 
       // assume blank expression has a value of 0
@@ -41,33 +46,26 @@ export default class calculateCommand extends Command {
       }
 
       // Calculate value of subexpressions in parentheses / functions
-      try {
-         expression = this.calculateFunction(expression, 'sqrt', Math.sqrt);
-         expression = this.calculateFunction(
-            expression,
-            'fact',
-            this.factorial
-         );
 
-         expression = this.calculateFunction(expression, 'log', Math.log10);
-         expression = this.calculateFunction(expression, 'ln', Math.log);
+      expression = this.calculateFunction(expression, 'sqrt', Math.sqrt);
+      expression = this.calculateFunction(expression, 'fact', this.factorial);
 
-         expression = this.calculateFunction(expression, 'arcsin', Math.asin);
-         expression = this.calculateFunction(expression, 'sin', Math.sin);
+      expression = this.calculateFunction(expression, 'log', Math.log10);
+      expression = this.calculateFunction(expression, 'ln', Math.log);
 
-         expression = this.calculateFunction(expression, 'arccos', Math.acos);
-         expression = this.calculateFunction(expression, 'cos', Math.cos);
+      expression = this.calculateFunction(expression, 'arcsin', Math.asin);
+      expression = this.calculateFunction(expression, 'sin', Math.sin);
 
-         expression = this.calculateFunction(expression, 'arctan', Math.atan);
-         expression = this.calculateFunction(expression, 'tan', Math.tan);
+      expression = this.calculateFunction(expression, 'arccos', Math.acos);
+      expression = this.calculateFunction(expression, 'cos', Math.cos);
 
-         expression = this.calculateSubexpressions(expression);
-      } catch (error) {
-         throw error;
-      }
+      expression = this.calculateFunction(expression, 'arctan', Math.atan);
+      expression = this.calculateFunction(expression, 'tan', Math.tan);
+
+      expression = this.calculateSubexpressions(expression);
 
       // iterate to find operand with most precendence in expression
-      for (let opp of operations) {
+      for (const opp of operations) {
          if (expression.indexOf(opp) != -1) {
             operation = opp;
             break;
@@ -84,7 +82,7 @@ export default class calculateCommand extends Command {
       }
 
       // split string into the two operands of the operation
-      let operands = this.splitByOperation(expression, operation);
+      const operands = this.splitByOperation(expression, operation);
 
       // perform operation on operands and return result
       switch (operation) {
@@ -159,28 +157,22 @@ export default class calculateCommand extends Command {
       expression: string,
       funcName: string,
       func: (number) => number
-   ) {
+   ): string {
       let startIdx = expression.indexOf(funcName);
 
       while (startIdx != -1) {
          // find related close parenthesis
-         let endIdx: number;
+         const endIdx = this.findCloseParenthesis(
+            expression,
+            startIdx + funcName.length
+         );
 
-         try {
-            endIdx = this.findCloseParenthesis(
-               expression,
-               startIdx + funcName.length
-            );
-         } catch (error) {
-            throw error;
-         }
-
-         let subexpression = expression.substring(
+         const subexpression = expression.substring(
             startIdx + funcName.length + 1,
             endIdx - 1
          );
 
-         let value = func(this.calculateExpression(subexpression));
+         const value = func(this.calculateExpression(subexpression));
 
          // replace subexpression with value
          expression =
@@ -207,19 +199,13 @@ export default class calculateCommand extends Command {
 
       while (startIdx != -1) {
          // find related close parenthesis
-         let endIdx: number;
-
-         try {
-            endIdx = this.findCloseParenthesis(expression, startIdx);
-         } catch (error) {
-            throw error;
-         }
+         const endIdx = this.findCloseParenthesis(expression, startIdx);
 
          // extract subexpression
-         let subexpression = expression.substring(startIdx + 1, endIdx - 1);
+         const subexpression = expression.substring(startIdx + 1, endIdx - 1);
 
          // calculate value of subexpression
-         let value = this.calculateExpression(subexpression);
+         const value = this.calculateExpression(subexpression);
 
          // replace subexpression with value
          expression =
@@ -242,7 +228,7 @@ export default class calculateCommand extends Command {
     * @return index of close parenthesis
     */
    findCloseParenthesis(expression: string, startIdx: number): number {
-      let length = expression.length;
+      const length = expression.length;
       let parenthesesCount = 1;
       let endIdx = startIdx + 1;
 
@@ -270,10 +256,10 @@ export default class calculateCommand extends Command {
     * @return array of strings with separated operands
     */
    splitByOperation(expression: string, operation: string): string[] {
-      let result = ['', ''];
+      const result = ['', ''];
 
       // get index of operation
-      let position = expression.lastIndexOf(operation);
+      const position = expression.lastIndexOf(operation);
 
       // split first half
       result[0] = expression.substring(0, position);

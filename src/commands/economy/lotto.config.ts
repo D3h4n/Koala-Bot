@@ -26,14 +26,15 @@ export default class lottoCommand extends Command {
       );
    }
 
-   async action(interaction: CommandInteraction) {
+   async action(interaction: CommandInteraction): Promise<void> {
       // if user provides a lotto id display lotto
       if (interaction.options.data.length <= 2) {
          // get lotto and user records
-         let lotto = await economyServices.getLotto(
+         const lotto = await economyServices.getLotto(
             interaction.options.getString('lottoid') ?? undefined,
             interaction.guild?.id
          );
+
          const user = await economyServices.getUserByDiscord(
             interaction.user.id
          );
@@ -79,7 +80,7 @@ export default class lottoCommand extends Command {
 
       // if user does not provide an id
       // get latest lotto for guild
-      let lotto = await economyServices.getLotto(
+      const lotto = await economyServices.getLotto(
          undefined,
          interaction.guild?.id
       );
@@ -168,12 +169,12 @@ export default class lottoCommand extends Command {
          .catch(interaction.reply);
    }
 
-   public static async checkLotto() {
+   public static async checkLotto(): Promise<void> {
       // get list of guilds
       const guilds = await guildServices.GetGuilds();
 
       // iterate through each guild
-      guilds.forEach(async (guild: IGuild & Document<any, any>) => {
+      guilds.forEach(async (guild: IGuild & Document<unknown, unknown>) => {
          // assert that lottos are running for that guild
          if (!guild.runLotto) {
             return;
@@ -189,7 +190,7 @@ export default class lottoCommand extends Command {
 
          // get lotto channel for guild
          const lottoChannel = client.channels.cache.get(
-            guild.lottoChannelId!
+            guild.lottoChannelId ?? ''
          ) as TextChannel;
 
          // check if latest lotto is done
@@ -241,7 +242,7 @@ export default class lottoCommand extends Command {
                   ].join('\n')
                )
                .setAuthor({
-                  name: client.user?.username!,
+                  name: client.user?.username ?? 'No Display Name',
                   iconURL: client.user?.displayAvatarURL(),
                });
 
@@ -261,7 +262,7 @@ export default class lottoCommand extends Command {
       const nums: number[] = [];
 
       for (let i = 0; i < 5; i++) {
-         let newNum = Math.floor(Math.random() * 30) + 1;
+         const newNum = Math.floor(Math.random() * 30) + 1;
 
          if (!nums.includes(newNum)) {
             nums.push(newNum);
@@ -317,7 +318,7 @@ export default class lottoCommand extends Command {
     * @returns
     */
    private static async endLotto(
-      lotto: ILotto & Document<any, any>,
+      lotto: ILotto & Document<unknown, unknown>,
       lottoChannel: TextChannel
    ) {
       // get guild record and generate lotto numbers
@@ -340,7 +341,7 @@ export default class lottoCommand extends Command {
       const winners: Array<{ user: IUser; earnings: number }> = []; // array storing winners and their earnings
 
       // iterate through each guess
-      for (let entry of guesses) {
+      for (const entry of guesses) {
          const user = await economyServices.getUserById(entry.userId); // get user record
 
          // assert that user exists
@@ -401,7 +402,7 @@ export default class lottoCommand extends Command {
    }
 
    private static async createNewLotto(
-      guild: IGuild & Document<any, any>,
+      guild: IGuild & Document<unknown, unknown>,
       lottoChannel: TextChannel
    ) {
       // assert guild exists
@@ -422,7 +423,7 @@ export default class lottoCommand extends Command {
          .setTitle('New Lotto')
          .setColor(config.mainColor)
          .setAuthor({
-            name: client.user?.username!,
+            name: client.user?.username ?? 'No Display Name',
             iconURL: client.user?.displayAvatarURL(),
          })
          .setDescription(
@@ -439,9 +440,8 @@ export default class lottoCommand extends Command {
    }
 
    private static generateEndDate(guild: IGuild) {
-      return new Date(
-         Math.ceil(new Date().getTime() / guild.lottoFrequency!) *
-            guild.lottoFrequency!
-      );
+      const frequency = guild.lottoFrequency || config.eventLoopTimeDelay;
+
+      return new Date(Math.ceil(new Date().getTime() / frequency) * frequency);
    }
 }

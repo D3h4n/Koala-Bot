@@ -7,9 +7,9 @@ export default class resumeCommand extends Command {
       super('resume', 'Resume the queue');
    }
 
-   async action(interaction: CommandInteraction) {
+   async action(interaction: CommandInteraction): Promise<void> {
       await interaction.deferReply();
-      let queue = distube.getQueue(interaction);
+      const queue = distube.getQueue(interaction);
 
       if (!queue || queue?.playing) {
          interaction.deleteReply();

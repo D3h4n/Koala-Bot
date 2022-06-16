@@ -41,7 +41,7 @@ class GuildServices {
    public async UpdateGuild(guildInfo: IGuild) {
       const guildRecord = await this.GetGuild(guildInfo.guildId);
 
-      for (let entry of Object.entries(guildInfo)) {
+      for (const entry of Object.entries(guildInfo)) {
          guildRecord[entry[0]] = entry[1];
       }
 

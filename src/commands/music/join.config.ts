@@ -7,9 +7,9 @@ export default class joinCommand extends Command {
       super('join', 'Add bot to voice channel');
    }
 
-   async action(interaction: CommandInteraction) {
+   async action(interaction: CommandInteraction): Promise<void> {
       // get voice channel of member
-      const channel = (interaction.member! as GuildMember).voice.channel;
+      const channel = (interaction.member as GuildMember)?.voice.channel;
 
       if (channel?.joinable) {
          try {

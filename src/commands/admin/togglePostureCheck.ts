@@ -25,7 +25,7 @@ export default class togglePostureCheckCommand extends Command {
       );
    }
 
-   async action(interaction: CommandInteraction) {
+   async action(interaction: CommandInteraction): Promise<void> {
       // get the guild id
       const guildId = interaction.guild?.id;
 
@@ -46,7 +46,7 @@ export default class togglePostureCheckCommand extends Command {
       }
 
       // calculate posture frequency
-      let frequency = interaction.options.getNumber('frequency');
+      const frequency = interaction.options.getNumber('frequency');
 
       // assert valid posture frequency
       if (!frequency) {
@@ -54,7 +54,7 @@ export default class togglePostureCheckCommand extends Command {
          return;
       }
 
-      let postureCheckFrequency = Math.round(frequency * 3.6e6);
+      const postureCheckFrequency = Math.round(frequency * 3.6e6);
 
       // update guild with new info
       guildServices.UpdateGuild({

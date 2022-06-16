@@ -7,7 +7,7 @@ export default class repeatCommand extends Command {
       super('repeat', 'Repeat the currently playing song or stop repeating');
    }
 
-   action(interaction: CommandInteraction) {
+   action(interaction: CommandInteraction): void {
       // get playing song
       const queue = distube.getQueue(interaction);
       const nowPlaying = queue?.songs?.[0];

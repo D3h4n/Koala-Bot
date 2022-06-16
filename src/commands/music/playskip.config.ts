@@ -15,17 +15,18 @@ export default class playSkipCommand extends Command {
       );
    }
 
-   async action(interaction: CommandInteraction) {
+   async action(interaction: CommandInteraction): Promise<void> {
       await interaction.deferReply();
       // get query
-      let query = interaction.options.getString('song', true);
+      const query = interaction.options.getString('song', true);
 
       // playskip query
-      let queue = distube.getQueue(interaction);
+      const queue = distube.getQueue(interaction);
 
       // check if there is a queue
       if (!queue) {
-         let voiceChannel = (interaction.member as GuildMember)?.voice.channel;
+         const voiceChannel = (interaction.member as GuildMember)?.voice
+            .channel;
 
          if (!voiceChannel) {
             interaction.editReply('Join a voice channel.');
@@ -55,7 +56,7 @@ export default class playSkipCommand extends Command {
          return;
       }
 
-      let song = new Song(result, {
+      const song = new Song(result, {
          member: interaction.member as GuildMember,
       });
 

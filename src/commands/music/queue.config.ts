@@ -19,18 +19,20 @@ export default class queueCommand extends Command {
       );
    }
 
-   async action(interaction: CommandInteraction) {
+   async action(interaction: CommandInteraction): Promise<void> {
       await interaction.deferReply();
-      let queue = distube.getQueue(interaction);
+      const queue = distube.getQueue(interaction);
 
-      if (!queue?.songs.length) {
+      if (!queue || !queue.songs?.length) {
          // check that the queue has songs
          interaction.editReply('`The queue is empty`');
          return;
       }
 
       try {
-         let numPages = Math.ceil(queue.songs.length / config.queuePageLength);
+         const numPages = Math.ceil(
+            queue.songs.length / config.queuePageLength
+         );
          let pageNumber = interaction.options.getNumber('page') || 1; // set pageNumber
 
          pageNumber =
@@ -58,15 +60,15 @@ export default class queueCommand extends Command {
          }
 
          // Reply with queue and add interactive buttons
-         let sentMsg = (await interaction.editReply({
-            embeds: [this.generateResponse(queue!, pageNumber)],
+         const sentMsg = (await interaction.editReply({
+            embeds: [this.generateResponse(queue, pageNumber)],
             components,
          })) as Message;
 
          if (numPages <= 1) return;
 
          // add reaction collector for message
-         let collector = sentMsg.createMessageComponentCollector({
+         const collector = sentMsg.createMessageComponentCollector({
             // filter reactions to ignore bot reactions and other reactions
             filter: (i) =>
                (i.customId === 'left' || i.customId === 'right') && !i.user.bot,
@@ -77,7 +79,7 @@ export default class queueCommand extends Command {
          collector
             .on('collect', async ({ customId }) => {
                // get the message action row
-               let row = sentMsg.components[0];
+               const row = sentMsg.components[0];
 
                // enable all buttons
                row.components.forEach((comp) => comp.setDisabled(false));
@@ -111,7 +113,7 @@ export default class queueCommand extends Command {
 
                // update queue and buttons
                sentMsg.edit({
-                  embeds: [this.generateResponse(queue!, pageNumber)],
+                  embeds: [this.generateResponse(queue, pageNumber)],
                   components: [row],
                });
             })
@@ -127,10 +129,10 @@ export default class queueCommand extends Command {
    }
 
    generateResponse(queue: Queue, pageNumber: number): MessageEmbed {
-      let songs = queue.songs; // list of songs
-      let numPages = Math.ceil(songs.length / config.queuePageLength); // number of pages
+      const songs = queue.songs; // list of songs
+      const numPages = Math.ceil(songs.length / config.queuePageLength); // number of pages
 
-      let nowPlaying = songs[0]; // get the currently playing song
+      const nowPlaying = songs[0]; // get the currently playing song
 
       // set the display for the currently playing song
       let description =
@@ -146,7 +148,7 @@ export default class queueCommand extends Command {
          }
 
          // last index of songs on page
-         let endIndex = Math.min(
+         const endIndex = Math.min(
             startIndex + config.queuePageLength,
             songs.length
          );
@@ -166,26 +168,24 @@ export default class queueCommand extends Command {
       }
 
       // set up the embedded message
-      let response = new MessageEmbed();
-
-      response
-         .setTitle('Queue')
-         .setColor(config.mainColor)
-         .setThumbnail(nowPlaying.thumbnail!)
-         .setFooter({
+      const response = new MessageEmbed({
+         title: 'Queue',
+         description,
+         footer: {
             text:
                `Page: ${pageNumber}/${numPages}` +
                '\u2800'.repeat(30) +
                `${songs.length} ${
                   songs.length === 1 ? 'song' : 'songs'
                } in Queue | Total Length: ${queue.formattedDuration}`,
-         })
-         .setDescription(description);
+         },
+         color: config.mainColor,
+      }).setThumbnail(nowPlaying.thumbnail ?? '');
 
       return response;
    }
 
-   generateSongDescription(song: Song) {
+   generateSongDescription(song: Song): string {
       return `[${song.name}](${song.url}) - ${song.formattedDuration} - \`${song.member?.displayName}\``;
    }
 }

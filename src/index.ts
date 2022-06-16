@@ -37,7 +37,7 @@ export const distube = initDistube(
 
 // log that bot is running
 client.once('ready', async () => {
-   client.user!.setPresence({
+   client.user?.setPresence({
       status: 'online',
       activities: [
          {
@@ -79,8 +79,16 @@ client.on('error', (error) => {
 });
 
 client.on('guildCreate', (guild) => {
+   if (!config.clientId) {
+      console.error(
+         'ERROR: Failed to register Guild Commands: Client ID not provided'
+      );
+      return;
+   }
+
    guildServices
       .CreateGuild(guild)
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       .then(() => registerGuildCommands(config.clientId!, guild.id, commands))
       .then(() => {
          console.log(`Joined new guild ${guild.name}`);
