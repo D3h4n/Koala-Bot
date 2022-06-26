@@ -13,8 +13,8 @@ export default {
       process.env.NODE_ENV === 'production'
          ? 'SLASH COMMANDS YO'
          : 'in maintenance', // bot status
+   registerCommands: process.env.NODE_ENV === 'development', // register commands on reload
    prefix: '$', // command prefix
-   onlineMessage: process.env.NODE_ENV === 'production', // boolean to display online message
    mainColor: 0x181818, // accent colour of embedded messages
    msgTimeout: 3e4, // time limit for message deletion (ms)
    helpPageLength: 5, // length of help pages

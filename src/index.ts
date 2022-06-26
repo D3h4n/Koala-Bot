@@ -1,7 +1,9 @@
 import { Client, Intents, Collection } from 'discord.js';
 import { handleInteraction } from './utils/helper_functions.config';
 import {
+   deregisterApplicationCommands,
    readCommands,
+   registerApplicationCommands,
    registerGuildCommands,
 } from './utils/register_commands.config';
 import initDistube from './utils/distube.config';
@@ -33,6 +35,11 @@ export const distube = initDistube(
 // load commands
 (async () => {
    commands = await readCommands('dist/commands');
+
+   if (config.registerCommands && config.clientId) {
+      deregisterApplicationCommands(config.clientId);
+      registerApplicationCommands(config.clientId, commands);
+   }
 })();
 
 // log that bot is running
