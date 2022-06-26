@@ -9,6 +9,22 @@ on:
          - main
 
 jobs:
+   validate:
+      name: Run Linter
+      runs-on: ubuntu-latest
+
+      steps:
+         - uses: actions/checkout@v2
+         - name: Use Node.js 17
+           uses: actions/setup-node@v1
+           with:
+              node-version: 17
+         - name: Install Node.js dependencies
+           run: npm ci
+         - uses: wearerequired/lint-action@v2
+           with:
+              eslint: true
+
    build:
       runs-on: ubuntu-latest
 
