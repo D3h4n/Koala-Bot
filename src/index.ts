@@ -39,6 +39,7 @@ export const distube = initDistube(
    if (config.registerCommands && config.clientId) {
       deregisterApplicationCommands(config.clientId);
       registerApplicationCommands(config.clientId, commands);
+      process.exit();
    }
 })();
 
