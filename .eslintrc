@@ -6,8 +6,7 @@
       "sourceType": "module",
       "project": "./tsconfig.json"
    },
-   "plugins": ["@typescript-eslint", "deprecation"],
-   "rules": { "deprecation/deprecation": "warn" },
+   "plugins": ["@typescript-eslint"],
    "extends": [
       "eslint:recommended",
       "plugin:@typescript-eslint/eslint-recommended",

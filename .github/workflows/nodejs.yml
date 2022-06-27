@@ -20,7 +20,7 @@ jobs:
            with:
               node-version: 17
          - name: Install Node.js dependencies
-           run: npm ci
+           run: npm i eslint
          - run: npm run lint
 
    build:
@@ -30,6 +30,9 @@ jobs:
       strategy:
          matrix:
             node-version: [15.x, 16.x, 17.x]
+
+      env:
+         DISCORD_BOT_TOKEN: ${{ env.DISCORD_BOT_TOKEN }}
 
       steps:
          - uses: actions/checkout@v2
