@@ -31,9 +31,6 @@ jobs:
          matrix:
             node-version: [15.x, 16.x, 17.x]
 
-      env:
-         DISCORD_BOT_TOKEN: ${{ env.DISCORD_BOT_TOKEN }}
-
       steps:
          - uses: actions/checkout@v2
          - name: Use Node.js ${{ matrix.node-version }}
@@ -45,3 +42,5 @@ jobs:
          - run: npm run build --if-present
          - run: npm test
          - run: npm run register
+           env:
+              DISCORD_BOT_TOKEN: ${{ DISCORD_BOT_TOKEN }}
