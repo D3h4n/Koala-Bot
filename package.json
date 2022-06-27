@@ -9,6 +9,7 @@
    },
    "scripts": {
       "test": "echo no tests && exit 0",
+      "lint": "eslint src",
       "build": "tsc",
       "watch": "tsc-watch --onsuccess \"npm run start-dev\"",
       "start": "NODE_ENV=production node dist/index.js",

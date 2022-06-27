@@ -21,9 +21,7 @@ jobs:
               node-version: 17
          - name: Install Node.js dependencies
            run: npm ci
-         - uses: wearerequired/lint-action@v2
-           with:
-              eslint: true
+         - run: npm run lint
 
    build:
       runs-on: ubuntu-latest
