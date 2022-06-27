@@ -1,6 +1,7 @@
 import { CommandInteraction, GuildMember, TextChannel } from 'discord.js';
 import Command from '../../utils/common.commands.config';
 import { distube } from '../../index';
+import { parseTimeString } from '../../utils/helper_functions.config';
 
 export default class PlayFromCommand extends Command {
    constructor() {
@@ -13,10 +14,10 @@ export default class PlayFromCommand extends Command {
             .setRequired(true)
       );
 
-      this.addIntegerOption((option) =>
+      this.addStringOption((option) =>
          option
             .setName('time')
-            .setDescription('The time in minutes to set for the current track')
+            .setDescription('The time to set for the current track (hh:mm:ss)')
             .setRequired(true)
       );
    }
@@ -25,7 +26,7 @@ export default class PlayFromCommand extends Command {
       await interaction.deferReply();
 
       const song = interaction.options.getString('song', true);
-      const time = interaction.options.getInteger('time', true) * 60;
+      const time = parseTimeString(interaction.options.getString('time', true));
 
       if (!interaction.guildId) {
          interaction.reply('Error occurred performing this command');

@@ -98,3 +98,20 @@ export async function postureCheck(): Promise<void> {
       channel.send(guild.postureCheckMessage ?? 'No Message');
    });
 }
+
+/**
+ * Parses a time string in the form hh:mm:ss and returns the time in seconds
+ *
+ * @param input
+ * @returns the time in seconds
+ */
+export function parseTimeString(input: string): number {
+   const time = new RegExp(/(\d\d:)?(\d\d:)?\d\d$/).exec(input)?.[0];
+
+   return (
+      time
+         ?.split(':')
+         ?.map(Number)
+         ?.reduce((total, curr) => total * 60 + curr) ?? 0
+   );
+}
