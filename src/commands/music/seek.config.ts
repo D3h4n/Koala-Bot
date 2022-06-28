@@ -1,7 +1,10 @@
 import { CommandInteraction } from 'discord.js';
 import Command from '../../utils/common.commands.config';
 import { distube } from '../../index';
-import { parseTimeString } from '../../utils/helper_functions.config';
+import {
+   parseTimeString,
+   timeToString,
+} from '../../utils/helper_functions.config';
 
 export default class SeekCommand extends Command {
    constructor() {
@@ -16,7 +19,8 @@ export default class SeekCommand extends Command {
    }
 
    action(interaction: CommandInteraction): void {
-      const time = parseTimeString(interaction.options.getString('time', true));
+      const timeString = interaction.options.getString('time', true);
+      const time = parseTimeString(timeString);
 
       if (!interaction.guildId) {
          interaction.reply('Error occurred performing this command');
@@ -25,6 +29,6 @@ export default class SeekCommand extends Command {
       }
 
       distube.seek(interaction, time);
-      interaction.reply('YES');
+      interaction.reply(`Playing from \`${timeToString(time)}\``);
    }
 }

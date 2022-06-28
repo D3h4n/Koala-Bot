@@ -1,8 +1,7 @@
-import { CommandInteraction, GuildMember } from 'discord.js';
+import { CommandInteraction } from 'discord.js';
 import Command from '../../utils/common.commands.config';
 import config from '../../utils/config';
 import { PermissionFlagsBits } from 'discord-api-types/v10';
-// import config from '../../utils/config';
 
 export default class timeoutCommand extends Command {
    constructor() {
@@ -23,7 +22,7 @@ export default class timeoutCommand extends Command {
       this.addNumberOption((option) =>
          option
             .setName('time')
-            .setDescription('How long to keep em quiet for')
+            .setDescription('How long to keep em quiet for (minutes)')
             .setRequired(true)
       );
 
@@ -66,10 +65,7 @@ export default class timeoutCommand extends Command {
       }
 
       // add timeout and handle errors
-      if (!this.addTimeout(memberToTimeout, timeout)) {
-         interaction.reply('`Some kinda error or something`');
-         return;
-      }
+      memberToTimeout.timeout(timeout, "You've been a bad boy");
 
       // send prompt after timeout
       interaction.reply({
@@ -78,31 +74,5 @@ export default class timeoutCommand extends Command {
          } seconds`,
          ephemeral: interaction.options.getBoolean('hidden') ?? false,
       });
-   }
-
-   private async addTimeout(member: GuildMember, timeout: number) {
-      const timeoutID = '416009802112696320'; // ID for timeout role
-      const roles = member.roles.cache; // get array of roles
-
-      // remove roles and add timeout role
-      try {
-         await member.roles.set([], "You've been a bad boy");
-         await member.roles.add(timeoutID);
-
-         // set timer to add roles and remove timeout role
-         setTimeout(async () => {
-            try {
-               await member.roles.remove(timeoutID);
-               await member.roles.add(roles);
-            } catch (error) {
-               console.error(error);
-            }
-         }, timeout);
-      } catch (error) {
-         console.error(error);
-         return false;
-      }
-
-      return true;
    }
 }

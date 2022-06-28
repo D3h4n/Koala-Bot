@@ -29,6 +29,7 @@ export const distube = initDistube(
    new DisTube(client, {
       emitNewSongOnly: true,
       youtubeDL: false,
+      leaveOnEmpty: true,
    })
 );
 
@@ -37,8 +38,8 @@ export const distube = initDistube(
    commands = await readCommands('dist/commands');
 
    if (config.registerCommands && config.clientId) {
-      deregisterApplicationCommands(config.clientId);
-      registerApplicationCommands(config.clientId, commands);
+      await deregisterApplicationCommands(config.clientId);
+      await registerApplicationCommands(config.clientId, commands);
       process.exit();
    }
 })();

@@ -106,7 +106,7 @@ export async function postureCheck(): Promise<void> {
  * @returns the time in seconds
  */
 export function parseTimeString(input: string): number {
-   const time = new RegExp(/(\d\d:)?(\d\d:)?\d\d$/).exec(input)?.[0];
+   const time = new RegExp(/^([0-5]?\d:){0,2}[0-5]?\d$/).exec(input)?.[0];
 
    return (
       time
@@ -114,4 +114,19 @@ export function parseTimeString(input: string): number {
          ?.map(Number)
          ?.reduce((total, curr) => total * 60 + curr) ?? 0
    );
+}
+
+export function timeToString(time: number): string {
+   const seconds = time % 60;
+
+   time = Math.floor(time / 60);
+   const minutes = time % 60;
+
+   const hours = Math.floor(time / 60);
+
+   return `${hours.toLocaleString('en-US', {
+      minimumIntegerDigits: 2,
+   })}:${minutes.toLocaleString('en-US', {
+      minimumIntegerDigits: 2,
+   })}:${seconds.toLocaleString('en-US', { minimumIntegerDigits: 2 })}`;
 }
