@@ -124,9 +124,25 @@ export function timeToString(time: number): string {
 
    const hours = Math.floor(time / 60);
 
-   return `${hours.toLocaleString('en-US', {
+   let result = seconds.toLocaleString('en-US', {
       minimumIntegerDigits: 2,
-   })}:${minutes.toLocaleString('en-US', {
-      minimumIntegerDigits: 2,
-   })}:${seconds.toLocaleString('en-US', { minimumIntegerDigits: 2 })}`;
+   });
+
+   result =
+      minutes.toLocaleString('en-US', {
+         minimumIntegerDigits: 2,
+      }) +
+      ':' +
+      result;
+
+   if (hours > 0) {
+      result =
+         hours.toLocaleString('en-US', {
+            minimumIntegerDigits: 2,
+         }) +
+         ':' +
+         result;
+   }
+
+   return result;
 }
