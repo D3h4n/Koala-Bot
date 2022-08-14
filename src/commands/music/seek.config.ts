@@ -1,4 +1,4 @@
-import { CommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 import Command from '../../utils/common.commands.config';
 import { distube } from '../../index';
 import {
@@ -18,7 +18,7 @@ export default class SeekCommand extends Command {
       );
    }
 
-   action(interaction: CommandInteraction): void {
+   action(interaction: ChatInputCommandInteraction): void {
       const timeString = interaction.options.getString('time', true);
       const time = parseTimeString(timeString);
 

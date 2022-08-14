@@ -2,11 +2,12 @@ import { Queue, Song } from 'distube';
 import config from '../../utils/config';
 import Command from '../../utils/common.commands.config';
 import {
-   CommandInteraction,
+   ChatInputCommandInteraction,
    Message,
-   MessageActionRow,
-   MessageButton,
-   MessageEmbed,
+   ActionRowBuilder,
+   ButtonBuilder,
+   EmbedBuilder,
+   ButtonStyle,
 } from 'discord.js';
 import { distube } from '../../index';
 
@@ -19,7 +20,7 @@ export default class queueCommand extends Command {
       );
    }
 
-   async action(interaction: CommandInteraction): Promise<void> {
+   async action(interaction: ChatInputCommandInteraction): Promise<void> {
       await interaction.deferReply();
       const queue = distube.getQueue(interaction);
 
@@ -38,23 +39,22 @@ export default class queueCommand extends Command {
          pageNumber =
             pageNumber < 1 ? 1 : pageNumber > numPages ? numPages : pageNumber;
 
-         let components: MessageActionRow[] | undefined = undefined;
+         let components: ActionRowBuilder<ButtonBuilder>[] | undefined =
+            undefined;
 
          if (numPages > 1) {
             components = [
-               new MessageActionRow().addComponents(
-                  new MessageButton()
+               new ActionRowBuilder<ButtonBuilder>().addComponents(
+                  new ButtonBuilder()
                      .setCustomId('left')
-                     .setStyle('PRIMARY')
+                     .setStyle(ButtonStyle.Primary)
                      .setLabel('back')
-                     .setEmoji('◀')
-                     .setDisabled(pageNumber === 1),
-                  new MessageButton()
+                     .setEmoji('◀'),
+                  new ButtonBuilder()
                      .setCustomId('right')
-                     .setStyle('PRIMARY')
+                     .setStyle(ButtonStyle.Primary)
                      .setLabel('next')
                      .setEmoji('▶')
-                     .setDisabled(pageNumber === numPages)
                ),
             ];
          }
@@ -76,45 +76,29 @@ export default class queueCommand extends Command {
             time: config.queueTimeLimit,
          });
 
+         // TODO: Figure out disabling buttons
          collector
             .on('collect', async ({ customId }) => {
-               // get the message action row
-               const row = sentMsg.components[0];
-
-               // enable all buttons
-               row.components.forEach((comp) => comp.setDisabled(false));
-
-               // run changePage function for every valid reaction
                switch (customId) {
                   case 'left':
-                     // decrement pagenumber
-                     pageNumber--;
-
-                     // disable button if first page
-                     if (pageNumber === 1) {
-                        row.components[0].setDisabled(true);
+                     if (pageNumber > 1) {
+                        pageNumber--;
                      }
                      break;
 
                   case 'right':
-                     // increment page number
-                     pageNumber++;
-
-                     // disable button if last page
-                     if (pageNumber === numPages) {
-                        row.components[1].setDisabled(true);
+                     if (pageNumber < numPages) {
+                        pageNumber++;
                      }
                      break;
 
                   default:
-                     process.stderr.write('Invalid button id');
-                     process.exit(1);
+                     console.error('Invalid button id');
                }
 
                // update queue and buttons
                sentMsg.edit({
                   embeds: [this.generateResponse(queue, pageNumber)],
-                  components: [row],
                });
             })
             .on('end', () => {
@@ -128,7 +112,7 @@ export default class queueCommand extends Command {
       }
    }
 
-   generateResponse(queue: Queue, pageNumber: number): MessageEmbed {
+   generateResponse(queue: Queue, pageNumber: number): EmbedBuilder {
       const songs = queue.songs; // list of songs
       const numPages = Math.ceil(songs.length / config.queuePageLength); // number of pages
 
@@ -168,7 +152,7 @@ export default class queueCommand extends Command {
       }
 
       // set up the embedded message
-      const response = new MessageEmbed({
+      const response = new EmbedBuilder({
          title: 'Queue',
          description,
          footer: {

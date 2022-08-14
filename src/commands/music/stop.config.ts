@@ -1,5 +1,5 @@
 import Command from '../../utils/common.commands.config';
-import { CommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 import { distube } from '../../index';
 
 export default class stopCommand extends Command {
@@ -7,7 +7,7 @@ export default class stopCommand extends Command {
       super('stop', 'Stop the queue');
    }
 
-   action(interaction: CommandInteraction): void {
+   action(interaction: ChatInputCommandInteraction): void {
       try {
          distube.stop(interaction);
       } catch (error) {

@@ -1,4 +1,4 @@
-import { CommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 import { distube } from '../../index';
 import Command from '../../utils/common.commands.config';
 
@@ -7,7 +7,7 @@ export default class resumeCommand extends Command {
       super('resume', 'Resume the queue');
    }
 
-   async action(interaction: CommandInteraction): Promise<void> {
+   async action(interaction: ChatInputCommandInteraction): Promise<void> {
       await interaction.deferReply();
       const queue = distube.getQueue(interaction);
 

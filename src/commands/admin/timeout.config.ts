@@ -1,4 +1,4 @@
-import { CommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 import Command from '../../utils/common.commands.config';
 import config from '../../utils/config';
 import { PermissionFlagsBits } from 'discord-api-types/v10';
@@ -33,7 +33,7 @@ export default class timeoutCommand extends Command {
       );
    }
 
-   action(interaction: CommandInteraction): void {
+   action(interaction: ChatInputCommandInteraction): void {
       // get first mentioned member
       const userToTimeout = interaction.options.getUser('user', true);
       const memberToTimeout = interaction.guild?.members.resolve(userToTimeout);

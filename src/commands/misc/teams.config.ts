@@ -1,4 +1,4 @@
-import { CommandInteraction, MessageEmbed } from 'discord.js';
+import { ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
 import config from '../../utils/config';
 import Command from '../../utils/common.commands.config';
 
@@ -14,7 +14,7 @@ export default class teamsCommand extends Command {
       );
    }
 
-   action(interaction: CommandInteraction): void {
+   action(interaction: ChatInputCommandInteraction): void {
       // get number of teams
       const numTeams = interaction.options.getNumber('numteams');
 
@@ -62,7 +62,7 @@ export default class teamsCommand extends Command {
       }
 
       // create embedded message of teams
-      const response = new MessageEmbed({
+      const response = new EmbedBuilder({
          title: `${numTeams} Random Teams`,
          description: this.generateDescription(teams).join('\n'),
          color: config.mainColor,

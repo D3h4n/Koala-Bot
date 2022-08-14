@@ -1,5 +1,9 @@
 import Command from '../../utils/common.commands.config';
-import { CommandInteraction, GuildMember, TextChannel } from 'discord.js';
+import {
+   ChatInputCommandInteraction,
+   GuildMember,
+   TextChannel,
+} from 'discord.js';
 import { distube } from '../../index';
 
 export default class playCommand extends Command {
@@ -14,7 +18,7 @@ export default class playCommand extends Command {
       );
    }
 
-   async action(interaction: CommandInteraction): Promise<void> {
+   async action(interaction: ChatInputCommandInteraction): Promise<void> {
       await interaction.deferReply();
       // generate query from args
       const query = interaction.options.getString('song', true);

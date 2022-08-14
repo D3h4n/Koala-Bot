@@ -1,11 +1,7 @@
-import {
-   CommandInteraction,
-   ApplicationCommandPermissionData,
-} from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
 
 export default abstract class Command extends SlashCommandBuilder {
-   permissions: ApplicationCommandPermissionData[] | undefined;
    guildid: string | undefined;
 
    constructor(
@@ -24,5 +20,5 @@ export default abstract class Command extends SlashCommandBuilder {
       }
    }
 
-   abstract action(interaction: CommandInteraction): void;
+   abstract action(interaction: ChatInputCommandInteraction): void;
 }

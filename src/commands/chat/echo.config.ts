@@ -1,4 +1,4 @@
-import { CommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 import Command from '../../utils/common.commands.config';
 
 export default class echoCommand extends Command {
@@ -13,7 +13,7 @@ export default class echoCommand extends Command {
       );
    }
 
-   action(interaction: CommandInteraction): void {
+   action(interaction: ChatInputCommandInteraction): void {
       // get message content to send
       interaction.reply(
          interaction.options.getString('message') ?? 'No message specified'

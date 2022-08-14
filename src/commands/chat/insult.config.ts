@@ -1,4 +1,4 @@
-import { CommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 import Command from '../../utils/common.commands.config';
 
 type wordType = 'adjective' | 'adverb' | 'noun' | 'verb' | 'expl';
@@ -40,7 +40,7 @@ export default class insultCommand extends Command {
       );
    }
 
-   action(interaction: CommandInteraction): void {
+   action(interaction: ChatInputCommandInteraction): void {
       // get user to insult
       const user = interaction.options.getUser('user') ?? interaction.user;
 

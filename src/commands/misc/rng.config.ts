@@ -1,4 +1,8 @@
-import { CommandInteraction, GuildMember, MessageEmbed } from 'discord.js';
+import {
+   ChatInputCommandInteraction,
+   GuildMember,
+   EmbedBuilder,
+} from 'discord.js';
 import config from '../../utils/config';
 import Command from '../../utils/common.commands.config';
 
@@ -19,7 +23,7 @@ export default class rngCommand extends Command {
       );
    }
 
-   action(interaction: CommandInteraction): void {
+   action(interaction: ChatInputCommandInteraction): void {
       let max = interaction.options.getNumber('max') ?? 10;
       let min = interaction.options.getNumber('min') ?? 1;
       const count = interaction.options.getNumber('count') ?? 1;
@@ -52,7 +56,7 @@ export default class rngCommand extends Command {
 
       if (count > 1) {
          // create embedded message response for more than 1 number
-         const response = new MessageEmbed({
+         const response = new EmbedBuilder({
             title: 'Random Numbers',
             author: {
                name: (interaction.member as GuildMember)?.displayName,

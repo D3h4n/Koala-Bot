@@ -1,5 +1,5 @@
 import Command from '../../utils/common.commands.config';
-import { CommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 import { distube } from '../../index';
 
 export default class skipCommand extends Command {
@@ -7,18 +7,19 @@ export default class skipCommand extends Command {
       super('skip', 'Skip the current song');
    }
 
-   action(interaction: CommandInteraction): void {
+   action(interaction: ChatInputCommandInteraction): void {
       try {
          const queue = distube.getQueue(interaction);
 
-         if (queue) {
-            if (queue.songs.length > 1) {
-               queue.skip();
-            } else {
-               queue.stop();
-            }
+         if (!queue) {
+            interaction.reply('`No songs playing`');
+            return;
+         }
+
+         if (queue.songs.length > 1) {
+            queue.skip();
          } else {
-            distube.voices.leave(interaction);
+            queue.stop();
          }
 
          interaction.reply('`Skipped song`');

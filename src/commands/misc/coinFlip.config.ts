@@ -1,4 +1,8 @@
-import { CommandInteraction, GuildMember, MessageEmbed } from 'discord.js';
+import {
+   ChatInputCommandInteraction,
+   GuildMember,
+   EmbedBuilder,
+} from 'discord.js';
 import Command from '../../utils/common.commands.config';
 import config from '../../utils/config';
 
@@ -11,7 +15,7 @@ export default class coinFlipCommand extends Command {
       );
    }
 
-   action(interaction: CommandInteraction): void {
+   action(interaction: ChatInputCommandInteraction): void {
       // set default values
       const flips: string[] = [];
       const times = interaction.options.getNumber('amount') ?? 1;
@@ -24,7 +28,7 @@ export default class coinFlipCommand extends Command {
       // if more than one flip
       if (times > 1) {
          // generate and send message embed of flips
-         const response = new MessageEmbed({
+         const response = new EmbedBuilder({
             title: 'Coin Flips',
             description: ['**Results:**', ...flips].join('\n'),
             color: config.mainColor,

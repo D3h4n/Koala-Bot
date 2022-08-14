@@ -1,4 +1,4 @@
-import { CommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 import { distube } from '../../index';
 import Command from '../../utils/common.commands.config';
 
@@ -15,7 +15,7 @@ export default class removeCommand extends Command {
       );
    }
 
-   action(interaction: CommandInteraction): void {
+   action(interaction: ChatInputCommandInteraction): void {
       // get position
       const position = interaction.options.getInteger('position', true);
 

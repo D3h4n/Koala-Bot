@@ -1,4 +1,8 @@
-import { CommandInteraction, GuildMember, MessageEmbed } from 'discord.js';
+import {
+   ChatInputCommandInteraction,
+   GuildMember,
+   EmbedBuilder,
+} from 'discord.js';
 import Command from '../../utils/common.commands.config';
 import economyServices from '../../services/economy.services';
 import config from '../../utils/config';
@@ -11,7 +15,7 @@ export default class dailyCommand extends Command {
       super('daily', 'earn daily currency');
    }
 
-   async action(interaction: CommandInteraction): Promise<void> {
+   async action(interaction: ChatInputCommandInteraction): Promise<void> {
       // get user record or create new record
       const user =
          (await economyServices.getUserByDiscord(interaction.user.id)) ??
@@ -45,9 +49,7 @@ export default class dailyCommand extends Command {
       user.save();
 
       // send embedded message
-      const response = new MessageEmbed();
-
-      response
+      const response = new EmbedBuilder()
          .setAuthor({
             name: (interaction.member as GuildMember)?.displayName,
             iconURL: interaction.user.displayAvatarURL(),

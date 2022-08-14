@@ -1,4 +1,4 @@
-import { CommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 import { PermissionFlagsBits } from 'discord-api-types/v10';
 import guildServices from '../../services/guild.services';
 import Command from '../../utils/common.commands.config';
@@ -25,13 +25,14 @@ export default class togglePostureCheckCommand extends Command {
       );
    }
 
-   async action(interaction: CommandInteraction): Promise<void> {
+   async action(interaction: ChatInputCommandInteraction): Promise<void> {
       // get the guild id
       const guildId = interaction.guild?.id;
 
       // assert guildId
       if (!guildId) {
-         return interaction.reply('`Error finding guild`');
+         interaction.reply('`Error finding guild`');
+         return;
       }
 
       // get guild record

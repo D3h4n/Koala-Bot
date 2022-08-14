@@ -1,5 +1,5 @@
 import Command from '../../utils/common.commands.config';
-import { CommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 import { distube } from '../../index';
 
 export default class leaveCommand extends Command {
@@ -7,7 +7,7 @@ export default class leaveCommand extends Command {
       super('leave', 'Leave voice channel');
    }
 
-   action(interaction: CommandInteraction): void {
+   action(interaction: ChatInputCommandInteraction): void {
       // disconnect bot
       distube.voices.leave(interaction);
       interaction.reply('`Left voice channel`');

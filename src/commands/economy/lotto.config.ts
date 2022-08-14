@@ -1,9 +1,9 @@
 import Command from '../../utils/common.commands.config';
 import economyServices from '../../services/economy.services';
 import {
-   CommandInteraction,
+   ChatInputCommandInteraction,
    GuildMember,
-   MessageEmbed,
+   EmbedBuilder,
    TextChannel,
 } from 'discord.js';
 import { Document } from 'mongoose';
@@ -26,7 +26,7 @@ export default class lottoCommand extends Command {
       );
    }
 
-   async action(interaction: CommandInteraction): Promise<void> {
+   async action(interaction: ChatInputCommandInteraction): Promise<void> {
       // if user provides a lotto id display lotto
       if (interaction.options.data.length <= 2) {
          // get lotto and user records
@@ -52,9 +52,7 @@ export default class lottoCommand extends Command {
          }
 
          // send information about lotto
-         const response = new MessageEmbed();
-
-         response
+         const response = new EmbedBuilder()
             .setTitle('Lotto')
             .setColor(config.mainColor)
             .setDescription(
@@ -87,7 +85,8 @@ export default class lottoCommand extends Command {
 
       // assert that lotto was found
       if (!lotto) {
-         return interaction.reply('`No lottos found`');
+         interaction.reply('`No lottos found`');
+         return;
       }
 
       if (lotto.done) {
@@ -95,9 +94,7 @@ export default class lottoCommand extends Command {
             interaction.user.id
          );
          // send information about lotto
-         const response = new MessageEmbed();
-
-         response
+         const response = new EmbedBuilder()
             .setTitle('Lotto')
             .setColor(config.mainColor)
             .setDescription(
@@ -142,7 +139,7 @@ export default class lottoCommand extends Command {
          .map(({ value }) => Number(value));
 
       // add guess to lotto
-      return economyServices
+      economyServices
          .addGuess(lotto.id, user.id, guessNums)
          .then(() => {
             // charge user for lotto
@@ -150,9 +147,7 @@ export default class lottoCommand extends Command {
             user.save();
 
             // send reponse to channel
-            const response = new MessageEmbed();
-
-            response
+            const response = new EmbedBuilder()
                .setTitle('New Guess Added')
                .setColor(config.mainColor)
                .setAuthor({
@@ -164,7 +159,6 @@ export default class lottoCommand extends Command {
             interaction.reply({
                embeds: [response],
             });
-            return;
          })
          .catch(interaction.reply);
    }
@@ -229,8 +223,7 @@ export default class lottoCommand extends Command {
             }
 
             // send information about lotto
-            const response = new MessageEmbed();
-            response
+            const response = new EmbedBuilder()
                .setTitle(`\`Lotto ends in ${timeString}\``)
                .setColor(config.mainColor)
                .setDescription(
@@ -365,9 +358,7 @@ export default class lottoCommand extends Command {
       lotto.save();
 
       // generate and send response
-      const response = new MessageEmbed();
-
-      response
+      const response = new EmbedBuilder()
          .setTitle('Lotto')
          .setColor(config.mainColor)
          .setDescription(
@@ -417,9 +408,7 @@ export default class lottoCommand extends Command {
       const lotto = await economyServices.createLotto(guild.guildId, endDate);
 
       // generate and send response
-      const response = new MessageEmbed();
-
-      response
+      const response = new EmbedBuilder()
          .setTitle('New Lotto')
          .setColor(config.mainColor)
          .setAuthor({

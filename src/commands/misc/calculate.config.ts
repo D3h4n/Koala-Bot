@@ -1,4 +1,4 @@
-import { CommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 import Command from '../../utils/common.commands.config';
 
 export default class calculateCommand extends Command {
@@ -13,7 +13,7 @@ export default class calculateCommand extends Command {
       );
    }
 
-   action(interaction: CommandInteraction): void {
+   action(interaction: ChatInputCommandInteraction): void {
       const input = interaction.options.getString('expression');
 
       if (!input) {

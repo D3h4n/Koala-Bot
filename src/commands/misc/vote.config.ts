@@ -1,8 +1,8 @@
 import {
-   CommandInteraction,
+   ChatInputCommandInteraction,
    GuildMember,
    Message,
-   MessageEmbed,
+   EmbedBuilder,
    MessageReaction,
    User,
 } from 'discord.js';
@@ -31,7 +31,7 @@ export default class voteCommand extends Command {
       );
    }
 
-   async action(interaction: CommandInteraction): Promise<void> {
+   async action(interaction: ChatInputCommandInteraction): Promise<void> {
       await interaction.deferReply();
       const timeLimit =
          interaction.options.getNumber('timelimit', true) * 60000; // time limit in milliseconds
@@ -59,7 +59,7 @@ export default class voteCommand extends Command {
       // send initial message
       const sentMessage = (await interaction.editReply({
          embeds: [
-            new MessageEmbed({
+            new EmbedBuilder({
                title: query,
                footer: {
                   text: '✅ - yes   ❌- no',
@@ -126,7 +126,7 @@ export default class voteCommand extends Command {
       displayAvatarURL: string,
       yesCount: number,
       noCount: number
-   ): MessageEmbed {
+   ): EmbedBuilder {
       let result: string;
 
       if (yesCount === noCount) {
@@ -137,7 +137,7 @@ export default class voteCommand extends Command {
          result = voteCommand.noEmote;
       }
 
-      const response = new MessageEmbed({
+      const response = new EmbedBuilder({
          title: query,
          author: {
             name: displayName,

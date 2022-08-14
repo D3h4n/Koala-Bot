@@ -1,4 +1,4 @@
-import { CommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 import Command from '../../utils/common.commands.config';
 import economyServices from '../../services/economy.services';
 
@@ -18,15 +18,16 @@ export default class betCommand extends Command {
       );
    }
 
-   async action(interaction: CommandInteraction): Promise<void> {
+   async action(interaction: ChatInputCommandInteraction): Promise<void> {
       // get the bet amount
       const betAmount = interaction.options.getNumber('amount');
 
       // assert that bet amount is a valid number
       if (!betAmount || Number.isNaN(betAmount) || betAmount < 1) {
-         return interaction.reply(
+         interaction.reply(
             `\`${interaction.options.data[0].value}\` is not a valid amount`
          );
+         return;
       }
 
       // get user record
@@ -36,16 +37,18 @@ export default class betCommand extends Command {
 
       // assert that user has a record
       if (!record) {
-         return interaction.reply(
+         interaction.reply(
             '`You have no money. Try collecting your daily first`'
          );
+         return;
       }
 
       // check if user has enough balance for bet
       if (record.balance < betAmount) {
-         return interaction.reply(
+         interaction.reply(
             `You only have \`$${record.balance}\`. Get you're money up.`
          );
+         return;
       }
 
       // get guess
@@ -53,9 +56,10 @@ export default class betCommand extends Command {
 
       // assert a valid guess
       if (!guess || Number.isNaN(guess) || guess < 1 || guess > 5) {
-         return interaction.reply(
+         interaction.reply(
             `\`${interaction.options.data[1].value}\` is not a valid amount`
          );
+         return;
       }
 
       // generate random number

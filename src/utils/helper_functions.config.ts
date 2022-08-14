@@ -1,5 +1,5 @@
 import {
-   CommandInteraction,
+   ChatInputCommandInteraction,
    TextChannel,
    Interaction,
    CacheType,
@@ -11,7 +11,7 @@ import economyServices from '../services/economy.services';
 import guildServices from '../services/guild.services';
 
 export const log = async function logEveryCommand(
-   interaction: CommandInteraction
+   interaction: ChatInputCommandInteraction
 ): Promise<void> {
    console.log(
       `[server] User: ${interaction.user.username} Channel: ${
@@ -23,8 +23,11 @@ export const log = async function logEveryCommand(
 export async function handleInteraction(
    interaction: Interaction<CacheType>
 ): Promise<void> {
-   if (interaction.isButton()) return await interaction.deferUpdate();
-   if (!interaction.isCommand()) return;
+   if (interaction.isButton()) {
+      await interaction.deferUpdate();
+      return;
+   }
+   if (!interaction.isChatInputCommand()) return;
 
    const command = commands.get(interaction.commandName);
 

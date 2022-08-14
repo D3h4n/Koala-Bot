@@ -1,4 +1,4 @@
-import { CommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 import economyServices from '../../services/economy.services';
 import Command from '../../utils/common.commands.config';
 
@@ -21,7 +21,7 @@ export default class giftCommand extends Command {
       );
    }
 
-   async action(interaction: CommandInteraction): Promise<void> {
+   async action(interaction: ChatInputCommandInteraction): Promise<void> {
       // get author record
       const authorId = interaction.user.id;
 

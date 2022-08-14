@@ -1,4 +1,9 @@
-import { Client, Intents, Collection } from 'discord.js';
+import {
+   Client,
+   GatewayIntentBits,
+   Collection,
+   ActivityType,
+} from 'discord.js';
 import { handleInteraction } from './utils/helper_functions.config';
 import {
    deregisterApplicationCommands,
@@ -16,10 +21,10 @@ import DisTube from 'distube';
 
 export const client = new Client({
    intents: [
-      Intents.FLAGS.GUILDS,
-      Intents.FLAGS.GUILD_VOICE_STATES,
-      Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-      Intents.FLAGS.GUILD_MESSAGES,
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildVoiceStates,
+      GatewayIntentBits.GuildMessageReactions,
+      GatewayIntentBits.GuildMessages,
    ],
 }); // initialize client
 
@@ -28,7 +33,6 @@ export let commands: Collection<string, Command>;
 export const distube = initDistube(
    new DisTube(client, {
       emitNewSongOnly: true,
-      youtubeDL: false,
       leaveOnEmpty: true,
    })
 );
@@ -51,7 +55,7 @@ client.once('ready', async () => {
       activities: [
          {
             name: config.botStatus,
-            type: 'PLAYING',
+            type: ActivityType.Playing,
          },
       ],
    });
@@ -63,25 +67,6 @@ client.once('ready', async () => {
 
 // runs for each interaction
 client.on('interactionCreate', handleInteraction);
-
-client.on('messageCreate', async (message) => {
-   if (
-      message.channelId === '310489953157120023' &&
-      message.content.startsWith('!ban')
-   ) {
-      const user = message.mentions.members?.first();
-
-      if (user) {
-         await message.channel.send(
-            `Successfully banned user ${user.toString()}`
-         );
-
-         setTimeout(() => {
-            message.channel.send('Just Kidding :smile:');
-         }, 3000);
-      }
-   }
-});
 
 client.on('error', (error) => {
    console.error(error.message);

@@ -1,4 +1,8 @@
-import { CommandInteraction, GuildMember, TextChannel } from 'discord.js';
+import {
+   ChatInputCommandInteraction,
+   GuildMember,
+   TextChannel,
+} from 'discord.js';
 import Command from '../../utils/common.commands.config';
 import { distube } from '../../index';
 import { parseTimeString } from '../../utils/helper_functions.config';
@@ -22,7 +26,7 @@ export default class PlayFromCommand extends Command {
       );
    }
 
-   async action(interaction: CommandInteraction): Promise<void> {
+   async action(interaction: ChatInputCommandInteraction): Promise<void> {
       await interaction.deferReply();
 
       const song = interaction.options.getString('song', true);

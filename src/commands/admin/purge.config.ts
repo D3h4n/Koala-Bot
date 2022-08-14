@@ -1,4 +1,4 @@
-import { CommandInteraction, TextChannel } from 'discord.js';
+import { ChatInputCommandInteraction, TextChannel } from 'discord.js';
 import config from '../../utils/config';
 import Command from '../../utils/common.commands.config';
 import { ChannelType, PermissionFlagsBits } from 'discord-api-types/v10';
@@ -20,7 +20,7 @@ export default class purgeCommand extends Command {
       );
    }
 
-   async action(interaction: CommandInteraction): Promise<void> {
+   async action(interaction: ChatInputCommandInteraction): Promise<void> {
       const channel = interaction.options.getChannel(
          'channel',
          true

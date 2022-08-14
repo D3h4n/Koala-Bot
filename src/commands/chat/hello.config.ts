@@ -1,4 +1,4 @@
-import { CommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 import Command from '../../utils/common.commands.config';
 
 export default class helloCommand extends Command {
@@ -19,7 +19,7 @@ export default class helloCommand extends Command {
       ];
    }
 
-   action(interaction: CommandInteraction): void {
+   action(interaction: ChatInputCommandInteraction): void {
       // get a random greeting from greetings array
       const greeting =
          this.greetings[Math.floor(Math.random() * this.greetings.length)];

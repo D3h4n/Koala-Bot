@@ -7,15 +7,15 @@ export default async function initMongoose(): Promise<void> {
       return;
    }
 
-   mongoose
-      .connect(config.dbURI, {
-         user: config.dbUser,
-         pass: config.dbPass,
-         useNewUrlParser: true,
-         useUnifiedTopology: true,
-      })
-      .catch((error) => {
-         console.error(error);
-         return null;
-      });
+   const options = {
+      user: config.dbUser,
+      pass: config.dbPass,
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+   };
+
+   mongoose.connect(config.dbURI, options).catch((error) => {
+      console.error(error);
+      return null;
+   });
 }

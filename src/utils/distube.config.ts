@@ -1,4 +1,4 @@
-import { MessageEmbed } from 'discord.js';
+import { EmbedBuilder } from 'discord.js';
 import DisTube from 'distube';
 import config from './config';
 
@@ -14,7 +14,7 @@ export default function (distube: DisTube): DisTube {
    distube.on('playSong', (queue, song) => {
       if (queue.repeatMode === 1) return;
 
-      const res = new MessageEmbed();
+      const res = new EmbedBuilder();
 
       const desc =
          `[${song.name}](${song.url})\n` + `Length: ${song.formattedDuration}`;
@@ -38,7 +38,7 @@ export default function (distube: DisTube): DisTube {
    distube.on('addSong', (queue, song) => {
       if (queue.songs.length === 1) return;
 
-      const res = new MessageEmbed();
+      const res = new EmbedBuilder();
 
       const desc =
          `[${song.name}](${song.url})\n` +
@@ -63,7 +63,7 @@ export default function (distube: DisTube): DisTube {
 
    distube.on('addList', (queue, playlist) => {
       try {
-         const res = new MessageEmbed();
+         const res = new EmbedBuilder();
 
          const desc =
             `[${playlist.name}](${playlist.url})\n and \`${
@@ -91,7 +91,7 @@ export default function (distube: DisTube): DisTube {
 
    distube.on('error', (channel, error) => {
       console.error(error);
-      channel.send('`ERROR: ' + error.message + '`');
+      channel?.send('`ERROR: ' + error.message + '`');
    });
 
    return distube;

@@ -1,13 +1,13 @@
 import Command from '../../utils/common.commands.config';
 import { distube } from '../../index';
-import { CommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 
 export default class pauseCommand extends Command {
    constructor() {
       super('pause', 'Pause song');
    }
 
-   action(interaction: CommandInteraction): void {
+   action(interaction: ChatInputCommandInteraction): void {
       try {
          // check if queue is playing
          if (distube.getQueue(interaction)?.playing) {

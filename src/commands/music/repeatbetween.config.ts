@@ -1,23 +1,14 @@
-import { CommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 import Command from '../../utils/common.commands.config';
-import { PermissionFlagsBits } from 'discord-api-types/v10';
-import {
-   parseTimeString,
-   timeToString,
-} from '../../utils/helper_functions.config';
+import { parseTimeString } from '../../utils/helper_functions.config';
 import { distube } from '../../index';
-// import { Queue, RepeatMode, Song } from 'distube';
-import { Queue, Song } from 'distube';
+import { Queue, RepeatMode, Song } from 'distube';
 
 export default class loopCommand extends Command {
    timeouts: Map<string, { song: Song; interval: NodeJS.Timeout }>;
 
    constructor() {
-      super(
-         'repeatbetween',
-         'Repeat a song between two times',
-         PermissionFlagsBits.Administrator // FIXME: update this later
-      );
+      super('repeatbetween', 'Repeat a song between two times');
 
       this.addSubcommand((command) =>
          command
@@ -43,7 +34,7 @@ export default class loopCommand extends Command {
       this.timeouts = new Map();
    }
 
-   async action(interaction: CommandInteraction): Promise<void> {
+   async action(interaction: ChatInputCommandInteraction): Promise<void> {
       const guildId = interaction.guildId;
 
       if (!guildId) {
@@ -79,41 +70,27 @@ export default class loopCommand extends Command {
    startRepeating(
       queue: Queue,
       guildId: string,
-      interaction: CommandInteraction
+      interaction: ChatInputCommandInteraction
    ): void {
-      const start = parseTimeString(
-         interaction.options.getString('start', true)
-      );
-
-      const startString = timeToString(start);
+      const startString = interaction.options.getString('start', true);
+      const endString = interaction.options.getString('end');
       const currentSong = queue.songs[0];
 
-      let timeDiff = currentSong.duration - start;
+      const start = parseTimeString(startString);
+      const end = Math.min(
+         endString ? parseTimeString(endString) : Number.MAX_SAFE_INTEGER,
+         currentSong.duration
+      );
 
-      console.log(timeDiff);
-
-      const endString = interaction.options.getString('end');
-
-      if (endString) {
-         const end = parseTimeString(endString);
-         timeDiff = end - start;
-      }
-
-      if (timeDiff < 10) {
-         interaction.editReply(
-            '`Time difference cannot be less than 10 seconds`'
-         );
+      if (start > end) {
+         interaction.editReply('`Start is after end`');
          return;
       }
 
-      if (timeDiff >= currentSong.duration) {
-         interaction.editReply("`Can't repeat after song is already finished`");
-         return;
-      }
-
-      // queue.setRepeatMode(RepeatMode.SONG);
+      queue.setRepeatMode(RepeatMode.SONG);
       queue.seek(start);
 
+      // poll every second for restarting the song
       const interval = setInterval(() => {
          if (!queue.playing || queue.songs[0] !== currentSong) {
             clearInterval(interval);
@@ -121,12 +98,14 @@ export default class loopCommand extends Command {
             this.timeouts.delete(guildId);
          }
 
-         queue.seek(start);
-      }, timeDiff * 1000);
+         if (queue.currentTime >= end) {
+            queue.seek(start);
+         }
+      }, 1000);
 
       if (this.timeouts.has(guildId)) {
-         const record = this.timeouts.get(guildId)
-         clearInterval(record?.interval)
+         const record = this.timeouts.get(guildId);
+         clearInterval(record?.interval);
       }
 
       this.timeouts.set(guildId, {
@@ -142,23 +121,20 @@ export default class loopCommand extends Command {
    }
 
    stopRepeating(
-      _queue: Queue,
+      queue: Queue,
       guildId: string,
-      interaction: CommandInteraction
+      interaction: ChatInputCommandInteraction
    ): void {
       const record = this.timeouts.get(guildId);
 
       if (!record) {
-         interaction.editReply(
-            "`Critical Error, for whatever reason the record doesn't exist`"
-         );
+         interaction.editReply('`Not repeating`');
          return;
       }
 
       clearInterval(record.interval);
-      this.timeouts.delete(guildId);
-      // queue.setRepeatMode(RepeatMode.DISABLED);
       interaction.editReply(`\`Stopped repeating ${record.song.name}\``);
-      return;
+      queue.setRepeatMode(RepeatMode.DISABLED);
+      this.timeouts.delete(guildId);
    }
 }

@@ -1,10 +1,12 @@
 import {
-   CommandInteraction,
+   ChatInputCommandInteraction,
    GuildMember,
    Message,
-   MessageActionRow,
-   MessageButton,
-   MessageEmbed,
+   ActionRowBuilder,
+   ButtonBuilder,
+   EmbedBuilder,
+   ApplicationCommandOptionType,
+   ButtonStyle,
 } from 'discord.js';
 import config from '../../utils/config';
 import Command from '../../utils/common.commands.config';
@@ -41,7 +43,7 @@ export default class chooseCommand extends Command {
       }
    }
 
-   async action(interaction: CommandInteraction): Promise<void> {
+   async action(interaction: ChatInputCommandInteraction): Promise<void> {
       const hidden = interaction.options.getBoolean('hidden') || false;
 
       await interaction.deferReply({
@@ -50,7 +52,7 @@ export default class chooseCommand extends Command {
 
       // generate random result
       const options = interaction.options.data
-         .filter((a) => a.type === 'STRING')
+         .filter((a) => a.type === ApplicationCommandOptionType.String)
          .map((a) => a.value) as string[];
 
       const result = options[Math.floor(Math.random() * options.length)];
@@ -59,21 +61,21 @@ export default class chooseCommand extends Command {
 
       if (hidden) return;
 
+      const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+         new ButtonBuilder()
+            .setCustomId('yes')
+            .setEmoji('✅')
+            .setStyle(ButtonStyle.Success),
+         new ButtonBuilder()
+            .setCustomId('no')
+            .setEmoji('❌')
+            .setStyle(ButtonStyle.Danger)
+      );
+
       // followup message with buttons
       const message = (await interaction.followUp({
          content: 'See options?',
-         components: [
-            new MessageActionRow().addComponents(
-               new MessageButton()
-                  .setCustomId('yes')
-                  .setEmoji('✅')
-                  .setStyle('SUCCESS'),
-               new MessageButton()
-                  .setCustomId('no')
-                  .setEmoji('❌')
-                  .setStyle('DANGER')
-            ),
-         ],
+         components: [row],
       })) as Message;
 
       let response = false;
@@ -96,7 +98,7 @@ export default class chooseCommand extends Command {
                      .edit({
                         content: null,
                         embeds: [
-                           new MessageEmbed({
+                           new EmbedBuilder({
                               title: 'Options',
                               color: config.mainColor,
                               author: {

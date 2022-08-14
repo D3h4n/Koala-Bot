@@ -1,4 +1,4 @@
-import { CommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 import { PermissionFlagsBits } from 'discord-api-types/v10';
 import Command from '../../utils/common.commands.config';
 import economyServices from '../../services/economy.services';
@@ -21,7 +21,7 @@ export default class toggleLottosCommand extends Command {
       );
    }
 
-   async action(interaction: CommandInteraction): Promise<void> {
+   async action(interaction: ChatInputCommandInteraction): Promise<void> {
       // get guild id
       const guildId = interaction.guild?.id;
 

@@ -1,5 +1,5 @@
 import Command from '../../utils/common.commands.config';
-import { CommandInteraction, GuildMember } from 'discord.js';
+import { ChatInputCommandInteraction, GuildMember } from 'discord.js';
 import { distube } from '../../index';
 
 export default class joinCommand extends Command {
@@ -7,7 +7,7 @@ export default class joinCommand extends Command {
       super('join', 'Add bot to voice channel');
    }
 
-   async action(interaction: CommandInteraction): Promise<void> {
+   async action(interaction: ChatInputCommandInteraction): Promise<void> {
       // get voice channel of member
       const channel = (interaction.member as GuildMember)?.voice.channel;
 

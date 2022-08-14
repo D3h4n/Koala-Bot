@@ -1,6 +1,6 @@
 import Command from '../../utils/common.commands.config';
 import config from '../../utils/config';
-import { CommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 import { google } from 'googleapis';
 
 export default class youtubeCommand extends Command {
@@ -15,7 +15,7 @@ export default class youtubeCommand extends Command {
       );
    }
 
-   action(interaction: CommandInteraction): void {
+   action(interaction: ChatInputCommandInteraction): void {
       // get search query
       const search = interaction.options.data
          .map((a) => a.value)

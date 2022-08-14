@@ -1,6 +1,10 @@
 import Command from '../../utils/common.commands.config';
-import { Song, SearchResult } from 'distube';
-import { CommandInteraction, GuildMember, TextChannel } from 'discord.js';
+import { Song, SearchResult, SearchResultType } from 'distube';
+import {
+   ChatInputCommandInteraction,
+   GuildMember,
+   TextChannel,
+} from 'discord.js';
 import { distube } from '../../index';
 
 export default class PlayTopCommand extends Command {
@@ -12,7 +16,7 @@ export default class PlayTopCommand extends Command {
       );
    }
 
-   async action(interaction: CommandInteraction): Promise<void> {
+   async action(interaction: ChatInputCommandInteraction): Promise<void> {
       await interaction.deferReply();
       // get query
       const query = interaction.options.getString('song', true);
@@ -53,7 +57,7 @@ export default class PlayTopCommand extends Command {
          [result] = await distube.search(query, {
             safeSearch: true,
             limit: 1,
-            type: 'video',
+            type: SearchResultType.VIDEO,
          });
       } catch (error) {
          interaction.editReply('`Could not find that song`');

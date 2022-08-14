@@ -1,7 +1,7 @@
 import {
-   CommandInteraction,
+   ChatInputCommandInteraction,
    GuildMember,
-   MessageEmbed,
+   EmbedBuilder,
    VoiceChannel,
 } from 'discord.js';
 import { ChannelType, PermissionFlagsBits } from 'discord-api-types/v10';
@@ -25,13 +25,13 @@ export default class yeetCommand extends Command {
       );
    }
 
-   async action(interaction: CommandInteraction): Promise<void> {
+   async action(interaction: ChatInputCommandInteraction): Promise<void> {
       const member = interaction.member as GuildMember;
 
       const voiceChannel = member.voice?.channel;
 
       // check if user is in a voice channel
-      if (!voiceChannel || !voiceChannel.isVoice()) {
+      if (!voiceChannel) {
          interaction.reply('`Gotta be in a channel buddy`');
          return;
       }
@@ -51,9 +51,7 @@ export default class yeetCommand extends Command {
       let count = 0;
 
       // create and send response
-      const response = new MessageEmbed();
-
-      response
+      const response = new EmbedBuilder()
          .setTitle(`Yote from "${voiceChannel.name}" to "${newChannel.name}"`)
          .setColor(config.mainColor)
          .setDescription(
